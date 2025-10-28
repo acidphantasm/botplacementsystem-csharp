@@ -87,9 +87,12 @@
     <Reference Include="CommonExtensions">
       <HintPath>$(TarkovManagedDir)CommonExtensions.dll</HintPath>
     </Reference>
-    <Reference Include="Unity.TextMeshPro">
-      <HintPath>$(TarkovManagedDir)Unity.TextMeshPro.dll</HintPath>
-    </Reference>
+	<Reference Include="Unity.TextMeshPro">
+		<HintPath>$(TarkovManagedDir)Unity.TextMeshPro.dll</HintPath>
+	</Reference>
+	<Reference Include="Unity.Postprocessing.Runtime">
+		<HintPath>$(TarkovManagedDir)Unity.Postprocessing.Runtime.dll</HintPath>
+	</Reference>
   </ItemGroup>
 
   <!-- Post-Build Actions -->
