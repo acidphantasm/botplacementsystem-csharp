@@ -1,10 +1,12 @@
 ﻿using acidphantasm_botplacementsystem.Patches;
 using BepInEx;
+using BepInEx.Bootstrap;
 using BepInEx.Logging;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.0")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.1")]
+    [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
@@ -61,11 +63,15 @@ namespace acidphantasm_botplacementsystem
         {
             LogSource = Logger;
 
+            if (!Chainloader.PluginInfos.ContainsKey("com.fika.headless"))
+            {
+                new MaxBotLimitPatch().Enable();
+            }
+
             //new OnGameStartedPatch().Enable();
             new UnregisterPlayerPatch().Enable();
             new MenuLoadPatch().Enable();
 
-            new MaxBotLimitPatch().Enable();
             new LocalGameProgressivePatch().Enable();
             new BossAddProgressionPatch().Enable();
             new PMCWaveCountPatch().Enable();
