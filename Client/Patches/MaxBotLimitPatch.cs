@@ -19,8 +19,8 @@ namespace acidphantasm_botplacementsystem.Patches
             var gameWorld = Singleton<GameWorld>.Instance;
             if (gameWorld == null) return;
 
-            var location = gameWorld.MainPlayer.Location;
-            if (location == null) return;
+            var location = gameWorld.LocationId;
+            if (string.IsNullOrEmpty(location)) return;
 
             switch (location.ToLower())
             {
