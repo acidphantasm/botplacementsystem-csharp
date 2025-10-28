@@ -86,9 +86,8 @@ public class StaticRouters : StaticRouter
                     info,
                     sessionID,
                     output
-                ) => await SaveBossTrackingData(info as BossTrackingData),
-                typeof(BossTrackingData)
-            ),
+                ) => await SaveBossTrackingData(info as BossTrackingData)
+                ),
             new RouteAction("/abps/load",
                 async (
                     url,
@@ -100,19 +99,15 @@ public class StaticRouters : StaticRouter
         ];
     }
 
-    private static async ValueTask<string> SaveBossTrackingData(BossTrackingData info)
+    private static ValueTask<string> SaveBossTrackingData(BossTrackingData info)
     {
-        if (info is null)
-        {
-            return null;
-        }
-        else
+        if (info is not null)
         {
             BossTrackingData = info;
         }
 
-        await Save();
-        return _jsonUtil.Serialize(new { success = true }); // FORKING DIGUSTING BUT CBA RN
+        Task.Run(Save);
+        return new ValueTask<string>(_httpResponseUtil.NullResponse());
     }
 
     private static async Task Save()
