@@ -1,0 +1,1647 @@
+﻿@page "/botplacementsystem/bossconfig/kolontay"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows Kolontay to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Kolontay</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_kolontay_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_kolontay_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_kolontay_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Kolontay_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _kolontay_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Kolontay_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_kolontay_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Time"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Time != -1)
+                            {
+                                <MudButton @onclick="default_Kolontay_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Customs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_kolontay_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_kolontay_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_kolontay_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Interchange_SpawnZones.Count != 1 ||
+                                     !_kolontay_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_kolontay_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_kolontay_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Reserve_SpawnZones.Count != 1 ||
+                                     !_kolontay_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_GroundZero_SpawnZones.Count != 1 ||
+                                     !_kolontay_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_GroundZeroHigh_SpawnChance != 30)
+                            {
+                                <MudButton @onclick="default_Kolontay_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_kolontay_GroundZeroHigh_SpawnZones.Contains("ZoneSandbox") ||
+                                     _kolontay_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_kolontay_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Streets_SpawnChance != 30)
+                            {
+                                <MudButton @onclick="default_Kolontay_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Streets_SpawnZones.Count != 2 ||
+                                     !_kolontay_Streets_SpawnZones.Contains("ZoneClimova") ||
+                                     !_kolontay_Streets_SpawnZones.Contains("ZoneMvd") ||
+                                     _kolontay_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Woods_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_kolontay_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_kolontay_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_kolontay_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _kolontay_Labyrinth_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Kolontay_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_kolontay_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_Kolontay_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_kolontay_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_kolontay_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Kolontay_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_kolontay_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Kolontay_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region KolontayGlobalConfig
+    private bool _kolontay_Enabled
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.Enable);
+            ModConfig.Config.BossConfig.BossKolontay.Enable = value;
+        }
+    }
+    private void undo_Kolontay_Enable() => _kolontay_Enabled = ModConfig.OriginalConfig.BossConfig.BossKolontay.Enable;
+    private void default_Kolontay_Enable() => _kolontay_Enabled = true;
+    private long _kolontay_Time
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.Time);
+            ModConfig.Config.BossConfig.BossKolontay.Time = value;
+        }
+    }
+    private void undo_Kolontay_Time() => _kolontay_Time = ModConfig.OriginalConfig.BossConfig.BossKolontay.Time;
+    private void default_Kolontay_Time() => _kolontay_Time = -1;
+    #endregion
+    #region KolontaySpawnConfig
+    #region KolontayCustoms
+    private int _kolontay_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_Kolontay_Customs_SpawnChance() => _kolontay_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Customs;
+    private void default_Kolontay_Customs_SpawnChance() => _kolontay_Customs_SpawnChance = 0;
+    private List<string> _kolontay_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Customs);
+            }
+        }
+    }
+    private void On_Kolontay_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Customs_SpawnZones() => _kolontay_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Customs };
+    private void default_Kolontay_Customs_SpawnZones() => _kolontay_Customs_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayFactory
+    private int _kolontay_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_Kolontay_FactoryDay_SpawnChance() => _kolontay_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Factory4Day;
+    private void default_Kolontay_FactoryDay_SpawnChance() => _kolontay_FactoryDay_SpawnChance = 0;
+    private List<string> _kolontay_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_Kolontay_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_FactoryDay_SpawnZones() => _kolontay_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Day };
+    private void default_Kolontay_FactoryDay_SpawnZones() => _kolontay_FactoryDay_SpawnZones = new List<string>();
+    private int _kolontay_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_Kolontay_FactoryNight_SpawnChance() => _kolontay_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Factory4Night;
+    private void default_Kolontay_FactoryNight_SpawnChance() => _kolontay_FactoryNight_SpawnChance = 0;
+    private List<string> _kolontay_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_Kolontay_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_FactoryNight_SpawnZones() => _kolontay_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Factory4Night };
+    private void default_Kolontay_FactoryNight_SpawnZones() => _kolontay_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayInterchange
+    private int _kolontay_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_Kolontay_Interchange_SpawnChance() => _kolontay_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Interchange;
+    private void default_Kolontay_Interchange_SpawnChance() => _kolontay_Interchange_SpawnChance = 0;
+    private List<string> _kolontay_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_Kolontay_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Interchange_SpawnZones() => _kolontay_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Interchange };
+    private void default_Kolontay_Interchange_SpawnZones() => _kolontay_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayLabs
+    private int _kolontay_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_Kolontay_Labs_SpawnChance() => _kolontay_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Laboratory;
+    private void default_Kolontay_Labs_SpawnChance() => _kolontay_Labs_SpawnChance = 0;
+    private List<string> _kolontay_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_Kolontay_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Labs_SpawnZones() => _kolontay_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Laboratory };
+    private void default_Kolontay_Labs_SpawnZones() => _kolontay_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayLighthouse
+    private int _kolontay_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_Kolontay_Lighthouse_SpawnChance() => _kolontay_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Lighthouse;
+    private void default_Kolontay_Lighthouse_SpawnChance() => _kolontay_Lighthouse_SpawnChance = 0;
+    private List<string> _kolontay_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_Kolontay_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Lighthouse_SpawnZones() => _kolontay_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Lighthouse };
+    private void default_Kolontay_Lighthouse_SpawnZones() => _kolontay_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayReserve
+    private int _kolontay_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_Kolontay_Reserve_SpawnChance() => _kolontay_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Reserve;
+    private void default_Kolontay_Reserve_SpawnChance() => _kolontay_Reserve_SpawnChance = 0;
+    private List<string> _kolontay_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_Kolontay_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Reserve_SpawnZones() => _kolontay_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Reserve };
+    private void default_Kolontay_Reserve_SpawnZones() => _kolontay_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayGroundZero
+    private int _kolontay_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_Kolontay_GroundZero_SpawnChance() => _kolontay_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.GroundZero;
+    private void default_Kolontay_GroundZero_SpawnChance() => _kolontay_GroundZero_SpawnChance = 0;
+    private List<string> _kolontay_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_Kolontay_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_GroundZero_SpawnZones() => _kolontay_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZero };
+    private void default_Kolontay_GroundZero_SpawnZones() => _kolontay_GroundZero_SpawnZones = new List<string>();
+    private int _kolontay_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Kolontay_GroundZeroHigh_SpawnChance() => _kolontay_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.GroundZeroHigh;
+    private void default_Kolontay_GroundZeroHigh_SpawnChance() => _kolontay_GroundZeroHigh_SpawnChance = 30;
+    private List<string> _kolontay_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_Kolontay_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_GroundZeroHigh_SpawnZones() => _kolontay_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.GroundZeroHigh };
+    private void default_Kolontay_GroundZeroHigh_SpawnZones() => _kolontay_GroundZeroHigh_SpawnZones = new List<string> {"ZoneSandbox"};
+    #endregion
+    #region KolontayShoreline
+    private int _kolontay_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_Kolontay_Shoreline_SpawnChance() => _kolontay_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Shoreline;
+    private void default_Kolontay_Shoreline_SpawnChance() => _kolontay_Shoreline_SpawnChance = 0;
+    private List<string> _kolontay_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_Kolontay_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Shoreline_SpawnZones() => _kolontay_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Shoreline };
+    private void default_Kolontay_Shoreline_SpawnZones() => _kolontay_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayStreets
+    private int _kolontay_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_Kolontay_Streets_SpawnChance() => _kolontay_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.TarkovStreets;
+    private void default_Kolontay_Streets_SpawnChance() => _kolontay_Streets_SpawnChance = 30;
+    private List<string> _kolontay_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_Kolontay_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Streets_SpawnZones() => _kolontay_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.TarkovStreets };
+    private void default_Kolontay_Streets_SpawnZones() => _kolontay_Streets_SpawnZones = new List<string> {"ZoneClimova,ZoneMvd"};
+    #endregion
+    #region KolontayWoods
+    private int _kolontay_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_Kolontay_Woods_SpawnChance() => _kolontay_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Woods;
+    private void default_Kolontay_Woods_SpawnChance() => _kolontay_Woods_SpawnChance = 0;
+    private List<string> _kolontay_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Woods);
+            }
+        }
+    }
+    private void On_Kolontay_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Woods_SpawnZones() => _kolontay_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Woods };
+    private void default_Kolontay_Woods_SpawnZones() => _kolontay_Woods_SpawnZones = new List<string>();
+    #endregion
+    #region KolontayLabyrinth
+    private int _kolontay_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.BossKolontay.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_Kolontay_Labyrinth_SpawnChance() => _kolontay_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKolontay.SpawnChance.Labyrinth;
+    private void default_Kolontay_Labyrinth_SpawnChance() => _kolontay_Labyrinth_SpawnChance = 0;
+    private List<string> _kolontay_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKolontay.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKolontay.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_Kolontay_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _kolontay_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_Kolontay_Labyrinth_SpawnZones() => _kolontay_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKolontay.BossZone.Labyrinth };
+    private void default_Kolontay_Labyrinth_SpawnZones() => _kolontay_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

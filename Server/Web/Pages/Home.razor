@@ -1,0 +1,48 @@
+﻿@page "/botplacementsystem"
+@layout MainLayout
+
+<MudMainContent>
+    <MudContainer>
+            <MudPaper Class="pa-6 ma-6 " Elevation="4">
+                <MudText Align="Align.Center" Typo="Typo.h4">ABPS Configuration Manager</MudText>
+            </MudPaper>
+            <MudPaper Height="150px" Class="pa-4 ma-6 d-flex flex-column justify-space-between" Elevation="1">
+                <MudText Align="Align.Center" Typo="Typo.body2">You can click on the Menu button at the top left to begin configuring ABPS to your wants and needs.</MudText>
+                <MudSpacer />
+                <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                    Nearly every change is tracked by the application and will notify you at the bottom right of pending changes to be saved.
+                    <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                    In addition, you can click on the button to view a list of changes that are pending.
+                        <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                            If you want to discard any changes that you have made, you can click on 'Reload Config' at the top right to revert everything back to it's last saved state.
+                        </MudText>
+                    </MudText>
+                </MudText>
+            </MudPaper>
+            <MudPaper Height="200px" Class="pa-4 ma-6 d-flex flex-column justify-space-between" Elevation="1">
+                <MudText Align="Align.Center" Typo="Typo.body2">At the bottom left of your window are toggles to have the application automatically show you 'Undo' & 'Default' buttons as you're making changes.</MudText>
+                <MudSpacer />
+                <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                    The 'Undo' button will appear when you've made a change and have yet to save the configuration.
+                    <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                        This button will effectively remove your changes (only for the setting next to which it resides) and set it back to what it was on the last saved state of your config.
+                    </MudText>
+                </MudText>
+                <MudSpacer />
+                <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                    The 'Default' button will only appear, if enabled, if your settings differ from the defaults that I have configured.
+                    <MudText Align="Align.Center" Typo="Typo.body2" Inline=false>
+                        It serves only as a quick way to return the setting to it's default state.
+                    </MudText>
+                </MudText>
+            </MudPaper>
+            <MudPaper Height="150px" Class="pa-4 ma-6 d-flex flex-column justify-space-between" Elevation="1">
+                <MudText Align="Align.Center" Typo="Typo.body2">If you would like to provide feedback or perhaps have ideas to be added to the mod, let me know in the SPT Discord or on the SPT Hub page for ABPS.</MudText>
+                <MudSpacer />
+                <MudTooltip Delay="1000" Color="Color.Primary" Text="I make better mods than I do landing pages for an application...">
+                    <MudText Align="Align.Center" Typo="Typo.h5">Remember to save your changes when you are done, and enjoy SPT with ABPS!</MudText>
+                </MudTooltip>
+                <MudSpacer />
+            </MudPaper>
+    </MudContainer>
+</MudMainContent>

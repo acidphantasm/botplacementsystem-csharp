@@ -1,0 +1,1677 @@
+﻿@page "/botplacementsystem/pmcconfig"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Weight of PMC Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Easy Difficulty Weight</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmc_EasyDifficulty</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_EasyDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_EasyDifficulty"))
+                        {
+                            <MudButton @onclick="undo_PMC_Easy" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_EasyDifficulty != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Easy" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Weight of PMC Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Normal Difficulty Weight</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmc_NormalDifficulty</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_NormalDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_NormalDifficulty"))
+                        {
+                            <MudButton @onclick="undo_PMC_Normal" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_NormalDifficulty != 50)
+                        {
+                            <MudButton @onclick="default_PMC_Normal" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Weight of PMC Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Hard Difficulty Weight</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmc_HardDifficulty</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_HardDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_HardDifficulty"))
+                        {
+                            <MudButton @onclick="undo_PMC_Hard" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_HardDifficulty != 30)
+                        {
+                            <MudButton @onclick="default_PMC_Hard" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Weight of PMC Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Impossible Difficulty Weight</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmc_ImpossibleDifficulty</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_ImpossibleDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_ImpossibleDifficulty"))
+                        {
+                            <MudButton @onclick="undo_PMC_Impossible" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_ImpossibleDifficulty != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Impossible" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudExpansionPanel>
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Starting PMCs" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Creates an initial PMC wave at the start of the raid, if disabled - PMCs won't spawn until the first wave configured in 'PMC Waves'." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Starting PMCs</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pmc_StartingPMCsEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pmc_StartingPMCsEnabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_StartingPMCsEnabled"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_Enabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_StartingPMCsEnabled != true)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_Enabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Whether or not starting PMCs will ignore the max bot caps set in game (F12)" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Ignore Max Bots</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pmc_StartingPMCsIgnoreMaxBotCaps" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pmc_StartingPMCsIgnoreMaxBotCaps</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_StartingPMCsIgnoreMaxBotCaps"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_IgnoreMaxBotCaps" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_StartingPMCsIgnoreMaxBotCaps != true)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_IgnoreMaxBotCaps" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The chance a PMC spawning at the start will be in a group and have teammates." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Chance</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_StartingPMCsEnabled">@_pmc_StartingGroupChance</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_StartingGroupChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_StartingPMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_StartingGroupChance"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_GroupChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_StartingGroupChance != 25)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_GroupChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum size of a group that a starting PMC can have." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Size</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_StartingPMCsEnabled">@_pmc_StartingGroupSize</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_StartingGroupSize" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_StartingPMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_StartingGroupSize"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_GroupSize" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_StartingGroupSize != 3)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_GroupSize" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">This is group count, not total count. When limit is hit, all remaining spawns are solo.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum amount of PMC Groups that can possibly spawn at the start." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Count</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_StartingPMCsEnabled">@_pmc_StartingGroupCount</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_StartingGroupCount" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_StartingPMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_StartingGroupCount"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_GroupCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_StartingGroupCount != 4)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_GroupCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Customs Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Customs_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Customs_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Customs_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Customs_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Customs_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Customs_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Customs" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        (_pmc_Starting_MapLimits_Customs_Min != 8 ||
+                        _pmc_Starting_MapLimits_Customs_Max != 10))
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Customs" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Factory Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryDay_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_FactoryDay_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryDay_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_FactoryDay_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_FactoryDay_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_FactoryDay_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_FactoryDay" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        (_pmc_Starting_MapLimits_FactoryDay_Min != 5 ||
+                        _pmc_Starting_MapLimits_FactoryDay_Max != 7))
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_FactoryDay" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Factory (Night) Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryNight_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_FactoryNight_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryNight_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_FactoryNight_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_FactoryNight_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_FactoryNight_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_FactoryNight" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_FactoryNight_Min != 5 ||
+                        _pmc_Starting_MapLimits_FactoryNight_Max != 7)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_FactoryNight" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Interchange Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Interchange_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Interchange_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Interchange_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Interchange_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Interchange_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Interchange_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Interchange" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Interchange_Min != 9 ||
+                        _pmc_Starting_MapLimits_Interchange_Max != 13)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Interchange" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Labs Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Labs_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Labs_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Labs_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Labs_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Labs_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Labs_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Labs" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Labs_Min != 7 ||
+                        _pmc_Starting_MapLimits_Labs_Max != 9)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Labs" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Lighthouse Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Lighthouse_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Lighthouse_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Lighthouse_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Lighthouse_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Lighthouse_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Lighthouse_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Lighthouse" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Lighthouse_Min != 7 ||
+                        _pmc_Starting_MapLimits_Lighthouse_Max != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Lighthouse" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Reserve Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Reserve_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Reserve_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Reserve_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Reserve_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Reserve_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Reserve_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Reserve" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Reserve_Min != 8 ||
+                        _pmc_Starting_MapLimits_Reserve_Max != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Reserve" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Ground Zero Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_GroundZero_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_GroundZero_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_GroundZero_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_GroundZero_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_GroundZero_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_GroundZero_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_GroundZero" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_GroundZero_Min != 8 ||
+                        _pmc_Starting_MapLimits_GroundZero_Max != 11)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_GroundZero" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Ground Zero High Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_GroundZeroHigh_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_GroundZeroHigh_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_GroundZeroHigh_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_GroundZeroHigh_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_GroundZeroHigh_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_GroundZeroHigh_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_GroundZeroHigh" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_GroundZeroHigh_Min != 8 ||
+                        _pmc_Starting_MapLimits_GroundZeroHigh_Max != 11)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_GroundZeroHigh" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Shoreline Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Shoreline_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Shoreline_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Shoreline_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Shoreline_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Shoreline_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Shoreline_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Shoreline" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Shoreline_Min != 9 ||
+                        _pmc_Starting_MapLimits_Shoreline_Max != 13)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Shoreline" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Streets Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Streets_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Streets_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Streets_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Streets_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Streets_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Streets_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Streets" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Streets_Min != 7 ||
+                        _pmc_Starting_MapLimits_Streets_Max != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Streets" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Woods Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Woods_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Woods_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Woods_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Woods_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Woods_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Woods_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Woods" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Woods_Min != 9 ||
+                        _pmc_Starting_MapLimits_Woods_Max != 13)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Woods" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="PMC Map Limits, minimum amount and maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Labyrinth Map Limits</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Starting minimum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Labyrinth_Min" Label="Min Limit" Variant="Variant.Filled"
+                                                 Min="0"
+                                                 Max="_pmc_Starting_MapLimits_Labyrinth_Max" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="3">
+                        <MudPaper Class="d-flex align-start mud-width-full" Style="margin-top: -10px;" Elevation="0">
+                            <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
+                                <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_Labyrinth_Max" Label="Max Limit" Variant="Variant.Filled"
+                                                 Min="_pmc_Starting_MapLimits_Labyrinth_Min"
+                                                 Max="15" />
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Labyrinth_Min") ||
+                        MainLayout.pendingChanges.Contains("_pmc_Starting_MapLimits_Labyrinth_Max"))
+                        {
+                            <MudButton @onclick="undo_PMC_Starting_MapLimits_Labyrinth" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_Starting_MapLimits_Labyrinth_Min != 0 ||
+                        _pmc_Starting_MapLimits_Labyrinth_Max != 0)
+                        {
+                            <MudButton @onclick="default_PMC_Starting_MapLimits_Labyrinth" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="PMC Waves" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">PMC Waves respect the SPT map limits, if the limit is reached - they will not spawn.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="If additional PMCs should spawn throughout the raid, if disabled - you will not get further PMC spawns." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable PMC Waves</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pmc_WavePMCsEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pmc_WavePMCsEnabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WavePMCsEnabled"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_Enabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WavePMCsEnabled != false)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_Enabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Whether or not wave PMCs will ignore the max bot caps set in game (F12)" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Ignore Max Bots</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_pmc_WavePMCsIgnoreMaxBotCaps" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_pmc_WavePMCsIgnoreMaxBotCaps</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WavePMCsIgnoreMaxBotCaps"))
+                        {
+                            <MudButton @onclick="undo_PMC_Waves_IgnoreMaxBotCaps" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WavePMCsIgnoreMaxBotCaps != false)
+                        {
+                            <MudButton @onclick="default_PMC_Waves_IgnoreMaxBotCaps" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The chance a PMC spawning in a wave will be in a group and have teammates." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Chance</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveGroupChance</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveGroupChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveGroupChance"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_GroupChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveGroupChance != 10)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_GroupChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum size of a group that a wave PMC can have." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Size</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveGroupSize</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveGroupSize" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveGroupSize"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_GroupSize" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveGroupSize != 2)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_GroupSize" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum amount of PMC Groups that can possibly spawn per wave." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Group Count</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveGroupCount</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveGroupCount" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveGroupCount"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_GroupCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveGroupCount != 3)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_GroupCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum amount of PMCs that can possibly spawn in each wave." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Max PMC Count per Wave</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveBotsPerWave</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveBotsPerWave" ValueLabel="true" Min="0" Max="15" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveBotsPerWave"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_MaxPMCCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveBotsPerWave != 5)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_MaxPMCCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The amount of time that must pass from the start of the raid to trigger the first PMC wave." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>First Wave Delay Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveDelayTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveDelayTimer" ValueLabel="true" Min="0" Max="900" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveDelayTimer"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_DelayTimer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveDelayTimer != 500)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_DelayTimer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The amount of time that must pass from the previous wave, to trigger another PMC wave." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Seconds Between Waves</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveTimer" ValueLabel="true" Min="0" Max="900" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveTimer"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_Timer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveTimer != 360)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_Timer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Time left in the raid to stop spawning additional waves - if set to 600 will not allow more PMC waves when 10m left in raid." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Wave Stop Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveEndTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_WaveEndTimer" ValueLabel="true" Min="0" Max="1200" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_pmc_WaveEndTimer"))
+                        {
+                            <MudButton @onclick="undo_PMC_Wave_EndTimer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _pmc_WaveEndTimer != 300)
+                        {
+                            <MudButton @onclick="default_PMC_Wave_EndTimer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region PMCDifficulty
+    private double _pmc_EasyDifficulty
+    {
+        get => ModConfig.Config.PmcDifficulty["easy"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcDifficulty["easy"]);
+            ModConfig.Config.PmcDifficulty["easy"] = value;
+        }
+    }
+    private void undo_PMC_Easy() => _pmc_EasyDifficulty = ModConfig.OriginalConfig.PmcDifficulty["easy"];
+    private void default_PMC_Easy() => _pmc_EasyDifficulty = 10;
+    private double _pmc_NormalDifficulty
+    {
+        get => ModConfig.Config.PmcDifficulty["normal"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcDifficulty["normal"]);
+            ModConfig.Config.PmcDifficulty["normal"] = value;
+        }
+    }
+    private void undo_PMC_Normal() => _pmc_NormalDifficulty = ModConfig.OriginalConfig.PmcDifficulty["normal"];
+    private void default_PMC_Normal() => _pmc_NormalDifficulty = 50;
+    private double _pmc_HardDifficulty
+    {
+        get => ModConfig.Config.PmcDifficulty["hard"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcDifficulty["hard"]);
+            ModConfig.Config.PmcDifficulty["hard"] = value;
+        }
+    }
+    private void undo_PMC_Hard() => _pmc_HardDifficulty = ModConfig.OriginalConfig.PmcDifficulty["hard"];
+    private void default_PMC_Hard() => _pmc_HardDifficulty = 30;
+    private double _pmc_ImpossibleDifficulty
+    {
+        get => ModConfig.Config.PmcDifficulty["impossible"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcDifficulty["impossible"]);
+            ModConfig.Config.PmcDifficulty["impossible"] = value;
+        }
+    }
+    private void undo_PMC_Impossible() => _pmc_ImpossibleDifficulty = ModConfig.OriginalConfig.PmcDifficulty["impossible"];
+    private void default_PMC_Impossible() => _pmc_ImpossibleDifficulty = 10;
+    #endregion
+    #region StartingPMCs
+    private bool _pmc_StartingPMCsEnabled
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.Enable);
+            ModConfig.Config.PmcConfig.StartingPMCs.Enable = value;
+        }
+    }
+    private void undo_PMC_Starting_Enabled() => _pmc_StartingPMCsEnabled = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.Enable;
+    private void default_PMC_Starting_Enabled() => _pmc_StartingPMCsEnabled = true;
+
+    private bool _pmc_StartingPMCsIgnoreMaxBotCaps
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.IgnoreMaxBotCaps);
+            ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps = value;
+        }
+    }
+    private void undo_PMC_Starting_IgnoreMaxBotCaps() => _pmc_StartingPMCsIgnoreMaxBotCaps = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
+    private void default_PMC_Starting_IgnoreMaxBotCaps() => _pmc_StartingPMCsIgnoreMaxBotCaps = true;
+
+    private int _pmc_StartingGroupChance
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.GroupChance;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.GroupChance);
+            ModConfig.Config.PmcConfig.StartingPMCs.GroupChance = value;
+        }
+    }
+    private void undo_PMC_Starting_GroupChance() => _pmc_StartingGroupChance = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.GroupChance;
+    private void default_PMC_Starting_GroupChance() => _pmc_StartingGroupChance = 25;
+
+    private int _pmc_StartingGroupSize
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupSize);
+            ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize = value;
+        }
+    }
+    private void undo_PMC_Starting_GroupSize() => _pmc_StartingGroupSize = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupSize;
+    private void default_PMC_Starting_GroupSize() => _pmc_StartingGroupSize = 3;
+
+    private int _pmc_StartingGroupCount
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupCount;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupCount);
+            ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupCount = value;
+        }
+    }
+    private void undo_PMC_Starting_GroupCount() => _pmc_StartingGroupCount = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupCount;
+    private void default_PMC_Starting_GroupCount() => _pmc_StartingGroupCount = 4;
+
+    #region MapLimits_Customs
+    private int _pmc_Starting_MapLimits_Customs_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Customs.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Customs.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Customs.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Customs_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Customs.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Customs.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Customs.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Customs()
+    {
+        _pmc_Starting_MapLimits_Customs_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Customs.Min;
+        _pmc_Starting_MapLimits_Customs_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Customs.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Customs() 
+    {
+        _pmc_Starting_MapLimits_Customs_Min = 8;
+        _pmc_Starting_MapLimits_Customs_Max = 10;
+    }
+    #endregion
+    #region MapLimits_Factory
+    private int _pmc_Starting_MapLimits_FactoryDay_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_FactoryDay_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_FactoryDay()
+    {
+        _pmc_Starting_MapLimits_FactoryDay_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Min;
+        _pmc_Starting_MapLimits_FactoryDay_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Day.Max;
+    }
+    private void default_PMC_Starting_MapLimits_FactoryDay()
+    {
+        _pmc_Starting_MapLimits_FactoryDay_Min = 5;
+        _pmc_Starting_MapLimits_FactoryDay_Max = 7;
+    }
+    private int _pmc_Starting_MapLimits_FactoryNight_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_FactoryNight_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_FactoryNight()
+    {
+        _pmc_Starting_MapLimits_FactoryNight_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Min;
+        _pmc_Starting_MapLimits_FactoryNight_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Factory4Night.Max;
+    }
+    private void default_PMC_Starting_MapLimits_FactoryNight()
+    {
+        _pmc_Starting_MapLimits_FactoryNight_Min = 5;
+        _pmc_Starting_MapLimits_FactoryNight_Max = 7;
+    }
+    #endregion
+    #region MapLimits_Interchange
+    private int _pmc_Starting_MapLimits_Interchange_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Interchange.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Interchange.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Interchange.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Interchange_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Interchange.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Interchange.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Interchange.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Interchange()
+    {
+        _pmc_Starting_MapLimits_Interchange_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Interchange.Min;
+        _pmc_Starting_MapLimits_Interchange_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Interchange.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Interchange()
+    {
+        _pmc_Starting_MapLimits_Interchange_Min = 9;
+        _pmc_Starting_MapLimits_Interchange_Max = 13;
+    }
+    #endregion
+    #region MapLimits_Labs
+    private int _pmc_Starting_MapLimits_Labs_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Laboratory.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Laboratory.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Laboratory.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Labs_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Laboratory.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Laboratory.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Laboratory.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Labs()
+    {
+        _pmc_Starting_MapLimits_Labs_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Laboratory.Min;
+        _pmc_Starting_MapLimits_Labs_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Laboratory.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Labs()
+    {
+        _pmc_Starting_MapLimits_Labs_Min = 7;
+        _pmc_Starting_MapLimits_Labs_Max = 9;
+    }
+    #endregion
+    #region MapLimits_Lighthouse
+    private int _pmc_Starting_MapLimits_Lighthouse_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Lighthouse_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Lighthouse()
+    {
+        _pmc_Starting_MapLimits_Lighthouse_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Min;
+        _pmc_Starting_MapLimits_Lighthouse_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Lighthouse.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Lighthouse()
+    {
+        _pmc_Starting_MapLimits_Lighthouse_Min = 7;
+        _pmc_Starting_MapLimits_Lighthouse_Max = 10;
+    }
+    #endregion
+    #region MapLimits_Reserve
+    private int _pmc_Starting_MapLimits_Reserve_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Reserve.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Reserve.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Reserve.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Reserve_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Reserve.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Reserve.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Reserve.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Reserve()
+    {
+        _pmc_Starting_MapLimits_Reserve_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Reserve.Min;
+        _pmc_Starting_MapLimits_Reserve_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Reserve.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Reserve()
+    {
+        _pmc_Starting_MapLimits_Reserve_Min = 8;
+        _pmc_Starting_MapLimits_Reserve_Max = 10;
+    }
+    #endregion
+    #region MapLimits_GroundZero
+    private int _pmc_Starting_MapLimits_GroundZero_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZero.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZero.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZero.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_GroundZero_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZero.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZero.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZero.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_GroundZero()
+    {
+        _pmc_Starting_MapLimits_GroundZero_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZero.Min;
+        _pmc_Starting_MapLimits_GroundZero_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZero.Max;
+    }
+    private void default_PMC_Starting_MapLimits_GroundZero()
+    {
+        _pmc_Starting_MapLimits_GroundZero_Min = 8;
+        _pmc_Starting_MapLimits_GroundZero_Max = 11;
+    }
+    private int _pmc_Starting_MapLimits_GroundZeroHigh_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_GroundZeroHigh_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_GroundZeroHigh()
+    {
+        _pmc_Starting_MapLimits_GroundZeroHigh_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Min;
+        _pmc_Starting_MapLimits_GroundZeroHigh_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.GroundZeroHigh.Max;
+    }
+    private void default_PMC_Starting_MapLimits_GroundZeroHigh()
+    {
+        _pmc_Starting_MapLimits_GroundZeroHigh_Min = 8;
+        _pmc_Starting_MapLimits_GroundZeroHigh_Max = 11;
+    }
+    #endregion
+    #region MapLimits_Shoreline
+    private int _pmc_Starting_MapLimits_Shoreline_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Shoreline.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Shoreline.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Shoreline.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Shoreline_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Shoreline.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Shoreline.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Shoreline.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Shoreline()
+    {
+        _pmc_Starting_MapLimits_Shoreline_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Shoreline.Min;
+        _pmc_Starting_MapLimits_Shoreline_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Shoreline.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Shoreline()
+    {
+        _pmc_Starting_MapLimits_Shoreline_Min = 9;
+        _pmc_Starting_MapLimits_Shoreline_Max = 13;
+    }
+    #endregion
+    #region MapLimits_Streets
+    private int _pmc_Starting_MapLimits_Streets_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Streets_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Streets()
+    {
+        _pmc_Starting_MapLimits_Streets_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Min;
+        _pmc_Starting_MapLimits_Streets_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.TarkovStreets.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Streets()
+    {
+        _pmc_Starting_MapLimits_Streets_Min = 7;
+        _pmc_Starting_MapLimits_Streets_Max = 10;
+    }
+    #endregion
+    #region MapLimits_Woods
+    private int _pmc_Starting_MapLimits_Woods_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Woods.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Woods.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Woods.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Woods_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Woods.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Woods.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Woods.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Woods()
+    {
+        _pmc_Starting_MapLimits_Woods_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Woods.Min;
+        _pmc_Starting_MapLimits_Woods_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Woods.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Woods()
+    {
+        _pmc_Starting_MapLimits_Woods_Min = 9;
+        _pmc_Starting_MapLimits_Woods_Max = 13;
+    }
+    #endregion
+    #region MapLimits_Labyrinth
+    private int _pmc_Starting_MapLimits_Labyrinth_Min
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Min;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Min);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Min = value;
+        }
+    }
+    private int _pmc_Starting_MapLimits_Labyrinth_Max
+    {
+        get => ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Max;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Max);
+            ModConfig.Config.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Max = value;
+        }
+    }
+    private void undo_PMC_Starting_MapLimits_Labyrinth()
+    {
+        _pmc_Starting_MapLimits_Labyrinth_Min = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Min;
+        _pmc_Starting_MapLimits_Labyrinth_Max = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MapLimits.Labyrinth.Max;
+    }
+    private void default_PMC_Starting_MapLimits_Labyrinth()
+    {
+        _pmc_Starting_MapLimits_Labyrinth_Min = 0;
+        _pmc_Starting_MapLimits_Labyrinth_Max = 0;
+    }
+    #endregion
+    #endregion
+    #region PMCWaves
+    private bool _pmc_WavePMCsEnabled
+    {
+        get => ModConfig.Config.PmcConfig.Waves.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.Enable);
+            ModConfig.Config.PmcConfig.Waves.Enable = value;
+        }
+    }
+    private void undo_PMC_Wave_Enabled() => _pmc_WavePMCsEnabled = ModConfig.OriginalConfig.PmcConfig.Waves.Enable;
+    private void default_PMC_Wave_Enabled() => _pmc_WavePMCsEnabled = false;
+
+    private bool _pmc_WavePMCsIgnoreMaxBotCaps
+    {
+        get => ModConfig.Config.PmcConfig.Waves.IgnoreMaxBotCaps;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.IgnoreMaxBotCaps);
+            ModConfig.Config.PmcConfig.Waves.IgnoreMaxBotCaps = value;
+        }
+    }
+    private void undo_PMC_Waves_IgnoreMaxBotCaps() => _pmc_WavePMCsIgnoreMaxBotCaps = ModConfig.OriginalConfig.PmcConfig.Waves.IgnoreMaxBotCaps;
+    private void default_PMC_Waves_IgnoreMaxBotCaps() => _pmc_WavePMCsIgnoreMaxBotCaps = false;
+
+    private int _pmc_WaveGroupChance
+    {
+        get => ModConfig.Config.PmcConfig.Waves.GroupChance;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.GroupChance);
+            ModConfig.Config.PmcConfig.Waves.GroupChance = value;
+        }
+    }
+    private void undo_PMC_Wave_GroupChance() => _pmc_WaveGroupChance = ModConfig.OriginalConfig.PmcConfig.Waves.GroupChance;
+    private void default_PMC_Wave_GroupChance() => _pmc_WaveGroupChance = 10;
+
+    private int _pmc_WaveGroupSize
+    {
+        get => ModConfig.Config.PmcConfig.Waves.MaxGroupSize;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupSize);
+            ModConfig.Config.PmcConfig.Waves.MaxGroupSize = value;
+        }
+    }
+    private void undo_PMC_Wave_GroupSize() => _pmc_WaveGroupSize = ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupSize;
+    private void default_PMC_Wave_GroupSize() => _pmc_WaveGroupSize = 2;
+
+    private int _pmc_WaveGroupCount
+    {
+        get => ModConfig.Config.PmcConfig.Waves.MaxGroupCount;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupCount);
+            ModConfig.Config.PmcConfig.Waves.MaxGroupCount = value;
+        }
+    }
+    private void undo_PMC_Wave_GroupCount() => _pmc_WaveGroupCount = ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupCount;
+    private void default_PMC_Wave_GroupCount() => _pmc_WaveGroupCount = 3;
+
+    private int _pmc_WaveBotsPerWave
+    {
+        get => ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.MaxBotsPerWave);
+            ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave = value;
+        }
+    }
+    private void undo_PMC_Wave_MaxPMCCount() => _pmc_WaveBotsPerWave = ModConfig.OriginalConfig.PmcConfig.Waves.MaxBotsPerWave;
+    private void default_PMC_Wave_MaxPMCCount() => _pmc_WaveBotsPerWave = 5;
+
+    private int _pmc_WaveDelayTimer
+    {
+        get => ModConfig.Config.PmcConfig.Waves.DelayBeforeFirstWave;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.DelayBeforeFirstWave);
+            ModConfig.Config.PmcConfig.Waves.DelayBeforeFirstWave = value;
+        }
+    }
+    private void undo_PMC_Wave_DelayTimer() => _pmc_WaveDelayTimer = ModConfig.OriginalConfig.PmcConfig.Waves.DelayBeforeFirstWave;
+    private void default_PMC_Wave_DelayTimer() => _pmc_WaveDelayTimer = 500;
+
+    private int _pmc_WaveTimer
+    {
+        get => ModConfig.Config.PmcConfig.Waves.SecondsBetweenWaves;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.SecondsBetweenWaves);
+            ModConfig.Config.PmcConfig.Waves.SecondsBetweenWaves = value;
+        }
+    }
+    private void undo_PMC_Wave_Timer() => _pmc_WaveTimer = ModConfig.OriginalConfig.PmcConfig.Waves.SecondsBetweenWaves;
+    private void default_PMC_Wave_Timer() => _pmc_WaveTimer = 360;
+
+    private int _pmc_WaveEndTimer
+    {
+        get => ModConfig.Config.PmcConfig.Waves.StopWavesBeforeEndOfRaidLimit;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcConfig.Waves.StopWavesBeforeEndOfRaidLimit);
+            ModConfig.Config.PmcConfig.Waves.StopWavesBeforeEndOfRaidLimit = value;
+        }
+    }
+    private void undo_PMC_Wave_EndTimer() => _pmc_WaveEndTimer = ModConfig.OriginalConfig.PmcConfig.Waves.StopWavesBeforeEndOfRaidLimit;
+    private void default_PMC_Wave_EndTimer() => _pmc_WaveEndTimer = 300;
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

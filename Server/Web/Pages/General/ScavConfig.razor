@@ -1,0 +1,1024 @@
+﻿@page "/botplacementsystem/scavconfig"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+        border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Raid Start" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Setting these values too high may cause issues and/or chaos.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="If Scavs should spawn at the start of the raid, if disabled - waves will still spawn if they enabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Starting Scavs</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_Starting_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_Starting_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_Enabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_Enabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Customs Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Customs</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Customs" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Customs"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Customs" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Customs != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Customs" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>FactoryDay Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_FactoryDay</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_FactoryDay" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_FactoryDay"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_FactoryDay" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_FactoryDay != 3)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_FactoryDay" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>FactoryNight Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_FactoryNight</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_FactoryNight" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_FactoryNight"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_FactoryNight" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_FactoryNight != 3)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_FactoryNight" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Interchange Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Interchange</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Interchange" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Interchange"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Interchange" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Interchange != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Interchange" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Labs Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Labs</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Labs" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Labs"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Labs" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Labs != 0)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Labs" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Lighthouse Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Lighthouse</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Lighthouse" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Lighthouse"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Lighthouse" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Lighthouse != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Lighthouse" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Reserve Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Reserve</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Reserve" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Reserve"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Reserve" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Reserve != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Reserve" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>GroundZero Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_GroundZero</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_GroundZero" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_GroundZero"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_GroundZero" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_GroundZero != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_GroundZero" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>GroundZeroHigh Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_GroundZeroHigh</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_GroundZeroHigh" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_GroundZeroHigh"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_GroundZeroHigh" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_GroundZeroHigh != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_GroundZeroHigh" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Shoreline Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Shoreline</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Shoreline" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Shoreline"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Shoreline" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Shoreline != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Shoreline" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Streets Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Streets</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Streets" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Streets"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Streets" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MapLimits_Streets != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Streets" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Woods Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Woods</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Woods" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                             MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Woods"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Woods" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                                 _scav_Starting_MapLimits_Woods != 5)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Woods" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The limit to the total starting scavs spawned." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Labyrinth Map Limit</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_Starting_Enabled">@_scav_Starting_MapLimits_Labyrinth</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Starting_MapLimits_Labyrinth" ValueLabel="true" Min="0" Max="10" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_Starting_Enabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                             MainLayout.pendingChanges.Contains("_scav_Starting_MapLimits_Labyrinth"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MapLimits_Labyrinth" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                                 _scav_Starting_MapLimits_Labyrinth != 0)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MapLimits_Labyrinth" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="If Marksman should spawn at the start of the raid, if disabled - waves will still spawn if they enabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Starting Marksman</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_Starting_MarksmanEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_Starting_MarksmanEnabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Starting_MarksmanEnabled"))
+                        {
+                            <MudButton @onclick="undo_Scav_Starting_MarksmanEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Starting_MarksmanEnabled != true)
+                        {
+                            <MudButton @onclick="default_Scav_Starting_MarksmanEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudExpansionPanel>
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Waves" Expanded=true>
+                <MudGrid>
+
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Editing these values may break the spawn system. Use care, default them if you break it.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="If additional Scavs should spawn throughout the raid, if disabled - you will not get further Scav spawns." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Scav Waves</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_WaveScavsEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_WaveScavsEnabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_WaveScavsEnabled"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_Enabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_WaveScavsEnabled != true)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_Enabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">Enables custom hardcoded values for Factory. If disabled, will use the values you set below.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enables a custom built timer for Factory. Will help alleviate the feeling of constant spawns on Factory." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Custom Factory Timers</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_WaveScavsCustomFactoryTimersEnabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_WaveScavsCustomFactoryTimersEnabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_WaveScavsCustomFactoryTimersEnabled"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_CustomFactoryTimersEnabled" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_WaveScavsCustomFactoryTimersEnabled != true)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_CustomFactoryTimersEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The amount of time that must pass from raid start to begin spawning scavs (in seconds)." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Start Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_StartTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_StartTimer" ValueLabel="true" Min="1" Max="300" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_StartTimer"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_StartTimer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_StartTimer != 60)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_StartTimer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The amount of time remaining in the raid to stop spawning scavs (in seconds)." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Stop Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_StopTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_StopTimer" ValueLabel="true" Min="60" Max="900" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_StopTimer"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_StopTimer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_StopTimer != 600)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_StopTimer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The minimum value to have active spawns, in seconds. This is how long spawning will be active - at minimum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Active Spawning Min Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_ActiveTimeMin</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_ActiveTimeMin" ValueLabel="true" Min="60" Max="@_scav_Wave_ActiveTimeMax" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_ActiveTimeMin"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_ActiveTimeMin" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_ActiveTimeMin != 180)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_ActiveTimeMin" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum value to have active spawns, in seconds. This is how long spawning will be active - at maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Active Spawning Max Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_ActiveTimeMax</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_ActiveTimeMax" ValueLabel="true" Min="@_scav_Wave_ActiveTimeMin" Max="600" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_ActiveTimeMax"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_ActiveTimeMax" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_ActiveTimeMax != 240)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_ActiveTimeMax" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The minimum value to have no active spawns, in seconds. This is how long spawning will be disabled - at minimum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Quiet Spawning Min Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_QuietTimeMin</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_QuietTimeMin" ValueLabel="true" Min="0" Max="@_scav_Wave_QuietTimeMax" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_QuietTimeMin"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_QuietTimeMin" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_QuietTimeMin != 120)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_QuietTimeMin" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="The maximum value to have no active spawns, in seconds. This is how long spawning will be disabled - at maximum." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Quiet Spawning Max Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_QuietTimeMax</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_QuietTimeMax" ValueLabel="true" Min="@_scav_Wave_QuietTimeMin" Max="900" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_QuietTimeMax"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_QuietTimeMax" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_QuietTimeMax != 180)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_QuietTimeMax" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="How often to check for spawns while active spawning timer is running." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Check to Spawn Timer</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_CheckTimer</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_CheckTimer" ValueLabel="true" Min="15" Max="30" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_CheckTimer"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_CheckTimer" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_CheckTimer != 15)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_CheckTimer" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="How many bots must be pending spawn to trigger a spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Pending Bots Required</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_scav_WaveScavsEnabled">@_scav_Wave_PendingSpawnTrigger</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_scav_Wave_PendingSpawnTrigger" ValueLabel="true" Min="1" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_scav_WaveScavsEnabled" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_scav_Wave_PendingSpawnTrigger"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_PendingSpawnTrigger" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _scav_Wave_PendingSpawnTrigger != 3)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_PendingSpawnTrigger" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
+                </MudGrid>
+            </MudExpansionPanel>
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region StartingScavs
+    private bool _scav_Starting_Enabled
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.Enable);
+            ModConfig.Config.ScavConfig.StartingScavs.Enable = value;
+        }
+    }
+    private void undo_Scav_Starting_Enabled() => _scav_Starting_Enabled = ModConfig.OriginalConfig.ScavConfig.StartingScavs.Enable;
+    private void default_Scav_Starting_Enabled() => _scav_Starting_Enabled = true;
+    private int _scav_Starting_MapLimits_Customs
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Customs);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Customs = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Customs() => _scav_Starting_MapLimits_Customs = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Customs;
+    private void default_Scav_Starting_MapLimits_Customs() => _scav_Starting_MapLimits_Customs = 5;
+    private int _scav_Starting_MapLimits_FactoryDay
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Day);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Day = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_FactoryDay() => _scav_Starting_MapLimits_FactoryDay = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Day;
+    private void default_Scav_Starting_MapLimits_FactoryDay() => _scav_Starting_MapLimits_FactoryDay = 3;
+    private int _scav_Starting_MapLimits_FactoryNight
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Night);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Night = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_FactoryNight() => _scav_Starting_MapLimits_FactoryNight = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Factory4Night;
+    private void default_Scav_Starting_MapLimits_FactoryNight() => _scav_Starting_MapLimits_FactoryNight = 3;
+    private int _scav_Starting_MapLimits_Interchange
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Interchange);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Interchange = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Interchange() => _scav_Starting_MapLimits_Interchange = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Interchange;
+    private void default_Scav_Starting_MapLimits_Interchange() => _scav_Starting_MapLimits_Interchange = 5;
+    private int _scav_Starting_MapLimits_Labs
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Laboratory);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Laboratory = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Labs() => _scav_Starting_MapLimits_Labs = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Laboratory;
+    private void default_Scav_Starting_MapLimits_Labs() => _scav_Starting_MapLimits_Labs = 0;
+    private int _scav_Starting_MapLimits_Lighthouse
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Lighthouse);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Lighthouse = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Lighthouse() => _scav_Starting_MapLimits_Lighthouse = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Lighthouse;
+    private void default_Scav_Starting_MapLimits_Lighthouse() => _scav_Starting_MapLimits_Lighthouse = 5;
+    private int _scav_Starting_MapLimits_Reserve
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Reserve);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Reserve = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Reserve() => _scav_Starting_MapLimits_Reserve = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Reserve;
+    private void default_Scav_Starting_MapLimits_Reserve() => _scav_Starting_MapLimits_Reserve = 5;
+    private int _scav_Starting_MapLimits_GroundZero
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.GroundZero);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.GroundZero = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_GroundZero() => _scav_Starting_MapLimits_GroundZero = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.GroundZero;
+    private void default_Scav_Starting_MapLimits_GroundZero() => _scav_Starting_MapLimits_GroundZero = 5;
+    private int _scav_Starting_MapLimits_GroundZeroHigh
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.GroundZeroHigh);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_GroundZeroHigh() => _scav_Starting_MapLimits_GroundZeroHigh = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.GroundZeroHigh;
+    private void default_Scav_Starting_MapLimits_GroundZeroHigh() => _scav_Starting_MapLimits_GroundZeroHigh = 5;
+    private int _scav_Starting_MapLimits_Shoreline
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Shoreline);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Shoreline = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Shoreline() => _scav_Starting_MapLimits_Shoreline = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Shoreline;
+    private void default_Scav_Starting_MapLimits_Shoreline() => _scav_Starting_MapLimits_Shoreline = 5;
+    private int _scav_Starting_MapLimits_Streets
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.TarkovStreets);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.TarkovStreets = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Streets() => _scav_Starting_MapLimits_Streets = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.TarkovStreets;
+    private void default_Scav_Starting_MapLimits_Streets() => _scav_Starting_MapLimits_Streets = 5;
+    private int _scav_Starting_MapLimits_Woods
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Woods);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Woods = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Woods() => _scav_Starting_MapLimits_Woods = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Woods;
+    private void default_Scav_Starting_MapLimits_Woods() => _scav_Starting_MapLimits_Woods = 5;
+    private int _scav_Starting_MapLimits_Labyrinth
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Labyrinth);
+            ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.Labyrinth = value;
+        }
+    }
+    private void undo_Scav_Starting_MapLimits_Labyrinth() => _scav_Starting_MapLimits_Labyrinth = ModConfig.OriginalConfig.ScavConfig.StartingScavs.MaxBotSpawns.Labyrinth;
+    private void default_Scav_Starting_MapLimits_Labyrinth() => _scav_Starting_MapLimits_Labyrinth = 0;
+    private bool _scav_Starting_MarksmanEnabled
+    {
+        get => ModConfig.Config.ScavConfig.StartingScavs.StartingMarksman;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.StartingScavs.StartingMarksman);
+            ModConfig.Config.ScavConfig.StartingScavs.StartingMarksman = value;
+        }
+    }
+    private void undo_Scav_Starting_MarksmanEnabled() => _scav_Starting_MarksmanEnabled = ModConfig.OriginalConfig.ScavConfig.StartingScavs.StartingMarksman;
+    private void default_Scav_Starting_MarksmanEnabled() => _scav_Starting_MarksmanEnabled = true;
+    #endregion
+    #region ScavWaves
+    private bool _scav_WaveScavsEnabled
+    {
+        get => ModConfig.Config.ScavConfig.Waves.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.Enable);
+            ModConfig.Config.ScavConfig.Waves.Enable = value;
+        }
+    }
+    private void undo_Scav_Wave_Enabled() => _scav_WaveScavsEnabled = ModConfig.OriginalConfig.ScavConfig.Waves.Enable;
+    private void default_Scav_Wave_Enabled() => _scav_WaveScavsEnabled = true;
+    private bool _scav_WaveScavsCustomFactoryTimersEnabled
+    {
+        get => ModConfig.Config.ScavConfig.Waves.EnableCustomFactory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomFactory);
+            ModConfig.Config.ScavConfig.Waves.EnableCustomFactory = value;
+        }
+    }
+    private void undo_Scav_Wave_CustomFactoryTimersEnabled() => _scav_WaveScavsCustomFactoryTimersEnabled = ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomFactory;
+    private void default_Scav_Wave_CustomFactoryTimersEnabled() => _scav_WaveScavsCustomFactoryTimersEnabled = true;
+
+    private int _scav_Wave_StartTimer
+    {
+        get => ModConfig.Config.ScavConfig.Waves.StartSpawns;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.StartSpawns);
+            ModConfig.Config.ScavConfig.Waves.StartSpawns = value;
+        }
+    }
+    private void undo_Scav_Wave_StartTimer() => _scav_Wave_StartTimer = ModConfig.OriginalConfig.ScavConfig.Waves.StartSpawns;
+    private void default_Scav_Wave_StartTimer() => _scav_Wave_StartTimer = 60;
+
+    private int _scav_Wave_StopTimer
+    {
+        get => ModConfig.Config.ScavConfig.Waves.StopSpawns;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.StopSpawns);
+            ModConfig.Config.ScavConfig.Waves.StopSpawns = value;
+        }
+    }
+    private void undo_Scav_Wave_StopTimer() => _scav_Wave_StopTimer = ModConfig.OriginalConfig.ScavConfig.Waves.StopSpawns;
+    private void default_Scav_Wave_StopTimer() => _scav_Wave_StopTimer = 600;
+
+    private int _scav_Wave_ActiveTimeMin
+    {
+        get => ModConfig.Config.ScavConfig.Waves.ActiveTimeMin;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.ActiveTimeMin);
+            ModConfig.Config.ScavConfig.Waves.ActiveTimeMin = value;
+        }
+    }
+    private void undo_Scav_Wave_ActiveTimeMin() => _scav_Wave_ActiveTimeMin = ModConfig.OriginalConfig.ScavConfig.Waves.ActiveTimeMin;
+    private void default_Scav_Wave_ActiveTimeMin() => _scav_Wave_ActiveTimeMin = 180;
+
+    private int _scav_Wave_ActiveTimeMax
+    {
+        get => ModConfig.Config.ScavConfig.Waves.ActiveTimeMax;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.ActiveTimeMax);
+            ModConfig.Config.ScavConfig.Waves.ActiveTimeMax = value;
+        }
+    }
+    private void undo_Scav_Wave_ActiveTimeMax() => _scav_Wave_ActiveTimeMax = ModConfig.OriginalConfig.ScavConfig.Waves.ActiveTimeMax;
+    private void default_Scav_Wave_ActiveTimeMax() => _scav_Wave_ActiveTimeMax = 240;
+
+    private int _scav_Wave_QuietTimeMin
+    {
+        get => ModConfig.Config.ScavConfig.Waves.QuietTimeMin;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.QuietTimeMin);
+            ModConfig.Config.ScavConfig.Waves.QuietTimeMin = value;
+        }
+    }
+    private void undo_Scav_Wave_QuietTimeMin() => _scav_Wave_QuietTimeMin = ModConfig.OriginalConfig.ScavConfig.Waves.QuietTimeMin;
+    private void default_Scav_Wave_QuietTimeMin() => _scav_Wave_QuietTimeMin = 120;
+
+    private int _scav_Wave_QuietTimeMax
+    {
+        get => ModConfig.Config.ScavConfig.Waves.QuietTimeMax;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.QuietTimeMax);
+            ModConfig.Config.ScavConfig.Waves.QuietTimeMax = value;
+        }
+    }
+    private void undo_Scav_Wave_QuietTimeMax() => _scav_Wave_QuietTimeMax = ModConfig.OriginalConfig.ScavConfig.Waves.QuietTimeMax;
+    private void default_Scav_Wave_QuietTimeMax() => _scav_Wave_QuietTimeMax = 180;
+
+    private int _scav_Wave_CheckTimer
+    {
+        get => ModConfig.Config.ScavConfig.Waves.CheckToSpawnTimer;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.CheckToSpawnTimer);
+            ModConfig.Config.ScavConfig.Waves.CheckToSpawnTimer = value;
+        }
+    }
+    private void undo_Scav_Wave_CheckTimer() => _scav_Wave_CheckTimer = ModConfig.OriginalConfig.ScavConfig.Waves.CheckToSpawnTimer;
+    private void default_Scav_Wave_CheckTimer() => _scav_Wave_CheckTimer = 15;
+
+    private int _scav_Wave_PendingSpawnTrigger
+    {
+        get => ModConfig.Config.ScavConfig.Waves.PendingBotsToTrigger;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.PendingBotsToTrigger);
+            ModConfig.Config.ScavConfig.Waves.PendingBotsToTrigger = value;
+        }
+    }
+    private void undo_Scav_Wave_PendingSpawnTrigger() => _scav_Wave_PendingSpawnTrigger = ModConfig.OriginalConfig.ScavConfig.Waves.PendingBotsToTrigger;
+    private void default_Scav_Wave_PendingSpawnTrigger() => _scav_Wave_PendingSpawnTrigger = 3;
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

@@ -1,0 +1,430 @@
+﻿@using _botplacementsystem.Globals
+@using _botplacementsystem.Models.Enums
+@using _botplacementsystem.Web.Core
+@inherits LayoutComponentBase
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+<HeadContent>
+    <link href="@Assets["_content/MudBlazor/MudBlazor.min.css"]" rel="stylesheet" />
+    <meta name="robots" content="noindex, nofollow">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&amp;family=Roboto:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet">
+</HeadContent>
+
+<MudThemeProvider Theme="@APBSThemeAdjustments" IsDarkMode/>
+<MudPopoverProvider/>
+<MudSnackbarProvider />
+<MudDialogProvider />
+
+<div class="no-highlight">
+    <script src="@Assets["_content/MudBlazor/MudBlazor.min.js"]"></script>
+    <MudLayout>
+        <MudAppBar Dense Elevation="1">
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.MenuOpen" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())">Menu</MudButton>
+            <MudSpacer/>
+            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true">
+                <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
+                    You or someone you know is in raid. Changes cannot be made. Click to check status.
+                </MudButton>
+            </MudOverlay>
+            <MudSpacer/>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="@((e) => RefreshData())" Disabled="_isReloading">Reload Config</MudButton>
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Inherit" OnClick="@((e) => SaveData())" Disabled="_isSaving">Save Config</MudButton>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Temporary" Breakpoint="Breakpoint.None">
+            <MudDrawerHeader>
+                <MudText Typo="Typo.h5" Class="mt-1">SETTINGS</MudText>
+            </MudDrawerHeader>
+            <NavMenu/>
+        </MudDrawer>
+        <MudMainContent Class="pt-3">
+            <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
+            <CascadingValue Value="this">
+                @if (_appDisableAnimations)
+                {
+                    <div class="no-animation-content">
+                        @Body
+                    </div>
+                }
+                else
+                {
+                    <div class="content">
+                        @Body
+                    </div>
+                }
+            </CascadingValue>
+        </MudMainContent>
+        <MudAppBar Dense Elevation="1" Bottom>
+            <MudCheckBox @bind-Value="_appUndoButtonToggle" Label="Show Undo Button"></MudCheckBox>
+            <MudCheckBox @bind-Value="_appDefaultButtonToggle" Label="Show Default Button"></MudCheckBox>
+            <MudCheckBox @bind-Value="_appDisableAnimations" Label="Disable Animations"></MudCheckBox>
+            <MudSpacer/>
+            @if (pendingChanges.Count > 0)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="ShowPendingChanges">@pendingChanges.Count.ToString() Unsaved changes</MudButton>
+            }
+            @if (pendingChanges.Count == 0)
+            {
+                <MudButton Variant="Variant.Outlined" Color="Color.Inherit">@pendingChanges.Count.ToString() Unsaved Changes</MudButton>
+            }
+        </MudAppBar>
+    </MudLayout>
+</div>
+
+
+<style>
+    .custom-blur-background {
+        backdrop-filter: blur(7px);
+    }
+    #blazor-error-ui {
+        background: lightyellow;
+        bottom: 0;
+        box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+        display: none;
+        left: 0;
+        padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+        position: fixed;
+        width: 100%;
+        z-index: 1000;
+        color: red;
+        margin-left: 3rem;
+    }
+
+    #blazor-error-ui .dismiss {
+        cursor: pointer;
+        position: absolute;
+        right: 0.75rem;
+        top: 0.5rem;
+    }
+
+    .no-highlight {
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+
+    :scope .content {
+        overflow: auto;
+        position: relative;
+        animation-name: transition;
+        animation-duration: 1.5s;
+        animation-delay: 0s;
+        animation-fill-mode: forwards;
+    }
+
+    .content::before {
+        content: "";
+        position: fixed;
+        background-position: 0px 0px;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-image: url('/acidphantasm-botplacementsystem/images/background.jpg');
+        background-size: cover;
+        -webkit-filter: blur(4px);
+        -moz-filter: blur(4px);
+        filter: blur(4px);
+        animation-name: transitionBG;
+        animation-duration: 3s;
+        animation-delay: 1s;
+        animation-fill-mode: forwards;
+    }
+
+    :scope .no-animation-content {
+        overflow: auto;
+        position: relative;
+        user-select: none;
+        -webkit-user-drag: none;
+        -webkit-user-select: none;
+    }
+
+    .no-animation-content::before {
+        content: "";
+        position: fixed;
+        background-position: 0px 0px;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: -1;
+        display: block;
+        background-image: url('/acidphantasm-botplacementsystem/images/background.jpg');
+        background-size: cover;
+        width: 100%;
+        height: 100%;
+        -webkit-filter: blur(4px);
+        -moz-filter: blur(4px);
+        filter: blur(4px);
+    }
+</style>
+
+
+@code {
+    bool _drawerOpen = false;
+    public bool _isInRaid = false;
+    static bool _unsavedChanges = false;
+    
+    private static bool _isSaving = false;
+    private static bool _isReloading = false;
+    
+    public static bool _appUndoButtonToggle
+    {
+        get => ModConfig.Config.ConfigAppSettings.ShowUndo; 
+        set { 
+            ModConfig.Config.ConfigAppSettings.ShowUndo = value;
+            if (!pendingChanges.Contains("_appUndoButtonToggle")) pendingChanges.Add("_appUndoButtonToggle");
+            else pendingChanges.Remove("_appUndoButtonToggle");
+        }
+    }
+    public static bool _appDefaultButtonToggle
+    {
+        get => ModConfig.Config.ConfigAppSettings.ShowDefault;
+        set
+        {
+            ModConfig.Config.ConfigAppSettings.ShowDefault = value;
+            if (!pendingChanges.Contains("_appDefaultButtonToggle")) pendingChanges.Add("_appDefaultButtonToggle");
+            else pendingChanges.Remove("_appDefaultButtonToggle");
+        }
+    }
+    public static bool _appDisableAnimations
+    {
+        get => ModConfig.Config.ConfigAppSettings.DisableAnimations;
+        set
+        {
+            ModConfig.Config.ConfigAppSettings.DisableAnimations = value;
+            if (!pendingChanges.Contains("_appDisableAnimations")) pendingChanges.Add("_appDisableAnimations");
+            else pendingChanges.Remove("_appDisableAnimations");
+        }
+    }
+
+    MudTheme APBSThemeAdjustments = new MudTheme()
+    {
+        PaletteDark = new PaletteDark()
+        {
+                Background = "#27272F",
+                Info = "#776BE7",
+                Warning = "#8AABA1",
+                Error = "#FF4081"
+        },
+        
+    };
+
+    public static List<string> pendingChanges = new List<string>();
+
+    private static MainLayout? _app;
+
+    public MainLayout()
+    {
+        _app = this;
+    }
+
+    public static void EnableUnsavedChangesButton()
+    {
+        _unsavedChanges = true;
+        _app?.StateHasChanged();
+    }
+
+    public static void TriggerUIRefresh()
+    {
+        _app?.StateHasChanged();
+    }
+
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    private async Task SaveData()
+    {
+        try
+        {
+            _isSaving = true;
+            StateHasChanged();
+
+            var result = await ModConfig.SaveConfig();
+
+            StateHasChanged();
+            switch (result)
+            {
+                case ConfigOperationResult.Success:
+                    Snackbar.Add("Config saved successfully.", Severity.Info, config => { config.ShowCloseIcon = false; });
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    _unsavedChanges = false;
+                    _isInRaid = false;
+                    break;
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                    _isInRaid = true;
+                    break;
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another process is already running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
+                    break;
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to save.", Severity.Error, config => { config.ShowCloseIcon = false; });
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, config => { config.ShowCloseIcon = false; });
+        }
+        finally
+        {
+            _isSaving = false;
+            StateHasChanged();
+        }
+    }
+    
+    private async Task RefreshData()
+    {
+        if (_unsavedChanges || pendingChanges.Count > 0)
+        {
+            var changeCount = pendingChanges.Count switch
+            {
+                > 1 => $"{pendingChanges.Count} unsaved changes",
+                1 => "1 unsaved change",
+                _ => "unsaved changes"
+            };
+
+            var parameters = new DialogParameters<RefreshWarningDialog>
+            {
+                { x => x.ChangeList, pendingChanges },
+                { x => x.ButtonText, "Reload Anyway" },
+                { x => x.Color, Color.Secondary }
+            };
+
+            var options = new DialogOptions { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
+
+            var dialog = await DialogService.ShowAsync<RefreshWarningDialog>($"You have {changeCount}.", parameters, options);
+            var result = await dialog.Result;
+
+            if (result is not null && !result.Canceled)
+                await DiscardChangesAndReload();
+
+            return;
+        }
+
+        try
+        {
+            _isReloading = true;
+            StateHasChanged();
+
+            var result = await ModConfig.ReloadConfig();
+            StateHasChanged();
+
+            switch (result)
+            {
+                case ConfigOperationResult.Success:
+                    Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = false;
+                    _unsavedChanges = false;
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    break;
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = true;
+                    break;
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    break;
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to reload.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+        }
+        finally
+        {
+            _isReloading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task ShowPendingChanges()
+    {
+        var changeCount = pendingChanges.Count switch
+        {
+            > 1 => $"{pendingChanges.Count} changes",
+            1 => "1 change",
+            _ => "changes"
+        };
+        var parameters = new DialogParameters<RefreshWarningDialog>
+            {
+                { x => x.ChangeList, pendingChanges },
+                { x => x.ButtonText, "OK" },
+                { x => x.showCancel, false },
+                { x => x.Color, Color.Default }
+            };
+
+        var options = new DialogOptions() { MaxWidth = MaxWidth.Medium, BackgroundClass = "custom-blur-background" };
+
+        await DialogService.ShowAsync<RefreshWarningDialog>($"You have {changeCount}.", parameters, options);
+    }
+
+    private async Task DiscardChangesAndReload()
+    {
+        var changeCount = pendingChanges.Count switch
+        {
+            > 1 => $"{pendingChanges.Count} changes",
+            1 => "1 change",
+            _ => "changes"
+        };
+
+        try
+        {
+            _isReloading = true;
+            StateHasChanged();
+
+            var result = await ModConfig.ReloadConfig();
+
+            switch (result)
+            {
+                case ConfigOperationResult.Success:
+                    _isInRaid = false;
+                    Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    pendingChanges.Clear();
+                    Utils.callerList.Clear();
+                    _unsavedChanges = false;
+                    break;
+
+                case ConfigOperationResult.InRaid:
+                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    _isInRaid = true;
+                    break;
+
+                case ConfigOperationResult.ActiveProcess:
+                    Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
+                    break;
+
+                case ConfigOperationResult.Failure:
+                default:
+                    Snackbar.Add("Config failed to reload.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Unexpected error: {ex.Message}", Severity.Error, cfg => cfg.ShowCloseIcon = false);
+        }
+        finally
+        {
+            _isReloading = false;
+            StateHasChanged();
+        }
+    }
+
+    private void RefreshPage()
+    {
+        _isInRaid = RaidInformation.IsInRaid;
+        StateHasChanged();
+    }
+}

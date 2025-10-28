@@ -1,0 +1,184 @@
+﻿@page "/botplacementsystem/bossconfig"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudTabs Centered="true" Elevation="0" Rounded="true" ApplyEffectsToContainer="false" SliderAnimation Style="line-height:4">
+            <MudExpansionPanels MultiExpansion="true">
+                <MudTabPanel Text="General">
+                    <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Difficulty Settings" Expanded=true>
+                        <MudGrid>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Weight of Boss Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Easy Difficulty Weight</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                <MudButton Style="margin-top: -20px;" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_boss_EasyDifficulty</MudButton>
+                            </MudItem>
+                            <MudItem xs="5">
+                                <MudSlider @bind-Value="_boss_EasyDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_boss_EasyDifficulty"))
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="undo_Boss_Easy" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _boss_EasyDifficulty != 0)
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="default_Boss_Easy" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Weight of Boss Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Normal Difficulty Weight</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                <MudButton Style="margin-top: -20px;" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_boss_NormalDifficulty</MudButton>
+                            </MudItem>
+                            <MudItem xs="5">
+                                <MudSlider Style="margin-top: -20px;" @bind-Value="_boss_NormalDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_boss_NormalDifficulty"))
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="undo_Boss_Normal" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _boss_NormalDifficulty != 60)
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="default_Boss_Normal" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Weight of Boss Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Hard Difficulty Weight</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                <MudButton Style="margin-top: -20px;" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_boss_HardDifficulty</MudButton>
+                            </MudItem>
+                            <MudItem xs="5">
+                                <MudSlider @bind-Value="_boss_HardDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_boss_HardDifficulty"))
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="undo_Boss_Hard" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _boss_HardDifficulty != 30)
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="default_Boss_Hard" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Weight of Boss Difficulty. Lower is less common, higher is more common." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Impossible Difficulty Weight</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                <MudButton Style="margin-top: -20px;" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_boss_ImpossibleDifficulty</MudButton>
+                            </MudItem>
+                            <MudItem xs="5">
+                                <MudSlider @bind-Value="_boss_ImpossibleDifficulty" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_boss_ImpossibleDifficulty"))
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="undo_Boss_Impossible" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _boss_ImpossibleDifficulty != 10)
+                                {
+                                    <MudButton Style="margin-top: -20px;" @onclick="default_Boss_Impossible" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudExpansionPanel>
+                </MudTabPanel>
+            </MudExpansionPanels>
+        </MudTabs>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region BossDifficulty
+    private double _boss_EasyDifficulty
+    {
+        get => ModConfig.Config.BossDifficulty["easy"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossDifficulty["easy"]);
+            ModConfig.Config.BossDifficulty["easy"] = value;
+        }
+    }
+    private void undo_Boss_Easy() => _boss_EasyDifficulty = ModConfig.OriginalConfig.BossDifficulty["easy"];
+    private void default_Boss_Easy() => _boss_EasyDifficulty = 0;
+    private double _boss_NormalDifficulty
+    {
+        get => ModConfig.Config.BossDifficulty["normal"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossDifficulty["normal"]);
+            ModConfig.Config.BossDifficulty["normal"] = value;
+        }
+    }
+    private void undo_Boss_Normal() => _boss_NormalDifficulty = ModConfig.OriginalConfig.BossDifficulty["normal"];
+    private void default_Boss_Normal() => _boss_NormalDifficulty = 60;
+    private double _boss_HardDifficulty
+    {
+        get => ModConfig.Config.BossDifficulty["hard"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossDifficulty["hard"]);
+            ModConfig.Config.BossDifficulty["hard"] = value;
+        }
+    }
+    private void undo_Boss_Hard() => _boss_HardDifficulty = ModConfig.OriginalConfig.BossDifficulty["hard"];
+    private void default_Boss_Hard() => _boss_HardDifficulty = 30;
+    private double _boss_ImpossibleDifficulty
+    {
+        get => ModConfig.Config.BossDifficulty["impossible"];
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossDifficulty["impossible"]);
+            ModConfig.Config.BossDifficulty["impossible"] = value;
+        }
+    }
+    private void undo_Boss_Impossible() => _boss_ImpossibleDifficulty = ModConfig.OriginalConfig.BossDifficulty["impossible"];
+    private void default_Boss_Impossible() => _boss_ImpossibleDifficulty = 10;
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

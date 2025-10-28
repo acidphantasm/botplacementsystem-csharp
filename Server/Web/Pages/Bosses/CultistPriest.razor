@@ -1,0 +1,1656 @@
+﻿@page "/botplacementsystem/bossconfig/sectantPriest"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows Cultist to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Cultist</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_sectantPriest_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_sectantPriest_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_sectantPriest_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Cultist_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _sectantPriest_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Cultist_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_sectantPriest_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Time"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Time != -1)
+                            {
+                                <MudButton @onclick="default_Cultist_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Customs_SpawnChance != 15)
+                            {
+                                <MudButton @onclick="default_Cultist_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Customs_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_Customs_SpawnZones.Contains("ZoneScavBase") ||
+                                     _sectantPriest_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_sectantPriest_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_FactoryNight_SpawnChance != 20)
+                            {
+                                <MudButton @onclick="default_Cultist_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_sectantPriest_FactoryNight_SpawnZones.Contains("BotZone"))
+                            {
+                                <MudButton @onclick="default_Cultist_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Interchange_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_sectantPriest_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_sectantPriest_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Reserve_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_GroundZero_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_GroundZeroHigh_SpawnChance != 44)
+                            {
+                                <MudButton @onclick="default_Cultist_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_GroundZeroHigh_SpawnZones.Contains("ZoneSandbox") ||
+                                     _sectantPriest_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Shoreline_SpawnChance != 15)
+                            {
+                                <MudButton @onclick="default_Cultist_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Shoreline_SpawnZones.Count != 3 ||
+                                     !_sectantPriest_Shoreline_SpawnZones.Contains("ZoneSanatorium1") ||
+                                     !_sectantPriest_Shoreline_SpawnZones.Contains("ZoneSanatorium2") ||
+                                     !_sectantPriest_Shoreline_SpawnZones.Contains("ZoneForestSpawn") ||
+                                     _sectantPriest_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Streets_SpawnZones.Count != 1 ||
+                                     !_sectantPriest_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Woods_SpawnChance != 15)
+                            {
+                                <MudButton @onclick="default_Cultist_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Woods_SpawnZones.Count != 2 ||
+                                     !_sectantPriest_Woods_SpawnZones.Contains("ZoneMiniHouse") ||
+                                     !_sectantPriest_Woods_SpawnZones.Contains("ZoneBrokenVill") ||
+                                     _sectantPriest_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_sectantPriest_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_sectantPriest_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _sectantPriest_Labyrinth_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Cultist_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_sectantPriest_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_Cultist_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_sectantPriest_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_sectantPriest_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Cultist_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_sectantPriest_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Cultist_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region CultistGlobalConfig
+    private bool _sectantPriest_Enabled
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.Enable);
+            ModConfig.Config.BossConfig.SectantPriest.Enable = value;
+        }
+    }
+    private void undo_Cultist_Enable() => _sectantPriest_Enabled = ModConfig.OriginalConfig.BossConfig.SectantPriest.Enable;
+    private void default_Cultist_Enable() => _sectantPriest_Enabled = true;
+    private long _sectantPriest_Time
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.Time);
+            ModConfig.Config.BossConfig.SectantPriest.Time = value;
+        }
+    }
+    private void undo_Cultist_Time() => _sectantPriest_Time = ModConfig.OriginalConfig.BossConfig.SectantPriest.Time;
+    private void default_Cultist_Time() => _sectantPriest_Time = -1;
+    #endregion
+    #region CultistSpawnConfig
+    #region CultistCustoms
+    private int _sectantPriest_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_Cultist_Customs_SpawnChance() => _sectantPriest_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Customs;
+    private void default_Cultist_Customs_SpawnChance() => _sectantPriest_Customs_SpawnChance = 15;
+    private List<string> _sectantPriest_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Customs);
+            }
+        }
+    }
+    private void On_Cultist_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Customs_SpawnZones() => _sectantPriest_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Customs };
+    private void default_Cultist_Customs_SpawnZones() => _sectantPriest_Customs_SpawnZones = new List<string> { "ZoneScavBase" };
+    #endregion
+    #region CultistFactory
+    private int _sectantPriest_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_Cultist_FactoryDay_SpawnChance() => _sectantPriest_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Factory4Day;
+    private void default_Cultist_FactoryDay_SpawnChance() => _sectantPriest_FactoryDay_SpawnChance = 0;
+    private List<string> _sectantPriest_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_Cultist_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_FactoryDay_SpawnZones() => _sectantPriest_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Day };
+    private void default_Cultist_FactoryDay_SpawnZones() => _sectantPriest_FactoryDay_SpawnZones = new List<string>();
+    private int _sectantPriest_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_Cultist_FactoryNight_SpawnChance() => _sectantPriest_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Factory4Night;
+    private void default_Cultist_FactoryNight_SpawnChance() => _sectantPriest_FactoryNight_SpawnChance = 20;
+    private List<string> _sectantPriest_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_Cultist_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_FactoryNight_SpawnZones() => _sectantPriest_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Factory4Night };
+    private void default_Cultist_FactoryNight_SpawnZones() => _sectantPriest_FactoryNight_SpawnZones = new List<string> { "BotZone" };
+    #endregion
+    #region CultistInterchange
+    private int _sectantPriest_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_Cultist_Interchange_SpawnChance() => _sectantPriest_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Interchange;
+    private void default_Cultist_Interchange_SpawnChance() => _sectantPriest_Interchange_SpawnChance = 0;
+    private List<string> _sectantPriest_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_Cultist_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Interchange_SpawnZones() => _sectantPriest_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Interchange };
+    private void default_Cultist_Interchange_SpawnZones() => _sectantPriest_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region CultistLabs
+    private int _sectantPriest_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_Cultist_Labs_SpawnChance() => _sectantPriest_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Laboratory;
+    private void default_Cultist_Labs_SpawnChance() => _sectantPriest_Labs_SpawnChance = 0;
+    private List<string> _sectantPriest_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_Cultist_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Labs_SpawnZones() => _sectantPriest_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Laboratory };
+    private void default_Cultist_Labs_SpawnZones() => _sectantPriest_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region CultistLighthouse
+    private int _sectantPriest_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_Cultist_Lighthouse_SpawnChance() => _sectantPriest_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Lighthouse;
+    private void default_Cultist_Lighthouse_SpawnChance() => _sectantPriest_Lighthouse_SpawnChance = 0;
+    private List<string> _sectantPriest_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_Cultist_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Lighthouse_SpawnZones() => _sectantPriest_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Lighthouse };
+    private void default_Cultist_Lighthouse_SpawnZones() => _sectantPriest_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region CultistReserve
+    private int _sectantPriest_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_Cultist_Reserve_SpawnChance() => _sectantPriest_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Reserve;
+    private void default_Cultist_Reserve_SpawnChance() => _sectantPriest_Reserve_SpawnChance = 0;
+    private List<string> _sectantPriest_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_Cultist_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Reserve_SpawnZones() => _sectantPriest_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Reserve };
+    private void default_Cultist_Reserve_SpawnZones() => _sectantPriest_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region CultistGroundZero
+    private int _sectantPriest_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_Cultist_GroundZero_SpawnChance() => _sectantPriest_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.GroundZero;
+    private void default_Cultist_GroundZero_SpawnChance() => _sectantPriest_GroundZero_SpawnChance = 0;
+    private List<string> _sectantPriest_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_Cultist_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_GroundZero_SpawnZones() => _sectantPriest_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZero };
+    private void default_Cultist_GroundZero_SpawnZones() => _sectantPriest_GroundZero_SpawnZones = new List<string>();
+    private int _sectantPriest_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Cultist_GroundZeroHigh_SpawnChance() => _sectantPriest_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.GroundZeroHigh;
+    private void default_Cultist_GroundZeroHigh_SpawnChance() => _sectantPriest_GroundZeroHigh_SpawnChance = 44;
+    private List<string> _sectantPriest_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_Cultist_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_GroundZeroHigh_SpawnZones() => _sectantPriest_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.GroundZeroHigh };
+    private void default_Cultist_GroundZeroHigh_SpawnZones() => _sectantPriest_GroundZeroHigh_SpawnZones = new List<string> { "ZoneSandbox" };
+    #endregion
+    #region CultistShoreline
+    private int _sectantPriest_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_Cultist_Shoreline_SpawnChance() => _sectantPriest_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Shoreline;
+    private void default_Cultist_Shoreline_SpawnChance() => _sectantPriest_Shoreline_SpawnChance = 15;
+    private List<string> _sectantPriest_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_Cultist_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Shoreline_SpawnZones() => _sectantPriest_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Shoreline };
+    private void default_Cultist_Shoreline_SpawnZones() => _sectantPriest_Shoreline_SpawnZones = new List<string> { "ZoneSanatorium1,ZoneSanatorium2,ZoneForestSpawn" };
+    #endregion
+    #region CultistStreets
+    private int _sectantPriest_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_Cultist_Streets_SpawnChance() => _sectantPriest_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.TarkovStreets;
+    private void default_Cultist_Streets_SpawnChance() => _sectantPriest_Streets_SpawnChance = 0;
+    private List<string> _sectantPriest_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_Cultist_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Streets_SpawnZones() => _sectantPriest_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.TarkovStreets };
+    private void default_Cultist_Streets_SpawnZones() => _sectantPriest_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region CultistWoods
+    private int _sectantPriest_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_Cultist_Woods_SpawnChance() => _sectantPriest_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Woods;
+    private void default_Cultist_Woods_SpawnChance() => _sectantPriest_Woods_SpawnChance = 15;
+    private List<string> _sectantPriest_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Woods);
+            }
+        }
+    }
+    private void On_Cultist_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Woods_SpawnZones() => _sectantPriest_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Woods };
+    private void default_Cultist_Woods_SpawnZones() => _sectantPriest_Woods_SpawnZones = new List<string> { "ZoneMiniHouse,ZoneBrokenVill" };
+    #endregion
+    #region CultistLabyrinth
+    private int _sectantPriest_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.SectantPriest.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_Cultist_Labyrinth_SpawnChance() => _sectantPriest_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.SectantPriest.SpawnChance.Labyrinth;
+    private void default_Cultist_Labyrinth_SpawnChance() => _sectantPriest_Labyrinth_SpawnChance = 0;
+    private List<string> _sectantPriest_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.SectantPriest.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.SectantPriest.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_Cultist_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _sectantPriest_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_Cultist_Labyrinth_SpawnZones() => _sectantPriest_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.SectantPriest.BossZone.Labyrinth };
+    private void default_Cultist_Labyrinth_SpawnZones() => _sectantPriest_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

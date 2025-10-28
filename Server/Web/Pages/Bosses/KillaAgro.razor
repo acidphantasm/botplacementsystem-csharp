@@ -1,0 +1,1635 @@
+﻿@page "/botplacementsystem/bossconfig/killaagro"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows KillaAgro to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable KillaAgro</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_killaAgro_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_killaAgro_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_killaAgro_Enabled"))
+                        {
+                            <MudButton @onclick="undo_KillaAgro_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _killaAgro_Enabled != true)
+                        {
+                            <MudButton @onclick="default_KillaAgro_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_killaAgro_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Time"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Time != -1)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Customs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_killaAgro_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_killaAgro_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_killaAgro_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_GroundZeroHigh_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Streets_SpawnZones.Count != 1 ||
+                                     !_killaAgro_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Woods_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_killaAgro_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_killaAgro_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killaAgro_Labyrinth_SpawnChance != 100)
+                            {
+                                <MudButton @onclick="default_KillaAgro_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_killaAgro_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_KillaAgro_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_killaAgro_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killaAgro_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_KillaAgro_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_killaAgro_Labyrinth_SpawnZones.Contains(String.Empty))
+                            {
+                                <MudButton @onclick="default_KillaAgro_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region KillaAgroGlobalConfig
+    private bool _killaAgro_Enabled
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.Enable);
+            ModConfig.Config.BossConfig.BossKillaAgro.Enable = value;
+        }
+    }
+    private void undo_KillaAgro_Enable() => _killaAgro_Enabled = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.Enable;
+    private void default_KillaAgro_Enable() => _killaAgro_Enabled = true;
+    private long _killaAgro_Time
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.Time);
+            ModConfig.Config.BossConfig.BossKillaAgro.Time = value;
+        }
+    }
+    private void undo_KillaAgro_Time() => _killaAgro_Time = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.Time;
+    private void default_KillaAgro_Time() => _killaAgro_Time = -1;
+    #endregion
+    #region KillaAgroSpawnConfig
+    #region KillaAgroCustoms
+    private int _killaAgro_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_KillaAgro_Customs_SpawnChance() => _killaAgro_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Customs;
+    private void default_KillaAgro_Customs_SpawnChance() => _killaAgro_Customs_SpawnChance = 0;
+    private List<string> _killaAgro_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Customs);
+            }
+        }
+    }
+    private void On_KillaAgro_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Customs_SpawnZones() => _killaAgro_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Customs };
+    private void default_KillaAgro_Customs_SpawnZones() => _killaAgro_Customs_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroFactory
+    private int _killaAgro_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_KillaAgro_FactoryDay_SpawnChance() => _killaAgro_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Factory4Day;
+    private void default_KillaAgro_FactoryDay_SpawnChance() => _killaAgro_FactoryDay_SpawnChance = 0;
+    private List<string> _killaAgro_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_KillaAgro_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_FactoryDay_SpawnZones() => _killaAgro_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Day };
+    private void default_KillaAgro_FactoryDay_SpawnZones() => _killaAgro_FactoryDay_SpawnZones = new List<string>();
+    private int _killaAgro_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_KillaAgro_FactoryNight_SpawnChance() => _killaAgro_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Factory4Night;
+    private void default_KillaAgro_FactoryNight_SpawnChance() => _killaAgro_FactoryNight_SpawnChance = 0;
+    private List<string> _killaAgro_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_KillaAgro_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_FactoryNight_SpawnZones() => _killaAgro_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Factory4Night };
+    private void default_KillaAgro_FactoryNight_SpawnZones() => _killaAgro_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroInterchange
+    private int _killaAgro_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_KillaAgro_Interchange_SpawnChance() => _killaAgro_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Interchange;
+    private void default_KillaAgro_Interchange_SpawnChance() => _killaAgro_Interchange_SpawnChance = 0;
+    private List<string> _killaAgro_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_KillaAgro_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Interchange_SpawnZones() => _killaAgro_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Interchange };
+    private void default_KillaAgro_Interchange_SpawnZones() => _killaAgro_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroLabs
+    private int _killaAgro_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_KillaAgro_Labs_SpawnChance() => _killaAgro_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Laboratory;
+    private void default_KillaAgro_Labs_SpawnChance() => _killaAgro_Labs_SpawnChance = 0;
+    private List<string> _killaAgro_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_KillaAgro_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Labs_SpawnZones() => _killaAgro_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Laboratory };
+    private void default_KillaAgro_Labs_SpawnZones() => _killaAgro_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroLighthouse
+    private int _killaAgro_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_KillaAgro_Lighthouse_SpawnChance() => _killaAgro_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Lighthouse;
+    private void default_KillaAgro_Lighthouse_SpawnChance() => _killaAgro_Lighthouse_SpawnChance = 0;
+    private List<string> _killaAgro_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_KillaAgro_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Lighthouse_SpawnZones() => _killaAgro_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Lighthouse };
+    private void default_KillaAgro_Lighthouse_SpawnZones() => _killaAgro_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroReserve
+    private int _killaAgro_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_KillaAgro_Reserve_SpawnChance() => _killaAgro_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Reserve;
+    private void default_KillaAgro_Reserve_SpawnChance() => _killaAgro_Reserve_SpawnChance = 0;
+    private List<string> _killaAgro_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_KillaAgro_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Reserve_SpawnZones() => _killaAgro_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Reserve };
+    private void default_KillaAgro_Reserve_SpawnZones() => _killaAgro_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroGroundZero
+    private int _killaAgro_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_KillaAgro_GroundZero_SpawnChance() => _killaAgro_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.GroundZero;
+    private void default_KillaAgro_GroundZero_SpawnChance() => _killaAgro_GroundZero_SpawnChance = 0;
+    private List<string> _killaAgro_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_KillaAgro_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_GroundZero_SpawnZones() => _killaAgro_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZero };
+    private void default_KillaAgro_GroundZero_SpawnZones() => _killaAgro_GroundZero_SpawnZones = new List<string>();
+    private int _killaAgro_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_KillaAgro_GroundZeroHigh_SpawnChance() => _killaAgro_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.GroundZeroHigh;
+    private void default_KillaAgro_GroundZeroHigh_SpawnChance() => _killaAgro_GroundZeroHigh_SpawnChance = 0;
+    private List<string> _killaAgro_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_KillaAgro_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_GroundZeroHigh_SpawnZones() => _killaAgro_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.GroundZeroHigh };
+    private void default_KillaAgro_GroundZeroHigh_SpawnZones() => _killaAgro_GroundZeroHigh_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroShoreline
+    private int _killaAgro_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_KillaAgro_Shoreline_SpawnChance() => _killaAgro_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Shoreline;
+    private void default_KillaAgro_Shoreline_SpawnChance() => _killaAgro_Shoreline_SpawnChance = 0;
+    private List<string> _killaAgro_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_KillaAgro_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Shoreline_SpawnZones() => _killaAgro_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Shoreline };
+    private void default_KillaAgro_Shoreline_SpawnZones() => _killaAgro_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroStreets
+    private int _killaAgro_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_KillaAgro_Streets_SpawnChance() => _killaAgro_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.TarkovStreets;
+    private void default_KillaAgro_Streets_SpawnChance() => _killaAgro_Streets_SpawnChance = 0;
+    private List<string> _killaAgro_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_KillaAgro_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Streets_SpawnZones() => _killaAgro_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.TarkovStreets };
+    private void default_KillaAgro_Streets_SpawnZones() => _killaAgro_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroWoods
+    private int _killaAgro_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_KillaAgro_Woods_SpawnChance() => _killaAgro_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Woods;
+    private void default_KillaAgro_Woods_SpawnChance() => _killaAgro_Woods_SpawnChance = 0;
+    private List<string> _killaAgro_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Woods);
+            }
+        }
+    }
+    private void On_KillaAgro_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Woods_SpawnZones() => _killaAgro_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Woods };
+    private void default_KillaAgro_Woods_SpawnZones() => _killaAgro_Woods_SpawnZones = new List<string>();
+    #endregion
+    #region KillaAgroLabyrinth
+    private int _killaAgro_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.BossKillaAgro.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_KillaAgro_Labyrinth_SpawnChance() => _killaAgro_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossKillaAgro.SpawnChance.Labyrinth;
+    private void default_KillaAgro_Labyrinth_SpawnChance() => _killaAgro_Labyrinth_SpawnChance = 100;
+    private List<string> _killaAgro_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossKillaAgro.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_KillaAgro_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _killaAgro_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_KillaAgro_Labyrinth_SpawnZones() => _killaAgro_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossKillaAgro.BossZone.Labyrinth };
+    private void default_KillaAgro_Labyrinth_SpawnZones() => _killaAgro_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

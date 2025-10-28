@@ -1,0 +1,1646 @@
+﻿@page "/botplacementsystem/bossconfig/glukhar"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows Glukhar to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Glukhar</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_glukhar_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_glukhar_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_glukhar_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Glukhar_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _glukhar_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Glukhar_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_glukhar_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Time"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Time != -1)
+                            {
+                                <MudButton @onclick="default_Glukhar_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Customs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_glukhar_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_glukhar_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_glukhar_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Interchange_SpawnZones.Count != 1 ||
+                                     !_glukhar_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_glukhar_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_glukhar_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Reserve_SpawnChance != 30)
+                            {
+                                <MudButton @onclick="default_Glukhar_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Reserve_SpawnZones.Count != 4 ||
+                                     !_glukhar_Reserve_SpawnZones.Contains("ZoneRailStrorage") ||
+                                     !_glukhar_Reserve_SpawnZones.Contains("ZonePTOR2") ||
+                                     !_glukhar_Reserve_SpawnZones.Contains("ZoneBarrack") ||
+                                     !_glukhar_Reserve_SpawnZones.Contains("ZoneSubStorage") ||
+                                     _glukhar_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_glukhar_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_GroundZeroHigh_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_glukhar_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_glukhar_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Streets_SpawnZones.Count != 1 ||
+                                     !_glukhar_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Woods_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_glukhar_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_glukhar_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_glukhar_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _glukhar_Labyrinth_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Glukhar_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_glukhar_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_Glukhar_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_glukhar_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_glukhar_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Glukhar_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_glukhar_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Glukhar_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region GlukharGlobalConfig
+    private bool _glukhar_Enabled
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.Enable);
+            ModConfig.Config.BossConfig.BossGluhar.Enable = value;
+        }
+    }
+    private void undo_Glukhar_Enable() => _glukhar_Enabled = ModConfig.OriginalConfig.BossConfig.BossGluhar.Enable;
+    private void default_Glukhar_Enable() => _glukhar_Enabled = true;
+    private long _glukhar_Time
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.Time);
+            ModConfig.Config.BossConfig.BossGluhar.Time = value;
+        }
+    }
+    private void undo_Glukhar_Time() => _glukhar_Time = ModConfig.OriginalConfig.BossConfig.BossGluhar.Time;
+    private void default_Glukhar_Time() => _glukhar_Time = -1;
+    #endregion
+    #region GlukharSpawnConfig
+    #region GlukharCustoms
+    private int _glukhar_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_Glukhar_Customs_SpawnChance() => _glukhar_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Customs;
+    private void default_Glukhar_Customs_SpawnChance() => _glukhar_Customs_SpawnChance = 0;
+    private List<string> _glukhar_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Customs);
+            }
+        }
+    }
+    private void On_Glukhar_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Customs_SpawnZones() => _glukhar_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Customs };
+    private void default_Glukhar_Customs_SpawnZones() => _glukhar_Customs_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharFactory
+    private int _glukhar_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_Glukhar_FactoryDay_SpawnChance() => _glukhar_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Factory4Day;
+    private void default_Glukhar_FactoryDay_SpawnChance() => _glukhar_FactoryDay_SpawnChance = 0;
+    private List<string> _glukhar_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_Glukhar_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_FactoryDay_SpawnZones() => _glukhar_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Day };
+    private void default_Glukhar_FactoryDay_SpawnZones() => _glukhar_FactoryDay_SpawnZones = new List<string>();
+    private int _glukhar_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_Glukhar_FactoryNight_SpawnChance() => _glukhar_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Factory4Night;
+    private void default_Glukhar_FactoryNight_SpawnChance() => _glukhar_FactoryNight_SpawnChance = 0;
+    private List<string> _glukhar_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_Glukhar_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_FactoryNight_SpawnZones() => _glukhar_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Factory4Night };
+    private void default_Glukhar_FactoryNight_SpawnZones() => _glukhar_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharInterchange
+    private int _glukhar_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_Glukhar_Interchange_SpawnChance() => _glukhar_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Interchange;
+    private void default_Glukhar_Interchange_SpawnChance() => _glukhar_Interchange_SpawnChance = 0;
+    private List<string> _glukhar_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_Glukhar_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Interchange_SpawnZones() => _glukhar_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Interchange };
+    private void default_Glukhar_Interchange_SpawnZones() => _glukhar_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharLabs
+    private int _glukhar_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_Glukhar_Labs_SpawnChance() => _glukhar_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Laboratory;
+    private void default_Glukhar_Labs_SpawnChance() => _glukhar_Labs_SpawnChance = 0;
+    private List<string> _glukhar_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_Glukhar_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Labs_SpawnZones() => _glukhar_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Laboratory };
+    private void default_Glukhar_Labs_SpawnZones() => _glukhar_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharLighthouse
+    private int _glukhar_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_Glukhar_Lighthouse_SpawnChance() => _glukhar_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Lighthouse;
+    private void default_Glukhar_Lighthouse_SpawnChance() => _glukhar_Lighthouse_SpawnChance = 0;
+    private List<string> _glukhar_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_Glukhar_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Lighthouse_SpawnZones() => _glukhar_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Lighthouse };
+    private void default_Glukhar_Lighthouse_SpawnZones() => _glukhar_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharReserve
+    private int _glukhar_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_Glukhar_Reserve_SpawnChance() => _glukhar_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Reserve;
+    private void default_Glukhar_Reserve_SpawnChance() => _glukhar_Reserve_SpawnChance = 30;
+    private List<string> _glukhar_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_Glukhar_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Reserve_SpawnZones() => _glukhar_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Reserve };
+    private void default_Glukhar_Reserve_SpawnZones() => _glukhar_Reserve_SpawnZones = new List<string> {"ZoneRailStrorage,ZonePTOR2,ZoneBarrack,ZoneSubStorage"};
+    #endregion
+    #region GlukharGroundZero
+    private int _glukhar_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_Glukhar_GroundZero_SpawnChance() => _glukhar_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.GroundZero;
+    private void default_Glukhar_GroundZero_SpawnChance() => _glukhar_GroundZero_SpawnChance = 0;
+    private List<string> _glukhar_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_Glukhar_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_GroundZero_SpawnZones() => _glukhar_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZero };
+    private void default_Glukhar_GroundZero_SpawnZones() => _glukhar_GroundZero_SpawnZones = new List<string>();
+    private int _glukhar_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Glukhar_GroundZeroHigh_SpawnChance() => _glukhar_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.GroundZeroHigh;
+    private void default_Glukhar_GroundZeroHigh_SpawnChance() => _glukhar_GroundZeroHigh_SpawnChance = 0;
+    private List<string> _glukhar_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_Glukhar_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_GroundZeroHigh_SpawnZones() => _glukhar_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.GroundZeroHigh };
+    private void default_Glukhar_GroundZeroHigh_SpawnZones() => _glukhar_GroundZeroHigh_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharShoreline
+    private int _glukhar_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_Glukhar_Shoreline_SpawnChance() => _glukhar_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Shoreline;
+    private void default_Glukhar_Shoreline_SpawnChance() => _glukhar_Shoreline_SpawnChance = 0;
+    private List<string> _glukhar_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_Glukhar_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Shoreline_SpawnZones() => _glukhar_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Shoreline };
+    private void default_Glukhar_Shoreline_SpawnZones() => _glukhar_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharStreets
+    private int _glukhar_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_Glukhar_Streets_SpawnChance() => _glukhar_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.TarkovStreets;
+    private void default_Glukhar_Streets_SpawnChance() => _glukhar_Streets_SpawnChance = 0;
+    private List<string> _glukhar_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_Glukhar_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Streets_SpawnZones() => _glukhar_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.TarkovStreets };
+    private void default_Glukhar_Streets_SpawnZones() => _glukhar_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharWoods
+    private int _glukhar_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_Glukhar_Woods_SpawnChance() => _glukhar_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Woods;
+    private void default_Glukhar_Woods_SpawnChance() => _glukhar_Woods_SpawnChance = 0;
+    private List<string> _glukhar_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Woods);
+            }
+        }
+    }
+    private void On_Glukhar_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Woods_SpawnZones() => _glukhar_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Woods };
+    private void default_Glukhar_Woods_SpawnZones() => _glukhar_Woods_SpawnZones = new List<string>();
+    #endregion
+    #region GlukharLabyrinth
+    private int _glukhar_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.BossGluhar.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_Glukhar_Labyrinth_SpawnChance() => _glukhar_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossGluhar.SpawnChance.Labyrinth;
+    private void default_Glukhar_Labyrinth_SpawnChance() => _glukhar_Labyrinth_SpawnChance = 0;
+    private List<string> _glukhar_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossGluhar.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossGluhar.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_Glukhar_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _glukhar_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_Glukhar_Labyrinth_SpawnZones() => _glukhar_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossGluhar.BossZone.Labyrinth };
+    private void default_Glukhar_Labyrinth_SpawnZones() => _glukhar_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

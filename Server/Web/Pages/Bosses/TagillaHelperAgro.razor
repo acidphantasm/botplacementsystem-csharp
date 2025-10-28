@@ -1,0 +1,1717 @@
+﻿@page "/botplacementsystem/bossconfig/tagillahelperagro"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows TagillaHelperAgro to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable TagillaHelperAgro</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_tagillaHelperAgro_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_tagillaHelperAgro_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Enabled"))
+                        {
+                            <MudButton @onclick="undo_TagillaHelperAgro_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _tagillaHelperAgro_Enabled != true)
+                        {
+                            <MudButton @onclick="default_TagillaHelperAgro_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_tagillaHelperAgro_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Adds additional spawns that you configure below per map." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Add Extra Spawns</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool?" @bind-Value="_TagillaHelperAgro_AddExtraSpawns" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_TagillaHelperAgro_AddExtraSpawns</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                           MainLayout.pendingChanges.Contains("_tagillaHelperAgro_AddExtraSpawns"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_AddExtraSpawns" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                            _TagillaHelperAgro_AddExtraSpawns != false)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_AddExtraSpawns" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Enabling this will remove the vanilla TagillaHelperAgro spawns from maps, if you still want tagillaHelperAgro - enable 'Add Extra Spawns' and set the spawns below." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Remove Vanilla Spawns</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool?" @bind-Value="_TagillaHelperAgro_DisableVanillaSpawns" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_TagillaHelperAgro_DisableVanillaSpawns</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_DisableVanillaSpawns"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_DisableVanillaSpawns" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _TagillaHelperAgro_DisableVanillaSpawns != false)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_DisableVanillaSpawns" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Time"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Time != -1)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Customs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_tagillaHelperAgro_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_tagillaHelperAgro_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_tagillaHelperAgro_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Interchange_SpawnZones.Count != 1 ||
+                                     !_tagillaHelperAgro_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_tagillaHelperAgro_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_tagillaHelperAgro_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Reserve_SpawnZones.Count != 1 ||
+                                     !_tagillaHelperAgro_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_GroundZero_SpawnZones.Count != 1 ||
+                                     !_tagillaHelperAgro_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_GroundZeroHigh_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_tagillaHelperAgro_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_tagillaHelperAgro_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Streets_SpawnZones.Count != 1 ||
+                                     !_tagillaHelperAgro_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Woods_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_tagillaHelperAgro_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_tagillaHelperAgro_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_tagillaHelperAgro_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _tagillaHelperAgro_Labyrinth_SpawnChance != 100)
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_tagillaHelperAgro_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_TagillaHelperAgro_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_tagillaHelperAgro_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_tagillaHelperAgro_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_TagillaHelperAgro_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_tagillaHelperAgro_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_TagillaHelperAgro_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region TagillaHelperAgroGlobalConfig
+    private bool _tagillaHelperAgro_Enabled
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.Enable);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.Enable = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Enable() => _tagillaHelperAgro_Enabled = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.Enable;
+    private void default_TagillaHelperAgro_Enable() => _tagillaHelperAgro_Enabled = true;
+    private bool? _TagillaHelperAgro_AddExtraSpawns
+    {
+        get => ModConfig.Config.BossConfig.ExUsec.AddExtraSpawns;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ExUsec.AddExtraSpawns);
+            ModConfig.Config.BossConfig.ExUsec.AddExtraSpawns = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_AddExtraSpawns() => _TagillaHelperAgro_AddExtraSpawns = ModConfig.OriginalConfig.BossConfig.ExUsec.AddExtraSpawns;
+    private void default_TagillaHelperAgro_AddExtraSpawns() => _TagillaHelperAgro_AddExtraSpawns = false;
+    private bool? _TagillaHelperAgro_DisableVanillaSpawns
+    {
+        get => ModConfig.Config.BossConfig.ExUsec.DisableVanillaSpawns;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ExUsec.DisableVanillaSpawns);
+            ModConfig.Config.BossConfig.ExUsec.DisableVanillaSpawns = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_DisableVanillaSpawns() => _TagillaHelperAgro_DisableVanillaSpawns = ModConfig.OriginalConfig.BossConfig.ExUsec.DisableVanillaSpawns;
+    private void default_TagillaHelperAgro_DisableVanillaSpawns() => _TagillaHelperAgro_DisableVanillaSpawns = false;
+    private long _tagillaHelperAgro_Time
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.Time);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.Time = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Time() => _tagillaHelperAgro_Time = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.Time;
+    private void default_TagillaHelperAgro_Time() => _tagillaHelperAgro_Time = -1;
+    #endregion
+    #region TagillaHelperAgroSpawnConfig
+    #region TagillaHelperAgroCustoms
+    private int _tagillaHelperAgro_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Customs_SpawnChance() => _tagillaHelperAgro_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Customs;
+    private void default_TagillaHelperAgro_Customs_SpawnChance() => _tagillaHelperAgro_Customs_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Customs);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Customs_SpawnZones() => _tagillaHelperAgro_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Customs };
+    private void default_TagillaHelperAgro_Customs_SpawnZones() => _tagillaHelperAgro_Customs_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroFactory
+    private int _tagillaHelperAgro_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_FactoryDay_SpawnChance() => _tagillaHelperAgro_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Day;
+    private void default_TagillaHelperAgro_FactoryDay_SpawnChance() => _tagillaHelperAgro_FactoryDay_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_FactoryDay_SpawnZones() => _tagillaHelperAgro_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Day };
+    private void default_TagillaHelperAgro_FactoryDay_SpawnZones() => _tagillaHelperAgro_FactoryDay_SpawnZones = new List<string>();
+    private int _tagillaHelperAgro_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_FactoryNight_SpawnChance() => _tagillaHelperAgro_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Factory4Night;
+    private void default_TagillaHelperAgro_FactoryNight_SpawnChance() => _tagillaHelperAgro_FactoryNight_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_FactoryNight_SpawnZones() => _tagillaHelperAgro_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Factory4Night };
+    private void default_TagillaHelperAgro_FactoryNight_SpawnZones() => _tagillaHelperAgro_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroInterchange
+    private int _tagillaHelperAgro_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Interchange_SpawnChance() => _tagillaHelperAgro_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Interchange;
+    private void default_TagillaHelperAgro_Interchange_SpawnChance() => _tagillaHelperAgro_Interchange_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Interchange_SpawnZones() => _tagillaHelperAgro_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Interchange };
+    private void default_TagillaHelperAgro_Interchange_SpawnZones() => _tagillaHelperAgro_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroLabs
+    private int _tagillaHelperAgro_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Labs_SpawnChance() => _tagillaHelperAgro_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Laboratory;
+    private void default_TagillaHelperAgro_Labs_SpawnChance() => _tagillaHelperAgro_Labs_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Labs_SpawnZones() => _tagillaHelperAgro_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Laboratory };
+    private void default_TagillaHelperAgro_Labs_SpawnZones() => _tagillaHelperAgro_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroLighthouse
+    private int _tagillaHelperAgro_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Lighthouse_SpawnChance() => _tagillaHelperAgro_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Lighthouse;
+    private void default_TagillaHelperAgro_Lighthouse_SpawnChance() => _tagillaHelperAgro_Lighthouse_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Lighthouse_SpawnZones() => _tagillaHelperAgro_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Lighthouse };
+    private void default_TagillaHelperAgro_Lighthouse_SpawnZones() => _tagillaHelperAgro_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroReserve
+    private int _tagillaHelperAgro_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Reserve_SpawnChance() => _tagillaHelperAgro_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Reserve;
+    private void default_TagillaHelperAgro_Reserve_SpawnChance() => _tagillaHelperAgro_Reserve_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Reserve_SpawnZones() => _tagillaHelperAgro_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Reserve };
+    private void default_TagillaHelperAgro_Reserve_SpawnZones() => _tagillaHelperAgro_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroGroundZero
+    private int _tagillaHelperAgro_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_GroundZero_SpawnChance() => _tagillaHelperAgro_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.GroundZero;
+    private void default_TagillaHelperAgro_GroundZero_SpawnChance() => _tagillaHelperAgro_GroundZero_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_GroundZero_SpawnZones() => _tagillaHelperAgro_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZero };
+    private void default_TagillaHelperAgro_GroundZero_SpawnZones() => _tagillaHelperAgro_GroundZero_SpawnZones = new List<string>();
+    private int _tagillaHelperAgro_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_GroundZeroHigh_SpawnChance() => _tagillaHelperAgro_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.GroundZeroHigh;
+    private void default_TagillaHelperAgro_GroundZeroHigh_SpawnChance() => _tagillaHelperAgro_GroundZeroHigh_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_GroundZeroHigh_SpawnZones() => _tagillaHelperAgro_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.GroundZeroHigh };
+    private void default_TagillaHelperAgro_GroundZeroHigh_SpawnZones() => _tagillaHelperAgro_GroundZeroHigh_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroShoreline
+    private int _tagillaHelperAgro_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Shoreline_SpawnChance() => _tagillaHelperAgro_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Shoreline;
+    private void default_TagillaHelperAgro_Shoreline_SpawnChance() => _tagillaHelperAgro_Shoreline_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Shoreline_SpawnZones() => _tagillaHelperAgro_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Shoreline };
+    private void default_TagillaHelperAgro_Shoreline_SpawnZones() => _tagillaHelperAgro_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroStreets
+    private int _tagillaHelperAgro_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Streets_SpawnChance() => _tagillaHelperAgro_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.TarkovStreets;
+    private void default_TagillaHelperAgro_Streets_SpawnChance() => _tagillaHelperAgro_Streets_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Streets_SpawnZones() => _tagillaHelperAgro_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.TarkovStreets };
+    private void default_TagillaHelperAgro_Streets_SpawnZones() => _tagillaHelperAgro_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroWoods
+    private int _tagillaHelperAgro_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Woods_SpawnChance() => _tagillaHelperAgro_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Woods;
+    private void default_TagillaHelperAgro_Woods_SpawnChance() => _tagillaHelperAgro_Woods_SpawnChance = 0;
+    private List<string> _tagillaHelperAgro_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Woods);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Woods_SpawnZones() => _tagillaHelperAgro_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Woods };
+    private void default_TagillaHelperAgro_Woods_SpawnZones() => _tagillaHelperAgro_Woods_SpawnZones = new List<string>();
+    #endregion
+    #region TagillaHelperAgroLabyrinth
+    private int _tagillaHelperAgro_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.TagillaHelperAgro.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_TagillaHelperAgro_Labyrinth_SpawnChance() => _tagillaHelperAgro_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.SpawnChance.Labyrinth;
+    private void default_TagillaHelperAgro_Labyrinth_SpawnChance() => _tagillaHelperAgro_Labyrinth_SpawnChance = 100;
+    private List<string> _tagillaHelperAgro_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.TagillaHelperAgro.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_TagillaHelperAgro_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _tagillaHelperAgro_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_TagillaHelperAgro_Labyrinth_SpawnZones() => _tagillaHelperAgro_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.TagillaHelperAgro.BossZone.Labyrinth };
+    private void default_TagillaHelperAgro_Labyrinth_SpawnZones() => _tagillaHelperAgro_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

@@ -1,0 +1,1647 @@
+﻿@page "/botplacementsystem/bossconfig/zryachiy"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows Zryachiy to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Zryachiy</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_zryachiy_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_zryachiy_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_zryachiy_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Zryachiy_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _zryachiy_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Zryachiy_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_zryachiy_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Time"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Time != -1)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Customs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_zryachiy_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_zryachiy_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_zryachiy_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Interchange_SpawnZones.Count != 1 ||
+                                     !_zryachiy_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_zryachiy_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Lighthouse_SpawnChance != 30)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Lighthouse_SpawnZones.Count != 1 ||
+                                     !_zryachiy_Lighthouse_SpawnZones.Contains("Zone_Island"))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Reserve_SpawnZones.Count != 1 ||
+                                     !_zryachiy_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_GroundZero_SpawnZones.Count != 1 ||
+                                     !_zryachiy_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_GroundZeroHigh_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_zryachiy_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_zryachiy_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Streets_SpawnZones.Count != 1 ||
+                                     !_zryachiy_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Woods_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_zryachiy_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_zryachiy_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_zryachiy_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _zryachiy_Labyrinth_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Zryachiy_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_zryachiy_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_Zryachiy_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_zryachiy_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_zryachiy_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Zryachiy_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_zryachiy_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Zryachiy_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region ZryachiyGlobalConfig
+    private bool _zryachiy_Enabled
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.Enable);
+            ModConfig.Config.BossConfig.BossZryachiy.Enable = value;
+        }
+    }
+    private void undo_Zryachiy_Enable() => _zryachiy_Enabled = ModConfig.OriginalConfig.BossConfig.BossZryachiy.Enable;
+    private void default_Zryachiy_Enable() => _zryachiy_Enabled = true;
+    private long _zryachiy_Time
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.Time);
+            ModConfig.Config.BossConfig.BossZryachiy.Time = value;
+        }
+    }
+    private void undo_Zryachiy_Time() => _zryachiy_Time = ModConfig.OriginalConfig.BossConfig.BossZryachiy.Time;
+    private void default_Zryachiy_Time() => _zryachiy_Time = -1;
+    #endregion
+    #region ZryachiySpawnConfig
+    #region ZryachiyCustoms
+    private int _zryachiy_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_Zryachiy_Customs_SpawnChance() => _zryachiy_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Customs;
+    private void default_Zryachiy_Customs_SpawnChance() => _zryachiy_Customs_SpawnChance = 0;
+    private List<string> _zryachiy_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Customs);
+            }
+        }
+    }
+    private void On_Zryachiy_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Customs_SpawnZones() => _zryachiy_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Customs };
+    private void default_Zryachiy_Customs_SpawnZones() => _zryachiy_Customs_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyFactory
+    private int _zryachiy_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_Zryachiy_FactoryDay_SpawnChance() => _zryachiy_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Factory4Day;
+    private void default_Zryachiy_FactoryDay_SpawnChance() => _zryachiy_FactoryDay_SpawnChance = 0;
+    private List<string> _zryachiy_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_Zryachiy_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_FactoryDay_SpawnZones() => _zryachiy_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Day };
+    private void default_Zryachiy_FactoryDay_SpawnZones() => _zryachiy_FactoryDay_SpawnZones = new List<string>();
+    private int _zryachiy_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_Zryachiy_FactoryNight_SpawnChance() => _zryachiy_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Factory4Night;
+    private void default_Zryachiy_FactoryNight_SpawnChance() => _zryachiy_FactoryNight_SpawnChance = 0;
+    private List<string> _zryachiy_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_Zryachiy_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_FactoryNight_SpawnZones() => _zryachiy_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Factory4Night };
+    private void default_Zryachiy_FactoryNight_SpawnZones() => _zryachiy_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyInterchange
+    private int _zryachiy_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_Zryachiy_Interchange_SpawnChance() => _zryachiy_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Interchange;
+    private void default_Zryachiy_Interchange_SpawnChance() => _zryachiy_Interchange_SpawnChance = 0;
+    private List<string> _zryachiy_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_Zryachiy_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Interchange_SpawnZones() => _zryachiy_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Interchange };
+    private void default_Zryachiy_Interchange_SpawnZones() => _zryachiy_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyLabs
+    private int _zryachiy_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_Zryachiy_Labs_SpawnChance() => _zryachiy_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Laboratory;
+    private void default_Zryachiy_Labs_SpawnChance() => _zryachiy_Labs_SpawnChance = 0;
+    private List<string> _zryachiy_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_Zryachiy_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Labs_SpawnZones() => _zryachiy_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Laboratory };
+    private void default_Zryachiy_Labs_SpawnZones() => _zryachiy_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyLighthouse
+    private int _zryachiy_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_Zryachiy_Lighthouse_SpawnChance() => _zryachiy_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Lighthouse;
+    private void default_Zryachiy_Lighthouse_SpawnChance() => _zryachiy_Lighthouse_SpawnChance = 100;
+    private List<string> _zryachiy_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_Zryachiy_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Lighthouse_SpawnZones() => _zryachiy_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Lighthouse };
+    private void default_Zryachiy_Lighthouse_SpawnZones() => _zryachiy_Lighthouse_SpawnZones = new List<string> { "Zone_Island" };
+    #endregion
+    #region ZryachiyReserve
+    private int _zryachiy_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_Zryachiy_Reserve_SpawnChance() => _zryachiy_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Reserve;
+    private void default_Zryachiy_Reserve_SpawnChance() => _zryachiy_Reserve_SpawnChance = 0;
+    private List<string> _zryachiy_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_Zryachiy_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Reserve_SpawnZones() => _zryachiy_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Reserve };
+    private void default_Zryachiy_Reserve_SpawnZones() => _zryachiy_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyGroundZero
+    private int _zryachiy_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_Zryachiy_GroundZero_SpawnChance() => _zryachiy_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.GroundZero;
+    private void default_Zryachiy_GroundZero_SpawnChance() => _zryachiy_GroundZero_SpawnChance = 0;
+    private List<string> _zryachiy_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_Zryachiy_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_GroundZero_SpawnZones() => _zryachiy_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZero };
+    private void default_Zryachiy_GroundZero_SpawnZones() => _zryachiy_GroundZero_SpawnZones = new List<string>();
+    private int _zryachiy_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Zryachiy_GroundZeroHigh_SpawnChance() => _zryachiy_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.GroundZeroHigh;
+    private void default_Zryachiy_GroundZeroHigh_SpawnChance() => _zryachiy_GroundZeroHigh_SpawnChance = 0;
+    private List<string> _zryachiy_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_Zryachiy_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_GroundZeroHigh_SpawnZones() => _zryachiy_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.GroundZeroHigh };
+    private void default_Zryachiy_GroundZeroHigh_SpawnZones() => _zryachiy_GroundZeroHigh_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyShoreline
+    private int _zryachiy_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_Zryachiy_Shoreline_SpawnChance() => _zryachiy_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Shoreline;
+    private void default_Zryachiy_Shoreline_SpawnChance() => _zryachiy_Shoreline_SpawnChance = 0;
+    private List<string> _zryachiy_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_Zryachiy_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Shoreline_SpawnZones() => _zryachiy_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Shoreline };
+    private void default_Zryachiy_Shoreline_SpawnZones() => _zryachiy_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyStreets
+    private int _zryachiy_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_Zryachiy_Streets_SpawnChance() => _zryachiy_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.TarkovStreets;
+    private void default_Zryachiy_Streets_SpawnChance() => _zryachiy_Streets_SpawnChance = 0;
+    private List<string> _zryachiy_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_Zryachiy_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Streets_SpawnZones() => _zryachiy_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.TarkovStreets };
+    private void default_Zryachiy_Streets_SpawnZones() => _zryachiy_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyWoods
+    private int _zryachiy_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_Zryachiy_Woods_SpawnChance() => _zryachiy_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Woods;
+    private void default_Zryachiy_Woods_SpawnChance() => _zryachiy_Woods_SpawnChance = 0;
+    private List<string> _zryachiy_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Woods);
+            }
+        }
+    }
+    private void On_Zryachiy_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Woods_SpawnZones() => _zryachiy_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Woods };
+    private void default_Zryachiy_Woods_SpawnZones() => _zryachiy_Woods_SpawnZones = new List<string>();
+    #endregion
+    #region ZryachiyLabyrinth
+    private int _zryachiy_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.BossZryachiy.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_Zryachiy_Labyrinth_SpawnChance() => _zryachiy_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.BossZryachiy.SpawnChance.Labyrinth;
+    private void default_Zryachiy_Labyrinth_SpawnChance() => _zryachiy_Labyrinth_SpawnChance = 0;
+    private List<string> _zryachiy_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.BossZryachiy.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.BossZryachiy.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_Zryachiy_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _zryachiy_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_Zryachiy_Labyrinth_SpawnZones() => _zryachiy_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.BossZryachiy.BossZone.Labyrinth };
+    private void default_Zryachiy_Labyrinth_SpawnZones() => _zryachiy_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

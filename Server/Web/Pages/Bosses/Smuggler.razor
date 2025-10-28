@@ -1,0 +1,1654 @@
+﻿@page "/botplacementsystem/bossconfig/arenaFighterEvent"
+@layout MainLayout
+
+<style>
+    .mud-divider {
+    border-width: 2.5px;
+    }
+</style>
+
+<MudMainContent>
+    <MudContainer Class="mb-20">
+        <MudExpansionPanels MultiExpansion="true">
+            <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Enable/Disable" Expanded=true>
+                <MudGrid>
+                    <MudItem xs="1" />
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Allows Smugglers to spawn if enabled, they will never spawn if disabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Smugglers</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_arenaFighterEvent_Enabled" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_arenaFighterEvent_Enabled</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                        MainLayout.pendingChanges.Contains("_arenaFighterEvent_Enabled"))
+                        {
+                            <MudButton @onclick="undo_Smugglers_Enable" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                        _arenaFighterEvent_Enabled != true)
+                        {
+                            <MudButton @onclick="default_Smugglers_Enable" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudExpansionPanel>
+            @if (_arenaFighterEvent_Enabled)
+            {
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How much time must pass before the spawn is triggered, in seconds. -1 is immediate." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Timer</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Time</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Time" ValueLabel="true" Min="-1" Max="3600" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Time"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Time" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Time != -1)
+                            {
+                                <MudButton @onclick="default_Smugglers_Time" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+                <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Style="padding-bottom:25px" Text="Spawn Chances & Zones" Expanded=true>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Customs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Customs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Customs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Customs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Customs_SpawnChance != 5)
+                            {
+                                <MudButton @onclick="default_Smugglers_Customs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Customs_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Customs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Customs_SpawnChance == 0">
+                                    @foreach (var name in CustomsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Customs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Customs_SpawnZones.Count != 2 ||
+                                     !_arenaFighterEvent_Customs_SpawnZones.Contains("ZoneFactoryCenter") ||
+                                     !_arenaFighterEvent_Customs_SpawnZones.Contains("ZoneScavBase") ||
+                                     _arenaFighterEvent_Customs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Customs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Day)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_FactoryDay_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_FactoryDay_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_FactoryDay_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_FactoryDay_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_FactoryDay_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_FactoryDay_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_FactoryDay_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_FactoryDay_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_FactoryDay_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_arenaFighterEvent_FactoryDay_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_FactoryDay_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Factory (Night)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_FactoryNight_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_FactoryNight_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_FactoryNight_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_FactoryNight_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_FactoryNight_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_FactoryNight_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_FactoryNight_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_FactoryNight_SpawnChance == 0">
+                                    @foreach (var name in FactorySpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_FactoryNight_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_arenaFighterEvent_FactoryNight_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_FactoryNight_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Interchange</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Interchange_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Interchange_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Interchange_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Interchange_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Interchange_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Interchange_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Interchange_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Interchange_SpawnChance == 0">
+                                    @foreach (var name in InterchangeSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Interchange_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Interchange_SpawnZones.Count != 1 ||
+                                     !_arenaFighterEvent_Interchange_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Interchange_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labs</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Labs_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Labs_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Labs_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Labs_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Labs_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Labs_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Labs_SpawnChance == 0">
+                                    @foreach (var name in LabsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Labs_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     !_arenaFighterEvent_Labs_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Labs_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Lighthouse</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Lighthouse_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Lighthouse_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Lighthouse_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Lighthouse_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Lighthouse_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Lighthouse_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Lighthouse_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Lighthouse_SpawnChance == 0">
+                                    @foreach (var name in LighthouseSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Lighthouse_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_arenaFighterEvent_Lighthouse_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Lighthouse_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Reserve</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Reserve_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Reserve_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Reserve_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Reserve_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Reserve_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Reserve_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Reserve_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Reserve_SpawnChance == 0">
+                                    @foreach (var name in ReserveSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Reserve_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Reserve_SpawnZones.Count != 1 ||
+                                     !_arenaFighterEvent_Reserve_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Reserve_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_GroundZero_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_GroundZero_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_GroundZero_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_GroundZero_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_GroundZero_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_GroundZero_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_GroundZero_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_GroundZero_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_GroundZero_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_GroundZero_SpawnZones.Count != 1 ||
+                                     !_arenaFighterEvent_GroundZero_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_GroundZero_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Ground Zero (High)</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_GroundZeroHigh_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_GroundZeroHigh_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_GroundZeroHigh_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_GroundZeroHigh_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_GroundZeroHigh_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_GroundZeroHigh_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_GroundZeroHigh_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_GroundZeroHigh_SpawnChance == 0">
+                                    @foreach (var name in GroundZeroSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_GroundZeroHigh_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_GroundZeroHigh_SpawnZones.Count != 1 ||
+                                     !_arenaFighterEvent_GroundZeroHigh_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_GroundZeroHigh_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Shoreline</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Shoreline_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Shoreline_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Shoreline_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Shoreline_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Shoreline_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Shoreline_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Shoreline_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Shoreline_SpawnChance == 0">
+                                    @foreach (var name in ShorelineSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Shoreline_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_arenaFighterEvent_Shoreline_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Shoreline_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Streets of Tarkov</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Streets_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Streets_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Streets_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Streets_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Streets_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Streets_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Streets_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Streets_SpawnChance == 0">
+                                    @foreach (var name in StreetsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Streets_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Streets_SpawnZones.Count != 1 ||
+                                     !_arenaFighterEvent_Streets_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Streets_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Woods</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Woods_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Woods_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Woods_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Woods_SpawnChance != 5)
+                            {
+                                <MudButton @onclick="default_Smugglers_Woods_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Woods_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Woods_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Woods_SpawnChance == 0">
+                                    @foreach (var name in WoodsSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Woods_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Woods_SpawnZones.Count != 5 ||
+                                     !_arenaFighterEvent_Woods_SpawnZones.Contains("ZoneMiniHouse") ||
+                                     !_arenaFighterEvent_Woods_SpawnZones.Contains("ZoneClearVill") ||
+                                     !_arenaFighterEvent_Woods_SpawnZones.Contains("ZoneRoad") ||
+                                     !_arenaFighterEvent_Woods_SpawnZones.Contains("ZoneBrokenVill") ||
+                                     !_arenaFighterEvent_Woods_SpawnZones.Contains("ZoneScavBase2") ||
+                                     _arenaFighterEvent_Woods_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Woods_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudPaper Class="align-center mud-width-full ma-1" Elevation="0">
+                                <MudText>Labyrinth</MudText>
+                                <MudDivider/>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="How likely the boss is to spawn." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Chance</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_arenaFighterEvent_Labyrinth_SpawnChance</MudButton>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudSlider @bind-Value="_arenaFighterEvent_Labyrinth_SpawnChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium"/>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Labyrinth_SpawnChance"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _arenaFighterEvent_Labyrinth_SpawnChance != 0)
+                            {
+                                <MudButton @onclick="default_Smugglers_Labyrinth_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Possible zones the boss will spawn in, select as many as you want - or none and they will spawn literally anywhere." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Spawn Zones</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1"/>
+                        <MudItem xs="5">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudSelect T="string" Style="margin-top: -15px;" Label="Spawn Zones"
+                                           MultiSelection="true"
+                                           SelectedValues="_arenaFighterEvent_Labyrinth_SpawnZones"
+                                           SelectedValuesChanged="On_Smugglers_Labyrinth_SpawnZonesChanged"
+                                           Variant="Variant.Filled"
+                                           AnchorOrigin="Origin.CenterLeft"
+                                           Dense Clearable ShrinkLabel
+                                           Disabled="_arenaFighterEvent_Labyrinth_SpawnChance == 0">
+                                    @foreach (var name in LabyrinthSpawnZones)
+                                    {
+                                        <MudSelectItem T="string" Value="@name">@name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_arenaFighterEvent_Labyrinth_SpawnZones"))
+                            {
+                                <MudButton @onclick="undo_Smugglers_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle && !_arenaFighterEvent_Labyrinth_SpawnZones.Contains(string.Empty))
+                            {
+                                <MudButton @onclick="default_Smugglers_Labyrinth_SpawnZones" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                </MudExpansionPanel>
+            }
+        </MudExpansionPanels>
+    </MudContainer>
+</MudMainContent>
+
+@code {
+    #region LocationZones
+    private string[] CustomsSpawnZones =
+    {
+        "ZoneBrige","ZoneCrossRoad","ZoneDormitory","ZoneGasStation","ZoneFactoryCenter","ZoneFactorySide","ZoneOldAZS","ZoneBlockPost","ZoneTankSquare","ZoneWade","ZoneCustoms","ZoneScavBase"
+    };
+    private string[] FactorySpawnZones =
+    {
+        "BotZone"
+    };
+    private string[] InterchangeSpawnZones =
+    {
+        "ZoneCenterBot","ZoneIDEA","ZoneCenter","ZoneIDEAPark",
+        "ZoneTrucks","ZoneRoad","ZoneOLI","ZoneGoshan",
+        "ZoneOLIPark","ZonePowerStation"
+    };
+    private string[] LabsSpawnZones =
+    {
+        "BotZoneBasement","BotZoneFloor1","BotZoneFloor2","BotZoneGate1",
+        "BotZoneGate2"
+    };
+    private string[] LighthouseSpawnZones =
+    {
+        "Zone_Containers","Zone_Rocks","Zone_Chalet","Zone_Village",
+        "Zone_Bridge","Zone_OldHouse","Zone_LongRoad","Zone_RoofBeach",
+        "Zone_DestroyedHouse","Zone_RoofContainers","Zone_Blockpost","Zone_RoofRocks",
+        "Zone_TreatmentRocks","Zone_TreatmentContainers","Zone_TreatmentBeach","Zone_Hellicopter",
+        "Zone_SniperPeak","Zone_Island"
+    };
+    private string[] ReserveSpawnZones =
+    {
+        "ZoneRailStrorage","ZonePTOR1","ZonePTOR2","ZoneBarrack",
+        "ZoneBunkerStorage","ZoneSubStorage","ZoneSubCommand"
+    };
+    private string[] GroundZeroSpawnZones =
+    {
+        "ZoneSandbox"
+    };
+    private string[] ShorelineSpawnZones =
+    {
+        "ZoneGreenHouses","ZoneIsland","ZoneForestGasStation","ZoneGasStation",
+        "ZonePowerStation","ZoneBunker","ZoneBusStation","ZonePort",
+        "ZoneForestTruck","ZoneForestSpawn","ZoneSanatorium1","ZoneSanatorium2",
+        "ZoneStartVillage","ZoneMeteoStation","ZoneRailWays","ZoneSmuglers",
+        "ZonePassClose","ZoneTunnel"
+    };
+    private string[] StreetsSpawnZones =
+    {
+        "ZoneSW01","ZoneConstruction","ZoneCarShowroom","ZoneCinema",
+        "ZoneFactory","ZoneHotel_1","ZoneHotel_2","ZoneConcordia_1",
+        "ZoneConcordiaParking","ZoneColumn","ZoneSW00","ZoneStilo",
+        "ZoneCard1","ZoneMvd","ZoneClimova"
+    };
+    private string[] WoodsSpawnZones =
+    {
+        "ZoneWoodCutter","ZoneHouse","ZoneBigRocks","ZoneRoad",
+        "ZoneHighRocks","ZoneMiniHouse","ZoneRedHouse","ZoneScavBase2",
+        "ZoneClearVill","ZoneBrokenVill","ZoneUsecBase","ZoneStoneBunker",
+        "ZoneDepo"
+    };
+    private string[] LabyrinthSpawnZones =
+    {
+        ""
+    };
+    #endregion
+
+    #region SmugglersGlobalConfig
+    private bool _arenaFighterEvent_Enabled
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.Enable);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.Enable = value;
+        }
+    }
+    private void undo_Smugglers_Enable() => _arenaFighterEvent_Enabled = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.Enable;
+    private void default_Smugglers_Enable() => _arenaFighterEvent_Enabled = true;
+    private long _arenaFighterEvent_Time
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.Time;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.Time);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.Time = value;
+        }
+    }
+    private void undo_Smugglers_Time() => _arenaFighterEvent_Time = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.Time;
+    private void default_Smugglers_Time() => _arenaFighterEvent_Time = -1;
+    #endregion
+    #region SmugglersSpawnConfig
+    #region SmugglersCustoms
+    private int _arenaFighterEvent_Customs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Customs;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Customs);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Customs = value;
+        }
+    }
+    private void undo_Smugglers_Customs_SpawnChance() => _arenaFighterEvent_Customs_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Customs;
+    private void default_Smugglers_Customs_SpawnChance() => _arenaFighterEvent_Customs_SpawnChance = 5;
+    private List<string> _arenaFighterEvent_Customs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Customs.Split(',').ToList();
+            return listValues;
+        }
+        set 
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Customs = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Customs);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Customs = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Customs);
+            }
+        }
+    }
+    private void On_Smugglers_Customs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Customs_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Customs_SpawnZones() => _arenaFighterEvent_Customs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Customs };
+    private void default_Smugglers_Customs_SpawnZones() => _arenaFighterEvent_Customs_SpawnZones = new List<string> { "ZoneFactoryCenter,ZoneScavBase" };
+    #endregion
+    #region SmugglersFactory
+    private int _arenaFighterEvent_FactoryDay_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Day;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Day);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Day = value;
+        }
+    }
+    private void undo_Smugglers_FactoryDay_SpawnChance() => _arenaFighterEvent_FactoryDay_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Day;
+    private void default_Smugglers_FactoryDay_SpawnChance() => _arenaFighterEvent_FactoryDay_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_FactoryDay_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Day.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Day = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Day);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Day = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Day);
+            }
+        }
+    }
+    private void On_Smugglers_FactoryDay_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_FactoryDay_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_FactoryDay_SpawnZones() => _arenaFighterEvent_FactoryDay_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Day };
+    private void default_Smugglers_FactoryDay_SpawnZones() => _arenaFighterEvent_FactoryDay_SpawnZones = new List<string>();
+    private int _arenaFighterEvent_FactoryNight_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Night;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Night);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Night = value;
+        }
+    }
+    private void undo_Smugglers_FactoryNight_SpawnChance() => _arenaFighterEvent_FactoryNight_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Factory4Night;
+    private void default_Smugglers_FactoryNight_SpawnChance() => _arenaFighterEvent_FactoryNight_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_FactoryNight_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Night.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Night = string.Empty;
+                Utils.UpdateView(string.Empty, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Night);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Factory4Night = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Night);
+            }
+        }
+    }
+    private void On_Smugglers_FactoryNight_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_FactoryNight_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_FactoryNight_SpawnZones() => _arenaFighterEvent_FactoryNight_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Factory4Night };
+    private void default_Smugglers_FactoryNight_SpawnZones() => _arenaFighterEvent_FactoryNight_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersInterchange
+    private int _arenaFighterEvent_Interchange_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Interchange;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Interchange);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Interchange = value;
+        }
+    }
+    private void undo_Smugglers_Interchange_SpawnChance() => _arenaFighterEvent_Interchange_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Interchange;
+    private void default_Smugglers_Interchange_SpawnChance() => _arenaFighterEvent_Interchange_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Interchange_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Interchange.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Interchange = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Interchange);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Interchange = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Interchange);
+            }
+        }
+    }
+    private void On_Smugglers_Interchange_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Interchange_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Interchange_SpawnZones() => _arenaFighterEvent_Interchange_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Interchange };
+    private void default_Smugglers_Interchange_SpawnZones() => _arenaFighterEvent_Interchange_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersLabs
+    private int _arenaFighterEvent_Labs_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Laboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Laboratory);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Laboratory = value;
+        }
+    }
+    private void undo_Smugglers_Labs_SpawnChance() => _arenaFighterEvent_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Laboratory;
+    private void default_Smugglers_Labs_SpawnChance() => _arenaFighterEvent_Labs_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Labs_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Laboratory.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Laboratory = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Laboratory);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Laboratory = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Laboratory);
+            }
+        }
+    }
+    private void On_Smugglers_Labs_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Labs_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Labs_SpawnZones() => _arenaFighterEvent_Labs_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Laboratory };
+    private void default_Smugglers_Labs_SpawnZones() => _arenaFighterEvent_Labs_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersLighthouse
+    private int _arenaFighterEvent_Lighthouse_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Lighthouse;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Lighthouse);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Lighthouse = value;
+        }
+    }
+    private void undo_Smugglers_Lighthouse_SpawnChance() => _arenaFighterEvent_Lighthouse_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Lighthouse;
+    private void default_Smugglers_Lighthouse_SpawnChance() => _arenaFighterEvent_Lighthouse_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Lighthouse_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Lighthouse.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Lighthouse = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Lighthouse);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Lighthouse = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Lighthouse);
+            }
+        }
+    }
+    private void On_Smugglers_Lighthouse_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Lighthouse_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Lighthouse_SpawnZones() => _arenaFighterEvent_Lighthouse_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Lighthouse };
+    private void default_Smugglers_Lighthouse_SpawnZones() => _arenaFighterEvent_Lighthouse_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersReserve
+    private int _arenaFighterEvent_Reserve_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Reserve;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Reserve);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Reserve = value;
+        }
+    }
+    private void undo_Smugglers_Reserve_SpawnChance() => _arenaFighterEvent_Reserve_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Reserve;
+    private void default_Smugglers_Reserve_SpawnChance() => _arenaFighterEvent_Reserve_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Reserve_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Reserve.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Reserve = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Reserve);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Reserve = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Reserve);
+            }
+        }
+    }
+    private void On_Smugglers_Reserve_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Reserve_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Reserve_SpawnZones() => _arenaFighterEvent_Reserve_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Reserve };
+    private void default_Smugglers_Reserve_SpawnZones() => _arenaFighterEvent_Reserve_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersGroundZero
+    private int _arenaFighterEvent_GroundZero_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.GroundZero;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.GroundZero);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.GroundZero = value;
+        }
+    }
+    private void undo_Smugglers_GroundZero_SpawnChance() => _arenaFighterEvent_GroundZero_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.GroundZero;
+    private void default_Smugglers_GroundZero_SpawnChance() => _arenaFighterEvent_GroundZero_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_GroundZero_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZero.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZero = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZero);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZero = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZero);
+            }
+        }
+    }
+    private void On_Smugglers_GroundZero_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_GroundZero_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_GroundZero_SpawnZones() => _arenaFighterEvent_GroundZero_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZero };
+    private void default_Smugglers_GroundZero_SpawnZones() => _arenaFighterEvent_GroundZero_SpawnZones = new List<string>();
+    private int _arenaFighterEvent_GroundZeroHigh_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.GroundZeroHigh;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.GroundZeroHigh);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.GroundZeroHigh = value;
+        }
+    }
+    private void undo_Smugglers_GroundZeroHigh_SpawnChance() => _arenaFighterEvent_GroundZeroHigh_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.GroundZeroHigh;
+    private void default_Smugglers_GroundZeroHigh_SpawnChance() => _arenaFighterEvent_GroundZeroHigh_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_GroundZeroHigh_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh);
+            }
+        }
+    }
+    private void On_Smugglers_GroundZeroHigh_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_GroundZeroHigh_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_GroundZeroHigh_SpawnZones() => _arenaFighterEvent_GroundZeroHigh_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.GroundZeroHigh };
+    private void default_Smugglers_GroundZeroHigh_SpawnZones() => _arenaFighterEvent_GroundZeroHigh_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersShoreline
+    private int _arenaFighterEvent_Shoreline_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Shoreline;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Shoreline);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Shoreline = value;
+        }
+    }
+    private void undo_Smugglers_Shoreline_SpawnChance() => _arenaFighterEvent_Shoreline_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Shoreline;
+    private void default_Smugglers_Shoreline_SpawnChance() => _arenaFighterEvent_Shoreline_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Shoreline_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Shoreline.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Shoreline = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Shoreline);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Shoreline = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Shoreline);
+            }
+        }
+    }
+    private void On_Smugglers_Shoreline_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Shoreline_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Shoreline_SpawnZones() => _arenaFighterEvent_Shoreline_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Shoreline };
+    private void default_Smugglers_Shoreline_SpawnZones() => _arenaFighterEvent_Shoreline_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersStreets
+    private int _arenaFighterEvent_Streets_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.TarkovStreets;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.TarkovStreets);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.TarkovStreets = value;
+        }
+    }
+    private void undo_Smugglers_Streets_SpawnChance() => _arenaFighterEvent_Streets_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.TarkovStreets;
+    private void default_Smugglers_Streets_SpawnChance() => _arenaFighterEvent_Streets_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Streets_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets);
+            }
+        }
+    }
+    private void On_Smugglers_Streets_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Streets_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Streets_SpawnZones() => _arenaFighterEvent_Streets_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.TarkovStreets };
+    private void default_Smugglers_Streets_SpawnZones() => _arenaFighterEvent_Streets_SpawnZones = new List<string>();
+    #endregion
+    #region SmugglersWoods
+    private int _arenaFighterEvent_Woods_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Woods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Woods);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Woods = value;
+        }
+    }
+    private void undo_Smugglers_Woods_SpawnChance() => _arenaFighterEvent_Woods_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Woods;
+    private void default_Smugglers_Woods_SpawnChance() => _arenaFighterEvent_Woods_SpawnChance = 5;
+    private List<string> _arenaFighterEvent_Woods_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Woods.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Woods = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Woods);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Woods = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Woods);
+            }
+        }
+    }
+    private void On_Smugglers_Woods_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Woods_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Woods_SpawnZones() => _arenaFighterEvent_Woods_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Woods };
+    private void default_Smugglers_Woods_SpawnZones() => _arenaFighterEvent_Woods_SpawnZones = new List<string> { "ZoneMiniHouse,ZoneClearVill,ZoneRoad,ZoneBrokenVill,ZoneScavBase2" };
+    #endregion
+    #region SmugglersLabyrinth
+    private int _arenaFighterEvent_Labyrinth_SpawnChance
+    {
+        get => ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Labyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Labyrinth);
+            ModConfig.Config.BossConfig.ArenaFighterEvent.SpawnChance.Labyrinth = value;
+        }
+    }
+    private void undo_Smugglers_Labyrinth_SpawnChance() => _arenaFighterEvent_Labyrinth_SpawnChance = ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.SpawnChance.Labyrinth;
+    private void default_Smugglers_Labyrinth_SpawnChance() => _arenaFighterEvent_Labyrinth_SpawnChance = 0;
+    private List<string> _arenaFighterEvent_Labyrinth_SpawnZones
+    {
+        get
+        {
+            List<string> listValues = ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Labyrinth.Split(',').ToList();
+            return listValues;
+        }
+        set
+        {
+            if (!value.Any())
+            {
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Labyrinth = "";
+                Utils.UpdateView("", ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Labyrinth);
+            }
+            else
+            {
+                string listConverted = string.Join(',', value).TrimStart(',');
+
+                ModConfig.Config.BossConfig.ArenaFighterEvent.BossZone.Labyrinth = listConverted;
+                Utils.UpdateView(listConverted, ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Labyrinth);
+            }
+        }
+    }
+    private void On_Smugglers_Labyrinth_SpawnZonesChanged(IEnumerable<string> selected)
+    {
+        _arenaFighterEvent_Labyrinth_SpawnZones = selected.ToList();
+    }
+    private void undo_Smugglers_Labyrinth_SpawnZones() => _arenaFighterEvent_Labyrinth_SpawnZones = new List<string> { ModConfig.OriginalConfig.BossConfig.ArenaFighterEvent.BossZone.Labyrinth };
+    private void default_Smugglers_Labyrinth_SpawnZones() => _arenaFighterEvent_Labyrinth_SpawnZones = new List<string>();
+    #endregion
+    #endregion
+
+    #region CASCADING PARAMETERS
+    [CascadingParameter] public MainLayout? Layout { get; set; }
+    #endregion
+}

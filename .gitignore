@@ -1,0 +1,12 @@
+Server/.idea
+Server/bin
+Server/obj
+Server/release
+Client/.vs
+Client/.idea
+Client/Properties
+Client/bin
+Client/obj
+Client/release
+Client/Patches/GameWorldPatch.cs
+Client/Utils/SpawnPointGetter.cs
