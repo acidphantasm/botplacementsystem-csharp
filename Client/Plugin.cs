@@ -63,13 +63,9 @@ namespace acidphantasm_botplacementsystem
         {
             LogSource = Logger;
 
-            if (!Chainloader.PluginInfos.ContainsKey("com.fika.headless"))
-            {
-                new MaxBotLimitPatch().Enable();
-            }
+            new MaxBotLimitPatch().Enable();
 
             //new OnGameStartedPatch().Enable();
-            new UnregisterPlayerPatch().Enable();
             new MenuLoadPatch().Enable();
 
             new LocalGameProgressivePatch().Enable();

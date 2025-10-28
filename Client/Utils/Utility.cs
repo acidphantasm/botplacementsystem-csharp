@@ -5,6 +5,7 @@ using SPT.Reflection.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace acidphantasm_botplacementsystem.Utils
 {
@@ -28,28 +29,33 @@ namespace acidphantasm_botplacementsystem.Utils
             {"bigmap", ["ZoneDormitory", "ZoneScavBase"]}
         };
 
-    public void Awake()
+        public void Awake()
         {
             mainProfileID = GetPlayerProfile().ProfileId;
             Plugin.LogSource.LogInfo(mainProfileID);
         }
+
         public static Profile GetPlayerProfile()
         {
             return ClientAppUtils.GetClientApp().GetClientBackEndSession().Profile;
         }
 
-        public static string GetCurrentLocation()
+        public static string CurrentLocation
         {
-            if (mapName != string.Empty) return mapName;
-
-            var gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld != null)
+            get
             {
-                mapName = gameWorld.MainPlayer.Location;
-                return mapName;
+                if (mapName != string.Empty) return mapName;
+
+                var gameWorld = Singleton<GameWorld>.Instance;
+                if (gameWorld != null)
+                {
+                    mapName = gameWorld.LocationId;
+                    return mapName;
+                }
+                return "default";
             }
-            return "default";
         }
+
         public static List<IPlayer> GetAllPMCs()
         {
             var gameWorld = Singleton<GameWorld>.Instance;
@@ -62,6 +68,7 @@ namespace acidphantasm_botplacementsystem.Utils
             }
             return new List<IPlayer>();
         }
+
         public static List<IPlayer> GetAllScavs()
         {
             var gameWorld = Singleton<GameWorld>.Instance;
