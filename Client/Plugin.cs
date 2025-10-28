@@ -63,17 +63,37 @@ namespace acidphantasm_botplacementsystem
         {
             LogSource = Logger;
 
-            new MaxBotLimitPatch().Enable();
+            /*
+             * This patch is only for development purposes in specific scenarios (or it would be in IFDEBUG)
+            new OnGameStartedPatch().Enable();
+            */
 
-            //new OnGameStartedPatch().Enable();
+            // Trigger /apbs/save
+            new UnregisterPlayerPatch().Enable();
+
+            // Trigger /apbs/load
             new MenuLoadPatch().Enable();
 
+            // Set bot limits
+            new MaxBotLimitPatch().Enable();
+
+            // Progressive Chances patches
             new LocalGameProgressivePatch().Enable();
             new BossAddProgressionPatch().Enable();
+
+            // Patch to build new lists for everything
             new PMCWaveCountPatch().Enable();
+
+            // Main PMC Method Patch to trigger ABPS spawning instead
             new PMCDistancePatch().Enable();
+
+            // If assaultgroup, make assault instead. This stops the "wave" of scavs that spawn in NewSpawn mode that track and rush the player
             new AssaultGroupPatch().Enable();
+
+            // Patch the NewSpawn primary method (it's in Update) to spawn scavs differently
             new NonWavesSpawnScenarioUpdatePatch().Enable();
+
+            // Zone Reselector for Scavs - primarily for redistribution based on active scavs in a zone and hotzone configuration
             new TryToSpawnInZonePatch().Enable();
             
             ABPSConfig.InitABPSConfig(Config);
