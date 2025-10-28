@@ -101,7 +101,7 @@ namespace acidphantasm_botplacementsystem.Patches
             for (int i = 0; i < num; i++)
             {
                 var wildSpawn = WildSpawnType.assault;
-                string mapName = Utility.GetCurrentLocation().ToLower();
+                string mapName = Utility.CurrentLocation.ToLower();
                 if (Utility.currentMapZones.Count == 0)
                 {
                     Utility.currentMapZones = ___botsController_0.BotSpawner.AllBotZones.ToList();
@@ -163,7 +163,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 //Logger.LogInfo("TryToSpawnInZoneAndDelay Hit with empty spawn points and is a scav/marksman");
 
                 WildSpawnType botType = data.Profiles[0].Info.Settings.Role;
-                string mapName = Utility.GetCurrentLocation().ToLower();
+                string mapName = Utility.CurrentLocation.ToLower();
 
                 List<IPlayer> pmcList = Utility.GetAllPMCs();
                 float pmcDistance = GetDistanceForMap(mapName);

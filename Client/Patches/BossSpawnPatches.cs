@@ -56,7 +56,7 @@ namespace acidphantasm_botplacementsystem.Patches
 
             List<IPlayer> pmcList = Utility.GetAllPMCs();
             List<IPlayer> scavList = Utility.GetAllScavs();
-            string location = Utility.GetCurrentLocation() ?? "default";
+            string location = Utility.CurrentLocation ?? "default";
             float distance = GetDistanceForMap(location);
             List<ISpawnPoint> validSpawnLocations = GetValidSpawnPoints(pmcList, scavList, distance, escortPointCount);
 
@@ -129,6 +129,7 @@ namespace acidphantasm_botplacementsystem.Patches
             Logger.LogInfo($"PMC spawnpoints being returned isn't matching required amount | Found: {validSpawnPoints.Count}/{neededPoints}");
             return validSpawnPoints;
         }
+
         private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance, bool checkAgainstMainPlayer = false)
         {
             if (spawnPoint == null) return false;
@@ -136,7 +137,7 @@ namespace acidphantasm_botplacementsystem.Patches
             if (Singleton<GameWorld>.Instance.MainPlayer != null)
             {
                 var mainPlayer = Singleton<GameWorld>.Instance.MainPlayer;
-                if (checkAgainstMainPlayer && !mainPlayer.Profile.GetCorrectedNickname().StartsWith("headless_") && mainPlayer.Side == EPlayerSide.Savage)
+                if (checkAgainstMainPlayer && mainPlayer.Side == EPlayerSide.Savage)
                 {
                     if (Vector3.Distance(spawnPoint.Position, mainPlayer.Position) < distance)
                     {
