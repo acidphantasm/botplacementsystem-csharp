@@ -63,24 +63,6 @@ public class AdjustWaves_Patch : AbstractPatch
             }
         }
         
-        Console.WriteLine("AdjustWaves");
-        
-        return false;
-    }
-}
-
-public class AdjustPMCSpawns_Patch : AbstractPatch
-{
-    protected override MethodBase GetTargetMethod()
-    {
-        return AccessTools.Method(typeof(RaidTimeAdjustmentService),"AdjustPMCSpawns");
-    }
-
-    [PatchPrefix]
-    public static bool Prefix(LocationBase mapBase, RaidChanges raidAdjustments)
-    {
-        Console.WriteLine("AdjustPMCSpawns");
-        
         return false;
     }
 }
