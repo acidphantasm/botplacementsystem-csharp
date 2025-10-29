@@ -180,6 +180,11 @@ public class VanillaAdjustments
 
         foreach (var (bot, data) in PmcConfig.HostilitySettings)
         {
+            if (PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes is not null)
+            {
+                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("assault")) 
+                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("assault");
+            }
             PmcConfig.HostilitySettings[bot].SavageEnemyChance = 100;
             PmcConfig.HostilitySettings[bot].BearEnemyChance = 100;
             PmcConfig.HostilitySettings[bot].UsecEnemyChance = 100;
