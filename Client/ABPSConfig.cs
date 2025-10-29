@@ -63,7 +63,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Customs",
                 23,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.customsMapLimit = customsMapLimit.Value;
@@ -73,7 +73,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Factory",
                 13,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.factoryMapLimit = factoryMapLimit.Value;
@@ -83,7 +83,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Interchange",
                 22,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.interchangeMapLimit = interchangeMapLimit.Value;
@@ -93,7 +93,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Labs",
                 19,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.labsMapLimit = labsMapLimit.Value;
@@ -103,7 +103,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Lighthouse",
                 22,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.lighthouseMapLimit = lighthouseMapLimit.Value;
@@ -113,7 +113,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Reserve",
                 22,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.reserveMapLimit = reserveMapLimit.Value;
@@ -123,7 +123,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Ground Zero",
                 16,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.groundZeroMapLimit = groundZeroMapLimit.Value;
@@ -133,7 +133,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Shoreline",
                 22,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.shorelineMapLimit = shorelineMapLimit.Value;
@@ -143,7 +143,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Streets",
                 23,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.streetsMapLimit = streetsMapLimit.Value;
@@ -153,7 +153,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Woods",
                 22,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.woodsMapLimit = woodsMapLimit.Value;
@@ -163,7 +163,7 @@ namespace acidphantasm_botplacementsystem
                 GeneralConfig,
                 "Max Bots - Labyrinth",
                 18,
-                new ConfigDescription("Does nothing if you use Fika Headless.\nMax bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
+                new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.labyrinthMapLimit = labyrinthMapLimit.Value;
