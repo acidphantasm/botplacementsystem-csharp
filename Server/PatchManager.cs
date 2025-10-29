@@ -4,13 +4,14 @@ using SPTarkov.Server.Core.DI;
 
 namespace _botplacementsystem;
 
-[Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 50)]
+[Injectable(TypePriority = OnLoadOrder.PreSptModLoader + 50)]
 public class PatchManager() : IOnLoad
 {
     public Task OnLoad()
     {
         new AdjustWaves_Patch().Enable();
-        new AdjustPMCSpawns_Patch().Enable();
+        new AdjustPmcSpawns_Patch().Enable();
+        new ReplaceBotHostility_Patch().Enable();
         
         return Task.CompletedTask;
     }
