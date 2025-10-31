@@ -16,8 +16,8 @@
       "Adjusted Labyrinth Bot Max Cap - You need to default this in F12 to fix"
     ],
     "BugFixes": [
+      "Resolved Progressive Boss Chances not saving correctly",
       "Resolved Scav brain types not being available on Labyrinth",
-      "Resolved Progressive Chances not saving correctly",
       "Resolved Scavs spawning on Labyrinth when not intended",
       "Resolved PMCs not spawning on Labyrinth when intended"
     ],
