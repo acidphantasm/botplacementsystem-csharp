@@ -26,7 +26,7 @@ public class AdjustWaves_Patch : AbstractPatch
         var pmcSpawns = ServiceLocator.ServiceProvider.GetService<PmcSpawns>();
         var scavSpawns = ServiceLocator.ServiceProvider.GetService<ScavSpawns>();
         
-        var locationName = mapBase.Id.ToLower();
+        var locationName = mapBase.Id.ToLowerInvariant();
         if (raidAdjustments.SimulatedRaidStartSeconds > 60)
         {
             var mapBosses = mapBase.BossLocationSpawn.Where((x) =>

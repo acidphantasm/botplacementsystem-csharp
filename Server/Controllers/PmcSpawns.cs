@@ -41,6 +41,8 @@ public class PmcSpawns
 
     private List<BossLocationSpawn> GetConfigValueForLocation(string location, double escapeTimeLimit)
     {
+        location = location.ToLowerInvariant();
+        
         var pmcSpawnInfo = new List<BossLocationSpawn>();
         if (ModConfig.Config.PmcConfig.StartingPMCs.Enable)
         {
@@ -59,7 +61,7 @@ public class PmcSpawns
         var pmcWaveSpawnInfo = new List<BossLocationSpawn>();
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.Waves.IgnoreMaxBotCaps;
         var difficultyWeights = ModConfig.Config.PmcDifficulty;
-        var waveMaxPMCCount = location.ToLower().Contains("factory") || location.ToLower().Contains("labyrinth") ? Math.Min(2, ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave - 2) : ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave;
+        var waveMaxPMCCount = location.Contains("factory") || location.Contains("labyrinth") ? Math.Min(2, ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave - 2) : ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave;
         var waveGroupLimit = ModConfig.Config.PmcConfig.Waves.MaxGroupCount;
         var waveGroupSize = ModConfig.Config.PmcConfig.Waves.MaxGroupSize;
         var waveGroupChance = ModConfig.Config.PmcConfig.Waves.GroupChance;
@@ -107,7 +109,6 @@ public class PmcSpawns
     private List<BossLocationSpawn> GenerateStartingPMCWaves(string location)
     {
         var startingPMCWaveInfo = new List<BossLocationSpawn>();
-        var actualKey = _databaseService.GetLocations().GetMappedKey(location);
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
         var mapAsMinMax = ModConfig.Config.PmcConfig.StartingPMCs.MapLimits[location];
         var minPMCCount = mapAsMinMax.Min;
@@ -165,8 +166,9 @@ public class PmcSpawns
     
     public List<BossLocationSpawn> GenerateScavRaidRemainingPMCs(string location, double remainingRaidTime)
     {
+        location = location.ToLowerInvariant();
+        
         var startingPMCWaveInfo = new List<BossLocationSpawn>();
-        var actualKey = _databaseService.GetLocations().GetMappedKey(location);
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
         var MapMinMax = ModConfig.Config.PmcConfig.StartingPMCs.MapLimits[location];
         var minPMCCount = MapMinMax.Min;
@@ -184,7 +186,7 @@ public class PmcSpawns
         if (remainingRaidTime < 1200) generatedPMCCount = _randomUtil.GetInt(1, 6);
         if (remainingRaidTime < 1800) generatedPMCCount = _randomUtil.GetInt(4, 9);
 
-        if (location.ToLower().Contains("factory") && generatedPMCCount > 5) generatedPMCCount -= 2;
+        if (location.Contains("factory") && generatedPMCCount > 5) generatedPMCCount -= 2;
 
         while (currentPMCCount < generatedPMCCount)
         {
