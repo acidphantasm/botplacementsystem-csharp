@@ -162,7 +162,7 @@ namespace acidphantasm_botplacementsystem
             labyrinthMapLimit = config.Bind(
                 GeneralConfig,
                 "Max Bots - Labyrinth",
-                18,
+                13,
                 new ConfigDescription("Max bots allowed on map, value is ignored by certain bots.\nStarting PMCs ignore the cap by default, if you want to change this you must do so in the server config.\n\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 50),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
@@ -304,8 +304,8 @@ namespace acidphantasm_botplacementsystem
 
             labyrinth_PMCSpawnDistanceCheck = config.Bind(
                 PMCConfig,
-                "Distance Limit - Woods",
-                30f,
+                "Distance Limit - Labyrinth",
+                20f,
                 new ConfigDescription("How far all PMCs must be from a spawn point for it to be enabled for other PMC spawns.\n Setting this too high will cause PMCs to fail to spawn.",
                 new AcceptableValueRange<float>(10f, 175f),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
