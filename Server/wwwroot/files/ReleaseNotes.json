@@ -1,0 +1,66 @@
+﻿[
+  {
+    "Version": "2.0.3",
+    "ReleaseDate": "October 31, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Added Checkbox to allow the Web Configuration page to check for updates to ABPS",
+      "Added Release Notes to Web Configuration",
+      "Added Toggle for allowing Scavs on Laboratory - Waves",
+      "Added Toggle for allowing Scavs on Labyrinth - Waves"
+    ],
+    "Changes": [
+      "Adjusted Scav + Marksman Hostility to always be friendly to everything except PMCs",
+      "Adjusted PMC Hostility to always be hostile to bossTagillaAgro, bossKillaAgro, and tagillaHelperAgro",
+      "Adjusted Scav Wave Custom Timer to also apply to Labs and Labyrinth",
+      "Adjusted Labyrinth Bot Max Cap"
+    ],
+    "BugFixes": [
+      "Resolved Scav brain types not being available on Labyrinth",
+      "Resolved Progressive Chances not saving correctly",
+      "Resolved Scavs spawning on Labyrinth when not intended",
+      "Resolved PMCs not spawning on Labyrinth when intended"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.2",
+    "ReleaseDate": "October 28, 2025",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [
+      "Added additional hostility check for PMCs vs Scavs",
+      "Added additional patch to skip events from reconfiguring hostility"
+    ],
+    "BugFixes": [
+      "Fixes for Fika Headless - Credits to Lacyway <3"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.1",
+    "ReleaseDate": "October 28, 2025",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Skip MaxBotPatch if using Fika Headless",
+      "Fix type on static router for Progressive Chances"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.0",
+    "ReleaseDate": "October 27, 2025",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Marksman spawning incorrectly or in the incorrect order to get a spawn location",
+      "Marksman not spawning on Woods",
+      "Hopefully all the hostility things people complained about that I never saw",
+      "Hopefully all the brain issues people complained about that I never saw"
+    ],
+    "KnownIssues": []
+  }
+]

@@ -24,6 +24,7 @@ public record ConfigAppSettings
     [JsonPropertyName("showUndo")] public bool ShowUndo { get; set; }
     [JsonPropertyName("showDefault")] public bool ShowDefault { get; set; }
     [JsonPropertyName("disableAnimations")] public bool DisableAnimations { get; set; }
+    [JsonPropertyName("allowUpdateChecks")] public bool AllowUpdateChecks { get; set; }
 }
 
 public class ValidLocationsMinMax
@@ -355,7 +356,9 @@ public record PMCStartingConfig
 public record ScavWaveConfig
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
-    [JsonPropertyName("enableCustomFactory")] public bool EnableCustomFactory { get; set; }
+    [JsonPropertyName("enableCustomTimers")] public bool EnableCustomTimers { get; set; }
+    [JsonPropertyName("allowScavsOnLaboratory")] public bool AllowScavsOnLaboratory { get; set; }
+    [JsonPropertyName("allowScavsOnLabyrinth")] public bool AllowScavsOnLabyrinth { get; set; }
     [JsonPropertyName("startSpawns")] public int StartSpawns { get; set; }
     [JsonPropertyName("stopSpawns")] public int StopSpawns { get; set; }
     [JsonPropertyName("activeTimeMin")] public int ActiveTimeMin { get; set; }
