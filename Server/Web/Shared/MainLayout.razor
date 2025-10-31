@@ -58,6 +58,7 @@
             <MudCheckBox @bind-Value="_appUndoButtonToggle" Label="Show Undo Button"></MudCheckBox>
             <MudCheckBox @bind-Value="_appDefaultButtonToggle" Label="Show Default Button"></MudCheckBox>
             <MudCheckBox @bind-Value="_appDisableAnimations" Label="Disable Animations"></MudCheckBox>
+            <MudCheckBox @bind-Value="_appAllowUpdateChecks" Label="Enable Update Checks"></MudCheckBox>
             <MudSpacer/>
             @if (pendingChanges.Count > 0)
             {
