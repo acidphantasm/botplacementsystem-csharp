@@ -13,7 +13,7 @@
       "Adjusted Scav + Marksman Hostility to always be friendly to everything except PMCs",
       "Adjusted PMC Hostility to always be hostile to bossTagillaAgro, bossKillaAgro, and tagillaHelperAgro",
       "Adjusted Scav Wave Custom Timer to also apply to Labs and Labyrinth",
-      "Adjusted Labyrinth Bot Max Cap"
+      "Adjusted Labyrinth Bot Max Cap - You need to default this in F12 to fix"
     ],
     "BugFixes": [
       "Resolved Scav brain types not being available on Labyrinth",
