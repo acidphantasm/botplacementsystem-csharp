@@ -50,8 +50,6 @@ public class VanillaAdjustments
 
     public void DisableNewSpawnSystem(LocationBase locationBase)
     {
-        if (locationBase.Id == "laboratory" || locationBase.Id == "labyrinth") return;
-
         locationBase.NewSpawn = false;
         locationBase.OfflineNewSpawn = false;
         locationBase.OldSpawn = true;
@@ -82,8 +80,6 @@ public class VanillaAdjustments
 
     public void DisableAllSpawnSystems(LocationBase locationBase)
     {
-        if (locationBase.Id == "laboratory") return;
-
         locationBase.NewSpawn = false;
         locationBase.OfflineNewSpawn = false;
         locationBase.OldSpawn = false;
@@ -95,7 +91,7 @@ public class VanillaAdjustments
         if ((locationBase.Id == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
             (locationBase.Id == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) return;
 
-        if (ModConfig.Config.ScavConfig.Waves.EnableCustomFactory && locationBase.Id.Contains("factory"))
+        if (ModConfig.Config.ScavConfig.Waves.EnableCustomTimers && (locationBase.Id.Contains("factory") || locationBase.Id.Contains("labyrinth") || locationBase.Id.Contains("laboratory")))
         {
             // Start-Stop Time for spawns
             locationBase.BotStart = ModConfig.Config.ScavConfig.Waves.StartSpawns;
@@ -172,9 +168,23 @@ public class VanillaAdjustments
             {
                 if (hostility[bot].BotRole == "pmcUSEC" || hostility[bot].BotRole == "pmcBEAR")
                 {
-                    var newHostilitySettings =
-                        _cloner.Clone(ModConfig.HostilityDefaults);
+                    var newHostilitySettings = _cloner.Clone(ModConfig.HostilityDefaults);
                     newHostilitySettings.BotRole = hostility[bot].BotRole;
+                    hostility[bot] = newHostilitySettings;
+                }
+
+                // Fix scav hostility settings for every map
+                if (hostility[bot].BotRole == "assault" || hostility[bot].BotRole == "marksman")
+                {
+                    var newHostilitySettings = _cloner.Clone(ModConfig.HostilityDefaults);
+                    newHostilitySettings.BotRole = hostility[bot].BotRole;
+                    foreach (var botType in newHostilitySettings.AlwaysEnemies)
+                    {
+                        if (botType == "pmcBEAR" || botType == "pmcUSEC") continue;
+                        
+                        newHostilitySettings.AlwaysFriends.Add(botType);
+                        newHostilitySettings.AlwaysEnemies.Remove(botType);
+                    }
                     hostility[bot] = newHostilitySettings;
                 }
             }
