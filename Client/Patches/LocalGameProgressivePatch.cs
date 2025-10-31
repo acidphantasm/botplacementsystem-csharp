@@ -30,24 +30,24 @@ namespace acidphantasm_botplacementsystem.Patches
                     if (BossInfoForProfile.ContainsKey(bossName))
                     {
                         int newChance = 0;
-                        bool didBossSpawnLastRaid = BossInfoForProfile[bossName].spawnedLastRaid;
+                        bool didBossSpawnLastRaid = BossInfoForProfile[bossName].SpawnedLastRaid;
 
                         if (didBossSpawnLastRaid)
                         {
-                            BossInfoForProfile[bossName].spawnedLastRaid = false;
+                            BossInfoForProfile[bossName].SpawnedLastRaid = false;
                             newChance = Plugin.minimumChance;
                         }
                         else
                         {
-                            if (BossInfoForProfile[bossName].chance + Plugin.chanceStep > Plugin.maximumChance)
+                            if (BossInfoForProfile[bossName].Chance + Plugin.chanceStep > Plugin.maximumChance)
                             {
-                                BossInfoForProfile[bossName].chance = Plugin.maximumChance;
+                                BossInfoForProfile[bossName].Chance = Plugin.maximumChance;
                                 newChance = Plugin.maximumChance;
                             }
                             else
                             {
-                                BossInfoForProfile[bossName].chance += Plugin.chanceStep;
-                                newChance = BossInfoForProfile[bossName].chance;
+                                BossInfoForProfile[bossName].Chance += Plugin.chanceStep;
+                                newChance = BossInfoForProfile[bossName].Chance;
                             }
                         }
 
@@ -58,10 +58,10 @@ namespace acidphantasm_botplacementsystem.Patches
                     {
                         Plugin.LogSource.LogInfo($"Setting chance to {Plugin.minimumChance} for {bossName}");
                         CustomizedObject values = new CustomizedObject();
-                        values.spawnedLastRaid = false;
-                        values.chance = Plugin.minimumChance;
+                        values.SpawnedLastRaid = false;
+                        values.Chance = Plugin.minimumChance;
                         BossInfoForProfile.Add(bossName, values);
-                        chance = values.chance;
+                        chance = values.Chance;
                     }
                 }
             }

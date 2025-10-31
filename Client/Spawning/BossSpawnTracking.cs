@@ -10,7 +10,7 @@ namespace acidphantasm_botplacementsystem.Spawning
 {
     public class BossSpawnTracking
     {
-        public static Dictionary<string, Dictionary<string, CustomizedObject>> BossInfoOutOfRaid { get; set; } = [];
+        public static Dictionary<string, CustomizedObject> BossInfoOutOfRaid { get; set; } = [];
         public static Dictionary<string, CustomizedObject> BossInfoForProfile { get; set; } = [];
 
         public static HashSet<WildSpawnType> TrackedBosses = new HashSet<WildSpawnType>
@@ -38,25 +38,23 @@ namespace acidphantasm_botplacementsystem.Spawning
 
         public static void UpdateBossSpawnChance(WildSpawnType boss)
         {
-            var profileID = Utility.GetPlayerProfile().ProfileId;
             CustomizedObject values = new CustomizedObject();
             string bossName = boss.ToString();
 
-            values.spawnedLastRaid = true;
-            values.chance = Plugin.minimumChance;
+            values.SpawnedLastRaid = true;
+            values.Chance = Plugin.minimumChance;
 
             if (!BossInfoForProfile.ContainsKey(bossName)) BossInfoForProfile.Add(bossName, values);
             else
             {
-                BossInfoForProfile[bossName].spawnedLastRaid = values.spawnedLastRaid;
-                BossInfoForProfile[bossName].chance = values.chance;
+                BossInfoForProfile[bossName].SpawnedLastRaid = values.SpawnedLastRaid;
+                BossInfoForProfile[bossName].Chance = values.Chance;
             }
 
         }
         public static void EndRaidMergeData()
         {
-            var profileID = Utility.GetPlayerProfile().ProfileId;
-            BossInfoOutOfRaid[profileID] = BossInfoForProfile;
+            BossInfoOutOfRaid = BossInfoForProfile;
             SaveRaidEndInServer();
         }
 
@@ -64,13 +62,18 @@ namespace acidphantasm_botplacementsystem.Spawning
         {
             try
             {
-                RequestHandler.PutJsonAsync("/abps/save", JsonConvert.SerializeObject(BossInfoOutOfRaid));
-
+                var profile = Utility.GetPlayerProfile().ProfileId;
+                
+                var jsonString = JsonConvert.SerializeObject(
+                    new RequestData() { Data = BossInfoOutOfRaid, ProfileId = profile }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                
+                RequestHandler.PutJsonAsync("/botplacementsystem/save", jsonString);
+                BossInfoForProfile.Clear();
             }
             catch (Exception ex)
             {
                 Plugin.LogSource.LogError("Failed to save: " + ex.ToString());
-                NotificationManagerClass.DisplayWarningNotification("Failed to save Boss Tracking data - check the server");
+                NotificationManagerClass.DisplayWarningNotification("Failed to save ABPS Progressive Boss data - check the server");
             }
         }
 
@@ -78,26 +81,31 @@ namespace acidphantasm_botplacementsystem.Spawning
         {
             try
             {
-                string payload = await RequestHandler.GetJsonAsync("/abps/load");
-                BossInfoOutOfRaid = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, CustomizedObject>>>(payload);
+                var profile = Utility.GetPlayerProfile().ProfileId;
+                
+                string payload = await RequestHandler.GetJsonAsync("/botplacementsystem/load");
+                var retrievedData =
+                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, CustomizedObject>>>(payload);
 
-                var profileID = Utility.GetPlayerProfile().ProfileId;
-                if (BossInfoOutOfRaid.ContainsKey(profileID))
-                {
-                    BossInfoForProfile = BossInfoOutOfRaid[profileID];
-                }
+                BossInfoForProfile = retrievedData.TryGetValue(profile, out var value) ? value : new Dictionary<string, CustomizedObject>();
             }
             catch (Exception ex)
             {
                 Plugin.LogSource.LogError("Failed to load: " + ex.ToString());
-                NotificationManagerClass.DisplayWarningNotification("Failed to load Boss Tracking data - check the server");
+                NotificationManagerClass.DisplayWarningNotification("Failed to load ABPS Progressive Boss data - check the server");
             }
         }
 
         public class CustomizedObject
         {
-            public bool spawnedLastRaid;
-            public int chance;
+            public bool SpawnedLastRaid;
+            public int Chance;
+        }
+        
+        private struct RequestData
+        {
+            public string ProfileId;
+            public Dictionary<string, CustomizedObject> Data;
         }
     }
 }
