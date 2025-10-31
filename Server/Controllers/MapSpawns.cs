@@ -92,6 +92,7 @@ public class MapSpawns
             _vanillaAdjustments.AdjustNewWaveSettings(LocationData[actualkey].Base);
         }
 
+        _vanillaAdjustments.CheckAndAddScavBrainTypes();
         _vanillaAdjustments.DisableVanillaSettings();
         _vanillaAdjustments.RemoveCustomPMCWaves();
         BuildInitialCache();
@@ -148,7 +149,9 @@ public class MapSpawns
     {
         foreach (var map in _validMaps)
         {
-            if (map == "laboratory") continue;
+            if ((map == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
+                (map == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) continue;
+            
             var mapData = _scavSpawns.GetCustomMapData(map);
             
             if (mapData.Any())
@@ -224,7 +227,9 @@ public class MapSpawns
 
     private void RebuildStartingScavs(string location)
     {
-        if (location == "laboratory") return;
+        if ((location == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
+            (location == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) return;
+        
         _logger.Warning($"[ABPS] Recreating scavs for {location}");
 
         var mapData = _scavSpawns.GetCustomMapData(location);

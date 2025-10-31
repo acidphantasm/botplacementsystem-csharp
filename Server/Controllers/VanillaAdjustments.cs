@@ -150,6 +150,19 @@ public class VanillaAdjustments
         locationBase.Waves = [];
     }
 
+    public void CheckAndAddScavBrainTypes()
+    {
+        if (!BotConfig.PlayerScavBrainType.ContainsKey("labyrinth"))
+        {
+            BotConfig.PlayerScavBrainType["labyrinth"] = _cloner.Clone(BotConfig.PlayerScavBrainType["laboratory"]);
+        }
+        
+        if (!BotConfig.AssaultBrainType.ContainsKey("labyrinth"))
+        {
+            BotConfig.AssaultBrainType["labyrinth"] = _cloner.Clone(BotConfig.AssaultBrainType["laboratory"]);
+        }
+    }
+
     public void FixPMCHostility(LocationBase locationBase)
     {
         var hostility = locationBase.BotLocationModifier?.AdditionalHostilitySettings.ToList();
