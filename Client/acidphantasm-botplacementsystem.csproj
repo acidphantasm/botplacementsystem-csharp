@@ -100,15 +100,24 @@
     <ItemGroup>
       <OutputDLL Include="$(TargetPath)" />
       <License Include="$(ProjectDir)LICENSE" Condition="Exists('$(ProjectDir)LICENSE')" />
+        <ServerComponents Include="$(ProjectDir)../Server/bin/Release/$(ProjectName)/*.*" />
+        <Defaults Include="$(ProjectDir)../Server/bin/Release/$(ProjectName)/Defaults/*.*" />
+        <WebAssets Include="$(ProjectDir)../Server/bin/Release/$(ProjectName)/wwwroot/**/*.*" />
     </ItemGroup>
 
     <!-- Copy to Tarkov plugin directory -->
-    <Copy SourceFiles="@(OutputDLL);@(License)" DestinationFolder="$(TarkovDir)BepInEx\plugins\acidphantasm-botplacementsystem\" />
+    <Copy SourceFiles="@(OutputDLL);@(License)" DestinationFolder="$(TarkovDir)BepInEx\plugins\$(ProjectName)\" />
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(TarkovDir)SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Defaults)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\Defaults\%(RecursiveDir)" />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(TarkovDir)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
 
     <!-- Create release ZIP -->
     <RemoveDir Directories="$(ProjectDir)release" />
-    <Copy SourceFiles="@(OutputDLL);@(License)" DestinationFolder="$(ProjectDir)release\acidphantasm-botplacementsystem\BepInEx\plugins\acidphantasm-botplacementsystem\" />
-    <ZipDirectory SourceDirectory="$(ProjectDir)release\acidphantasm-botplacementsystem\" DestinationFile="$(ProjectDir)release\acidphantasm-botplacementsystem.zip" />
+    <Copy SourceFiles="@(OutputDLL);@(License)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\BepInEx\plugins\$(ProjectName)\" />
+    <Copy SourceFiles="@(ServerComponents)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(Defaults)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\Defaults\%(RecursiveDir)" />
+    <Copy SourceFiles="@(WebAssets)" DestinationFolder="$(ProjectDir)release\$(ProjectName)\SPT\user\mods\$(ProjectName)\wwwroot\%(RecursiveDir)" />
+    <ZipDirectory SourceDirectory="$(ProjectDir)release\$(ProjectName)\" DestinationFile="$(ProjectDir)release\$(ProjectName).zip" />
   </Target>
 
 </Project>

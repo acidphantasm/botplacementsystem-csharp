@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <Version>2.0.0</Version>
     <!-- The two lines below will set the output path for the binaries -->
-    <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)-$(Version)\</OutputPath>
+    <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
 
@@ -19,13 +19,7 @@
     <PackageReference Include="SPTarkov.Server.Core" Version="4.0.2" />
     <PackageReference Include="SPTarkov.Server.Web" Version="4.0.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="BotPlacementSystem.cs">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Compile>
-  </ItemGroup>
-
+    
   <ItemGroup>
     <None Update="LICENSE">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -54,6 +48,17 @@
     <Content Update="wwwroot\images\background.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Update="wwwroot\files\ReleaseNotes.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
+
+
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+        <DebugType>None</DebugType>
+        <DebugSymbols>false</DebugSymbols>
+        <GenerateDependencyFile>false</GenerateDependencyFile>
+        <StaticWebAssetsEnabled>false</StaticWebAssetsEnabled>
+    </PropertyGroup>
 
 </Project>
