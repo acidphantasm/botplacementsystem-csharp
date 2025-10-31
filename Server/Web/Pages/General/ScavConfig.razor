@@ -484,8 +484,8 @@
                     </MudItem>
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Enables a custom built timer for Factory. Will help alleviate the feeling of constant spawns on Factory." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Enable Custom Factory Timers</MudText>
+                            <MudTooltip Text="Enables a custom built timer for Factory, Laboratory, and Labyrinth. Will help alleviate the feeling of constant spawns." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Enable Custom Timers (READ !)</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
@@ -504,6 +504,58 @@
                         _scav_WaveScavsCustomFactoryTimersEnabled != true)
                         {
                             <MudButton @onclick="default_Scav_Wave_CustomFactoryTimersEnabled" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1"/>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enables scavs spawning in waves on Laboratory. Does not control starting counts." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Allow Scav Waves on Laboratory</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_AllowedOnLaboratory" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_AllowedOnLaboratory</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                             MainLayout.pendingChanges.Contains("_scav_AllowedOnLaboratory"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_Laboratory" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                                 _scav_AllowedOnLaboratory != false)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_Laboratory" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+                    
+                    <MudItem xs="1"/>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Enables scavs spawning in waves on Labyrinth. Does not control starting counts." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Allow Scav Waves on Labyrinth</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                            <MudSwitch T="bool" @bind-Value="_scav_AllowedOnLabyrinth" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_scav_AllowedOnLabyrinth</MudSwitch>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                             MainLayout.pendingChanges.Contains("_scav_AllowedOnLabyrinth"))
+                        {
+                            <MudButton @onclick="undo_Scav_Wave_Labyrinth" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                                 _scav_AllowedOnLabyrinth != false)
+                        {
+                            <MudButton @onclick="default_Scav_Wave_Labyrinth" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -911,16 +963,38 @@
     private void default_Scav_Wave_Enabled() => _scav_WaveScavsEnabled = true;
     private bool _scav_WaveScavsCustomFactoryTimersEnabled
     {
-        get => ModConfig.Config.ScavConfig.Waves.EnableCustomFactory;
+        get => ModConfig.Config.ScavConfig.Waves.EnableCustomTimers;
         set
         {
-            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomFactory);
-            ModConfig.Config.ScavConfig.Waves.EnableCustomFactory = value;
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomTimers);
+            ModConfig.Config.ScavConfig.Waves.EnableCustomTimers = value;
         }
     }
-    private void undo_Scav_Wave_CustomFactoryTimersEnabled() => _scav_WaveScavsCustomFactoryTimersEnabled = ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomFactory;
+    private void undo_Scav_Wave_CustomFactoryTimersEnabled() => _scav_WaveScavsCustomFactoryTimersEnabled = ModConfig.OriginalConfig.ScavConfig.Waves.EnableCustomTimers;
     private void default_Scav_Wave_CustomFactoryTimersEnabled() => _scav_WaveScavsCustomFactoryTimersEnabled = true;
-
+    private bool _scav_AllowedOnLaboratory
+    {
+        get => ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.AllowScavsOnLaboratory);
+            ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory = value;
+        }
+    }
+    private void undo_Scav_Wave_Laboratory() => _scav_AllowedOnLaboratory = ModConfig.OriginalConfig.ScavConfig.Waves.AllowScavsOnLaboratory;
+    private void default_Scav_Wave_Laboratory() => _scav_AllowedOnLaboratory = false;
+    private bool _scav_AllowedOnLabyrinth
+    {
+        get => ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.ScavConfig.Waves.AllowScavsOnLabyrinth);
+            ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth = value;
+        }
+    }
+    private void undo_Scav_Wave_Labyrinth() => _scav_AllowedOnLabyrinth = ModConfig.OriginalConfig.ScavConfig.Waves.AllowScavsOnLabyrinth;
+    private void default_Scav_Wave_Labyrinth() => _scav_AllowedOnLabyrinth = false;
+    
     private int _scav_Wave_StartTimer
     {
         get => ModConfig.Config.ScavConfig.Waves.StartSpawns;

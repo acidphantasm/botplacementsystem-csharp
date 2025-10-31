@@ -101,7 +101,9 @@
     },
     "waves": {
       "enable": true,
-      "enableCustomFactory": true,
+      "enableCustomTimers": true,
+      "allowScavsOnLaboratory": false,
+      "allowScavsOnLabyrinth": false,
       "startSpawns": 60,
       "stopSpawns": 600,
       "activeTimeMin": 180,

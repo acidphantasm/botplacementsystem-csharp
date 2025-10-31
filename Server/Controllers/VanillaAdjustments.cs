@@ -60,6 +60,9 @@ public class VanillaAdjustments
 
     public void DisableOldSpawnSystem(LocationBase locationBase)
     {
+        if ((locationBase.Id == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
+            (locationBase.Id == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) return;
+        
         locationBase.NewSpawn = true;
         locationBase.OfflineNewSpawn = true;
         locationBase.OldSpawn = false;
@@ -68,7 +71,9 @@ public class VanillaAdjustments
 
     public void EnableAllSpawnSystems(LocationBase locationBase)
     {
-        if (locationBase.Id == "laboratory") return;
+        if ((locationBase.Id == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
+            (locationBase.Id == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) return;
+        
         locationBase.NewSpawn = true;
         locationBase.OfflineNewSpawn = true;
         locationBase.OldSpawn = true;
@@ -87,7 +92,8 @@ public class VanillaAdjustments
 
     public void AdjustNewWaveSettings(LocationBase locationBase)
     {
-        if (locationBase.Id == "laboratory") return;
+        if ((locationBase.Id == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
+            (locationBase.Id == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) return;
 
         if (ModConfig.Config.ScavConfig.Waves.EnableCustomFactory && locationBase.Id.Contains("factory"))
         {
