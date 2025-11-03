@@ -14,6 +14,7 @@ public record AbpsConfig
     [JsonPropertyName("pmcConfig")] public PMCConfig PmcConfig { get; set; }
     [JsonPropertyName("scavConfig")] public ScavConfig ScavConfig { get; set; }
     [JsonPropertyName("bossDifficulty")] public Dictionary<string, double> BossDifficulty { get; set; }
+    [JsonPropertyName("weeklyBoss")] public WeeklyBossConfig WeeklyBoss { get; set; }
     [JsonPropertyName("bossConfig")] public BossConfig BossConfig { get; set; }
 
     [JsonPropertyName("configAppSettings")]

@@ -1,9 +1,12 @@
 ﻿using _botplacementsystem.Globals;
 using _botplacementsystem.Models;
 using SPTarkov.DI.Annotations;
+using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common;
+using SPTarkov.Server.Core.Models.Spt.Config;
 using SPTarkov.Server.Core.Models.Utils;
+using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
@@ -16,19 +19,22 @@ public class BossSpawns
     private RandomUtil _randomUtil;
     private ICloner _cloner;
     private WeightedRandomHelper _weightedRandomHelper;
+    private readonly BotConfig _botConfig;
 
     public BossSpawns
     (
         ISptLogger<BossSpawns> logger,
         ICloner cloner,
         WeightedRandomHelper weightedRandomHelper,
-        RandomUtil randomUtil
+        RandomUtil randomUtil,
+        ConfigServer configServer
     )
     {
         _logger = logger;
         _cloner = cloner;
         _weightedRandomHelper = weightedRandomHelper;
         _randomUtil = randomUtil;
+        _botConfig = configServer.GetConfig<BotConfig>();
     }
 
     public List<BossLocationSpawn> GetCustomMapData(string location, double escapeTimeLimit)
@@ -69,7 +75,27 @@ public class BossSpawns
                 continue;
             }
 
-            bossDefaultData[0].BossChance = (double?) bossData.SpawnChance[location];
+            if (!Enum.TryParse<WildSpawnType>(boss, ignoreCase: true, out var bossType))
+            {
+                _logger.Warning($"Boss: {boss} is not a valid WildSpawnType. Report this.");
+                bossDefaultData[0].BossChance = bossData.SpawnChance[location];
+            }
+            else
+            {
+                if (ModConfig.Config.WeeklyBoss.Enable)
+                {
+                    var isWeeklyBoss = IsWeeklyBoss(bossType);
+                    if (isWeeklyBoss)
+                    {
+                        _logger.Warning($"Weekly Boss: {boss} | 100% Chance on {location}");
+                        bossDefaultData[0].ShowOnTarkovMap = true;
+                        bossDefaultData[0].ShowOnTarkovMapPvE = true;
+                        bossDefaultData[0].BossChance = 100;
+                    }
+                    else bossDefaultData[0].BossChance = bossData.SpawnChance[location];
+                }
+                else bossDefaultData[0].BossChance = bossData.SpawnChance[location];
+            }
             bossDefaultData[0].BossZone = (string?)bossData.BossZone[location];
             bossDefaultData[0].BossDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossEscortDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
@@ -78,6 +104,19 @@ public class BossSpawns
         }
 
         return bossesForMap;
+    }
+
+    private bool IsWeeklyBoss(WildSpawnType bossType)
+    {
+        var bossList = _botConfig.WeeklyBoss.BossPool;
+        var startOfWeek = DateTime.Today.GetMostRecentPreviousDay(DayOfWeek.Monday);
+
+        var seed = startOfWeek.Year * 1000 + startOfWeek.DayOfYear;
+        var random =  new Random(seed);
+
+        var boss = bossList[random.Next(0, bossList.Count)];
+
+        return boss == bossType;
     }
 
     private List<BossLocationSpawn> GenerateBossWaves(string location, double escapeTimeLimit)

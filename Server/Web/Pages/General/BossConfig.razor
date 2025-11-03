@@ -15,6 +15,43 @@
                     <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Difficulty Settings" Expanded=true>
                         <MudGrid>
 
+                            <MudItem xs="1">
+                                <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <ChildContent>
+                                            <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                        </ChildContent>
+                                        <TooltipContent>
+                                            <MudText Typo="Typo.caption">This will set the boss to be 100% chance on every single map YOU have given the boss a chance to spawn on.</MudText>
+                                        </TooltipContent>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Allows you to use the SPT Weekly Boss logic to force a single boss to be 100% chance." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Enable Weekly Bosses</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_enableWeeklyBosses" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_enableWeeklyBosses</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_enableWeeklyBosses"))
+                                {
+                                    <MudButton @onclick="undo_WeeklyBosses" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _enableWeeklyBosses != false)
+                                {
+                                    <MudButton @onclick="default_WeeklyBosses" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+                            
                             <MudItem xs="1" />
                             <MudItem xs="4">
                                 <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
@@ -131,6 +168,19 @@
 </MudMainContent>
 
 @code {
+
+    private bool _enableWeeklyBosses
+    {
+        get => ModConfig.Config.WeeklyBoss.Enable;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.WeeklyBoss.Enable);
+            ModConfig.Config.WeeklyBoss.Enable = value;
+        }
+    }
+    private void undo_WeeklyBosses() => _enableWeeklyBosses = ModConfig.OriginalConfig.WeeklyBoss.Enable;
+    private void default_WeeklyBosses() => _enableWeeklyBosses = false;
+    
     #region BossDifficulty
     private double _boss_EasyDifficulty
     {

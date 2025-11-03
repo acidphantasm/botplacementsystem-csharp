@@ -123,6 +123,9 @@
     "hard": 30,
     "impossible": 10
   },
+  "weeklyBoss": {
+    "enable": false
+  },
   "bossConfig": {
     "bossKnight": {
       "enable": true,
