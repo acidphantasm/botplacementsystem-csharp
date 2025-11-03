@@ -5,6 +5,9 @@
     "hard": 30,
     "impossible": 10
   },
+  "pmcType": {
+    "usecChance" : 50
+  },
   "pmcConfig": {
     "startingPMCs": {
       "enable": true,

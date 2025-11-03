@@ -14,6 +14,46 @@
             <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
                 <MudGrid>
 
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">This is always out of 100, the chance is specifically for USEC but also impacts BEAR.</MudText>
+                                    <MudText Typo="Typo.caption">If set to 30% then BEAR chance is 70%.</MudText>
+                                    <MudText Typo="Typo.caption">If set to 100% then BEAR chance is 0%.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Text="Chance a Pmc and it's group members are USEC." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>USEC Chance</MudText>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="1">
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">@_pmc_UsecChance</MudButton>
+                    </MudItem>
+                    <MudItem xs="5">
+                        <MudSlider @bind-Value="_pmc_UsecChance" ValueLabel="true" Min="0" Max="100" Color="Color.Info" Size="Size.Medium" />
+                    </MudItem>
+                    <MudItem xs="1">
+                        @if (MainLayout._appUndoButtonToggle &&
+                             MainLayout.pendingChanges.Contains("_pmc_UsecChance"))
+                        {
+                            <MudButton @onclick="undo_Pmc_UsecChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                        }
+                        else if (MainLayout._appDefaultButtonToggle &&
+                                 _pmc_UsecChance != 50)
+                        {
+                            <MudButton @onclick="default_Pmc_UsecChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                        }
+                    </MudItem>
+
                     <MudItem xs="1" />
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
@@ -1067,6 +1107,18 @@
 </MudMainContent>
 
 @code {
+    
+    private double _pmc_UsecChance
+    {
+        get => ModConfig.Config.PmcType.UsecChance;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.PmcType.UsecChance);
+            ModConfig.Config.PmcType.UsecChance = value;
+        }
+    }
+    private void undo_Pmc_UsecChance() => _pmc_UsecChance = ModConfig.OriginalConfig.PmcType.UsecChance;
+    private void default_Pmc_UsecChance() => _pmc_UsecChance = 50;
     #region PMCDifficulty
     private double _pmc_EasyDifficulty
     {

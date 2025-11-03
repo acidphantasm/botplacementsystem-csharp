@@ -87,7 +87,7 @@ public class PmcSpawns
                     groupCount++;
                 }
 
-                var pmcType = _randomUtil.GetChance100(50) ? "pmcUSEC" : "pmcBEAR";
+                var pmcType = _randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
                 var bossDefaultData = _cloner.Clone(GetDefaultValuesForBoss(pmcType));
 
                 bossDefaultData[0].BossEscortAmount = groupSize.ToString();
@@ -135,7 +135,7 @@ public class PmcSpawns
                 groupCount++;
             }
 
-            var pmcType = _randomUtil.GetChance100(50) ? "pmcUSEC" : "pmcBEAR";
+            var pmcType = _randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
             var bossDefaultData = _cloner.Clone(this.GetDefaultValuesForBoss(pmcType));
 
             bossDefaultData[0].BossEscortAmount = groupSize.ToString();

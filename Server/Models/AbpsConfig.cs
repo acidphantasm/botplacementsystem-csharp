@@ -10,6 +10,7 @@ public record AbpsConfig
 {
     // export type DifficultyConfig = "easy" | "normal" | "hard" | "impossible";
     [JsonPropertyName("pmcDifficulty")] public Dictionary<string, double> PmcDifficulty { get; set; }
+    [JsonPropertyName("pmcType")] public PmcTypeChance PmcType { get; set; }
     [JsonPropertyName("pmcConfig")] public PMCConfig PmcConfig { get; set; }
     [JsonPropertyName("scavConfig")] public ScavConfig ScavConfig { get; set; }
     [JsonPropertyName("bossDifficulty")] public Dictionary<string, double> BossDifficulty { get; set; }
@@ -19,6 +20,14 @@ public record AbpsConfig
     public ConfigAppSettings ConfigAppSettings { get; set; }
 }
 
+public record PmcTypeChance
+{
+    [JsonPropertyName("usecChance")] public double UsecChance { get; set; }
+}
+public record WeeklyBossConfig
+{
+    [JsonPropertyName("enable")] public bool Enable { get; set; } 
+}
 public record ConfigAppSettings
 {
     [JsonPropertyName("showUndo")] public bool ShowUndo { get; set; }
