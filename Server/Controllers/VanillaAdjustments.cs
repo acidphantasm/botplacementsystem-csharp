@@ -213,6 +213,12 @@ public class VanillaAdjustments
             {
                 if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("assault")) 
                     PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("assault");
+                
+                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcBEAR")) 
+                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcBEAR");
+                
+                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcUSEC")) 
+                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcUSEC");
             }
             PmcConfig.HostilitySettings[bot].SavageEnemyChance = 100;
             PmcConfig.HostilitySettings[bot].BearEnemyChance = 100;
