@@ -64,7 +64,7 @@ namespace acidphantasm_botplacementsystem.Patches
                     break;
             }
 
-            Logger.LogInfo($"[ABPS] Setting max bots to {maxCount} on {location.ToLower()}");
+            Plugin.LogSource.LogInfo($"[ABPS] Setting max bots to {maxCount} on {location.ToLower()}");
             __instance.MaxCount = maxCount;
 
             if (__instance.BotSpawner != null)
