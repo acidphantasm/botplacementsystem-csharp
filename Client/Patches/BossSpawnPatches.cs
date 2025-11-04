@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace acidphantasm_botplacementsystem.Patches
@@ -83,37 +84,33 @@ namespace acidphantasm_botplacementsystem.Patches
                         return false;
                     }
                     //__instance.method_3(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
-                    PMCSpawning.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations, __instance, __instance.BotSpawner_0, __instance.IBotCreator);
+                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations, __instance, __instance.BotSpawner_0, __instance.IBotCreator);
                     __result = true;
                     return false;
                 }
             }
 
-            Logger.LogInfo($"No valid spawnpoints found - spawning anywhere: {creationData.Profiles[0].Nickname} | WildSpawnType: {wave.BossType} | Count: {1 + wave.EscortCount}");
-
-            return true;
+            Logger.LogInfo($"No valid spawnpoints found - skipping spawn: {creationData.Profiles[0].Nickname} | WildSpawnType: {wave.BossType} | Count: {1 + wave.EscortCount}");
+            __result = true;
+            return false;
         }
 
         private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, int neededPoints)
         {
             List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
-
             List<ISpawnPoint> list = Utility.GetPlayerSpawnPoints();
-
             list = list.OrderBy(_ => Guid.NewGuid()).ToList();
 
             bool foundInitialPoint = false;
 
-            var counter = 0;
             for (int i = 0; i < list.Count; i++)
             {
                 ISpawnPoint checkPoint = list[i];
-                counter++;
                 if (validSpawnPoints.Count == neededPoints)
                 {
                     return validSpawnPoints;
                 }
-                if (foundInitialPoint && Vector3.Distance(checkPoint.Position, validSpawnPoints[0].Position) <= 20f)
+                if (foundInitialPoint && Vector3.Distance(checkPoint.Position, validSpawnPoints[0].Position) <= 10f)
                 {
                     validSpawnPoints.Add(checkPoint);
                 }
@@ -126,7 +123,30 @@ namespace acidphantasm_botplacementsystem.Patches
                     }
                 }
             }
-            Logger.LogInfo($"PMC spawnpoints being returned isn't matching required amount | Found: {validSpawnPoints.Count}/{neededPoints}");
+            if (foundInitialPoint) return validSpawnPoints;
+            
+            // Get And Return Alternative Points if no Player points found
+            // Uses lower distance checks for everything
+            // Only returns a single point, it'll stack group members
+            // Clear original list, it should already be clear but make sure
+            validSpawnPoints.Clear();
+            List<ISpawnPoint> alternativeList = Utility.GetBotNoBossNoSnipeSpawnPoints();
+            alternativeList = alternativeList.OrderBy(_ => Guid.NewGuid()).ToList();
+            
+            for (int i = 0; i < alternativeList.Count; i++)
+            {
+                ISpawnPoint checkPoint = alternativeList[i];
+                if (IsValid(checkPoint, pmcPlayers, distance / 2, true))
+                {
+                    if (IsValid(checkPoint, scavPlayers, 20f))
+                    {
+                        validSpawnPoints.Add(checkPoint);
+                        return validSpawnPoints;
+                    }
+                }
+            }
+            
+            // No spawn points found at all, return empty list
             return validSpawnPoints;
         }
 
@@ -162,8 +182,6 @@ namespace acidphantasm_botplacementsystem.Patches
                         return false;
                     }
                 }
-                //Logger.LogInfo($"Point is valid after checking {players.Count}");
-                return true;
             }
             return true;
         }
