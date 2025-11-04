@@ -1,8 +1,28 @@
 ﻿[
   {
+    "Version": "2.0.4",
+    "ReleaseDate": "November 4, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Added `Weekly Boss` feature from SPT, with a tiny twist",
+      "Added PMC Faction Chance configuration slider"
+    ],
+    "Changes": [
+      "Adjusted Pmc spawn logic for proper group assignment",
+      "Adjusted Pmc spawn logic to remove some additional delays for followers",
+      "Adjusted Pmc waves to flip to any Bot spawn points available but only checking 50% of configured distances",
+      "Adjusted Pmc waves to use ABPS spawn logic instead of vanilla when no Player spawn points are available"
+    ],
+    "BugFixes": [
+      "Resolved Pmcs of the same faction being friendly even if they are in different `groups`",
+      "Resolved Scav Zone Reassignment affecting Factory / GZ / Labyrinth / Laboratory"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.3",
     "ReleaseDate": "October 31, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Added Checkbox to allow the Web Configuration page to check for updates to ABPS",
       "Added Release Notes to Web Configuration",

@@ -5,13 +5,12 @@ using BepInEx.Logging;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.3")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.4")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
         
-
         public static int customsMapLimit;
         public static int factoryMapLimit;
         public static int interchangeMapLimit;
@@ -65,8 +64,8 @@ namespace acidphantasm_botplacementsystem
 
             /*
              * This patch is only for development purposes in specific scenarios (or it would be in IFDEBUG)
-            new OnGameStartedPatch().Enable();
             */
+            //new OnGameStartedPatch().Enable();
 
             // Trigger /apbs/save
             new UnregisterPlayerPatch().Enable();
@@ -95,6 +94,9 @@ namespace acidphantasm_botplacementsystem
 
             // Zone Reselector for Scavs - primarily for redistribution based on active scavs in a zone and hotzone configuration
             new TryToSpawnInZonePatch().Enable();
+            
+            // Check enemy patch to prevent bots in the same group being enemies, but allow other groups containing the same PMC type to be enemies
+            new IsPlayerEnemyPatch().Enable();
             
             ABPSConfig.InitABPSConfig(Config);
         }
