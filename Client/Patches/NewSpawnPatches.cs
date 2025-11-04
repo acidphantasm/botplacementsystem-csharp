@@ -178,7 +178,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 if (mapHasHotzone && hotZoneSelected) scavDistance = 10f;
                 pointsToSpawn = GetValidSpawnPoints(botZone, mapName, pmcList, pmcDistance, scavList, scavDistance, botType);
 
-                if (!mapName.Contains("factory") && !mapName.Contains("sandbox") && !mapName.Contains("labyrinth") || !mapName.Contains("laboratory"))
+                if (!mapName.Contains("factory") && !mapName.Contains("sandbox") && !mapName.Contains("labyrinth") && !mapName.Contains("laboratory"))
                 {
                     var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Where(x => x.IsRole(WildSpawnType.assault)).ToList().Count;
 
@@ -208,7 +208,7 @@ namespace acidphantasm_botplacementsystem.Patches
 
                         if (pointsToSpawn.Count == 0)
                         {
-                            Logger.LogInfo($"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
+                            Plugin.LogSource.LogInfo($"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
                             pointsToSpawn = null;
                         }
                     }
