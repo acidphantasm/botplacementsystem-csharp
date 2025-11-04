@@ -114,6 +114,18 @@ namespace acidphantasm_botplacementsystem.Utils
             }
             return playerSpawnPoints;
         }
+
+        public static List<ISpawnPoint> GetBotNoBossNoSnipeSpawnPoints()
+        {
+            if (playerSpawnPoints.Count == 0 || allSpawnPoints.Count == 0)
+            {
+                Plugin.LogSource.LogInfo("Getting All Player SpawnPoints");
+                playerSpawnPoints = GetAllSpawnPoints()
+                    .Where(x => x.Categories.ContainBotCategory() && !x.Categories.ContainBossCategory() && !x.IsSnipeZone)
+                    .ToList();
+            }
+            return playerSpawnPoints;
+        }
         public static List<BotZone> GetMapBotZones()
         {
             List<BotZone> shuffledList = currentMapZones.OrderBy(_ => Guid.NewGuid()).ToList();
