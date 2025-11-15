@@ -35,6 +35,8 @@ public record ConfigAppSettings
     [JsonPropertyName("showDefault")] public bool ShowDefault { get; set; }
     [JsonPropertyName("disableAnimations")] public bool DisableAnimations { get; set; }
     [JsonPropertyName("allowUpdateChecks")] public bool AllowUpdateChecks { get; set; }
+    [JsonPropertyName("requireAuthCode")] public bool RequireAuthCode { get; set; }
+    [JsonPropertyName("authCode")] public string AuthCode { get; set; }
 }
 
 public class ValidLocationsMinMax

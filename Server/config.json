@@ -783,6 +783,8 @@
     "showUndo": true,
     "showDefault": false,
     "disableAnimations": false,
-    "allowUpdateChecks": false
+    "allowUpdateChecks": false,
+    "requireAuthCode": false,
+    "authCode": "Kitten Mittons"
   }
 }

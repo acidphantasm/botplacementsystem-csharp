@@ -1,6 +1,7 @@
 ﻿{
   "BotPreset": "easy",
   "BotSide": "Savage",
+  "KeepZoneOnSpawn": false,
   "SpawnMode": [
     "pve"
   ],

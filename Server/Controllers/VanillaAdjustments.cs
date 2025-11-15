@@ -103,8 +103,8 @@ public class VanillaAdjustments
             locationBase.BotSpawnTimeOnMax = 30;
 
             // Start-Stop wave wait times between active spawning
-            locationBase.BotSpawnTimeOffMin = 20;
-            locationBase.BotSpawnTimeOffMax = 60;
+            locationBase.BotSpawnTimeOffMin = 120;
+            locationBase.BotSpawnTimeOffMax = 180;
 
             // Probably how often it checks to spawn while active spawning
             locationBase.BotSpawnPeriodCheck = 15;

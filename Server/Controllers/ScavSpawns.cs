@@ -101,10 +101,10 @@ public class ScavSpawns
                 marksmanCount++;
             }
 
-            scavDefaultData.SlotsMin = 0;
-            scavDefaultData.SlotsMax = 1;
-            scavDefaultData.TimeMin = 1;
-            scavDefaultData.TimeMax = 5;
+            scavDefaultData.SlotsMin = botRole == "assault" ? 0 : 1;
+            scavDefaultData.SlotsMax = botRole == "assault" ? 1 : 2;
+            scavDefaultData.TimeMin = -1;
+            scavDefaultData.TimeMax = -1;
             scavDefaultData.Number = currentCount;
             scavDefaultData.WildSpawnType = botRole == "assault" ? WildSpawnType.assault : WildSpawnType.marksman;
             scavDefaultData.IsPlayers = botRole == "assault" && _randomUtil.GetChance100(playerScavChance);

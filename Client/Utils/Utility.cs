@@ -18,6 +18,7 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<IPlayer> allScavs = new List<IPlayer>();
         public static List<ISpawnPoint> allSpawnPoints = new List<ISpawnPoint>();
         public static List<ISpawnPoint> playerSpawnPoints = new List<ISpawnPoint>();
+        public static List<ISpawnPoint> backupPlayerSpawnPoints = new List<ISpawnPoint>();
         public static List<BotZone> currentMapZones = new List<BotZone>();
 
         public static Dictionary<string, string[]> mapHotSpots = new Dictionary<string, string[]>()
@@ -117,14 +118,14 @@ namespace acidphantasm_botplacementsystem.Utils
 
         public static List<ISpawnPoint> GetBotNoBossNoSnipeSpawnPoints()
         {
-            if (playerSpawnPoints.Count == 0 || allSpawnPoints.Count == 0)
+            if (backupPlayerSpawnPoints.Count == 0 || backupPlayerSpawnPoints.Count == 0)
             {
-                Plugin.LogSource.LogInfo("Getting All Player SpawnPoints");
-                playerSpawnPoints = GetAllSpawnPoints()
+                Plugin.LogSource.LogInfo("Getting Backup Player SpawnPoints");
+                backupPlayerSpawnPoints = GetAllSpawnPoints()
                     .Where(x => x.Categories.ContainBotCategory() && !x.Categories.ContainBossCategory() && !x.IsSnipeZone)
                     .ToList();
             }
-            return playerSpawnPoints;
+            return backupPlayerSpawnPoints;
         }
         public static List<BotZone> GetMapBotZones()
         {

@@ -26,7 +26,7 @@ internal class IsPlayerEnemyPatch : ModulePatch
             string thisBotId = player.Profile.ProfileId;
             
             // Check our group mappings - as we spawn bots faster than the group manager can assign groups and handle them
-            if (PmcGroupSpawner.pmcGroups.TryGetValue(leaderId, out var followers))
+            if (PmcGroupSpawner.allPmcGroups.TryGetValue(leaderId, out var followers))
             {
                 if (followers.Contains(thisBotId))
                 {

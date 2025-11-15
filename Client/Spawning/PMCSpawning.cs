@@ -19,8 +19,8 @@ namespace acidphantasm_botplacementsystem.Spawning
 
         public static List<string> pmcBosses = new List<string>();
         
-        public static Dictionary<string, List<string>> pmcGroups = new Dictionary<string, List<string>>();
-        public static Dictionary<string, BossSpawnerClass.Class332> wavePmcGroup = new Dictionary<string, BossSpawnerClass.Class332>();
+        public static Dictionary<string, List<string>> allPmcGroups = new Dictionary<string, List<string>>();
+        public static Dictionary<string, BossSpawnerClass.Class332> wavePmcGroupClassData = new Dictionary<string, BossSpawnerClass.Class332>();
 
         public static async Task StartSpawnPMCGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions, BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
         {
@@ -47,7 +47,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             _bossSpawnerClass.List_0.Add(@class.spawnProcessData);
 
             var leaderProfileId = creationData.Profiles[0].ProfileId;
-            pmcGroups[leaderProfileId] = new List<string>();
+            allPmcGroups[leaderProfileId] = new List<string>();
             
             if (flag)
             {
@@ -60,7 +60,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             else
             {
                 // OG WAVE - No follower & spawn leader is method_1 callback instead
-                if (followersCount != 0) wavePmcGroup[leaderProfileId] = @class;
+                if (followersCount != 0) wavePmcGroupClassData[leaderProfileId] = @class;
                 await SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
             }
         }
@@ -85,7 +85,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             else if (followersCount > 0)
             {
                 BotCreationDataClass botCreationDataClass = await BotCreationDataClass.Create(new BotProfileDataClass(EPlayerSide.Savage, wave.EscortType, wave.EscortDif, wave.Time, spawnParams, false), _iBotCreator, followersCount, _botSpawner);
-                pmcGroups[leaderProfileId] = botCreationDataClass.Profiles.Select(p => p.ProfileId).ToList();
+                allPmcGroups[leaderProfileId] = botCreationDataClass.Profiles.Select(p => p.ProfileId).ToList();
                 TryToSpawnInZoneAndDelay(zone, botCreationDataClass, false, true, pointsToSpawn, forceSpawn);
             }
         }
@@ -117,7 +117,7 @@ namespace acidphantasm_botplacementsystem.Spawning
                     }
                 }
                 BotCreationDataClass result = await BotCreationDataClass.Create(new BotProfileDataClass(side, bossLocationSpawnSubData.BossEscortType, bossLocationSpawnSubData.EscortDifficulty, wave.Time, spawnParams), _iBotCreator, bossLocationSpawnSubData.BossEscortAmount, _botSpawner);
-                pmcGroups[leaderProfileId] = result.Profiles.Select(p => p.ProfileId).ToList();
+                allPmcGroups[leaderProfileId] = result.Profiles.Select(p => p.ProfileId).ToList();
                 TryToSpawnInZoneAndDelay(zone, result, false, true, list, forceSpawn);
                 await Task.Yield();
                 list = null;
@@ -273,12 +273,13 @@ namespace acidphantasm_botplacementsystem.Spawning
                 @class.data.SpawnParams.ShallBeGroup.DescreaseCount();
             }
             _botSpawner.BotCreator.ActivateBot(@class.data, zone, @class.shallBeGroup, new Func<BotOwner, BotZone, BotsGroup>(GetGroupAndSetEnemies), new Action<BotOwner>(@class.method_0), cancellationToken);
-            
-            if (!wavePmcGroup.ContainsKey(data.Profiles[0].ProfileId)) return;
+
+            // Check if it's a wave, and return completed if not
+            var spawnedBotProfileId = data.Profiles[0].ProfileId;
+            if (!wavePmcGroupClassData.TryGetValue(spawnedBotProfileId, out var originalClassData)) return;
             
             // Spawn boss followers now
-            var originalClassData = wavePmcGroup[data.Profiles[0].ProfileId];
-            SpawnFollowers(@originalClassData.creationData, @originalClassData.botZone, @originalClassData.followersCount, @originalClassData.spawnParams, @originalClassData.wave, @originalClassData.side, @originalClassData.openedPositions, true, data.Profiles[0].ProfileId);
+            SpawnFollowers(@originalClassData.creationData, @originalClassData.botZone, @originalClassData.followersCount, @originalClassData.spawnParams, @originalClassData.wave, @originalClassData.side, @originalClassData.openedPositions, true, spawnedBotProfileId);
         }
         
         
@@ -289,7 +290,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             var botProfileId = bot.Profile.ProfileId;
             List<BotOwner> botOwners = new List<BotOwner>();
 
-            if (pmcGroups.ContainsKey(botProfileId))
+            if (allPmcGroups.ContainsKey(botProfileId))
             {
                 foreach (BotOwner botOwner in _botSpawner.method_5(bot))
                 {
@@ -311,15 +312,14 @@ namespace acidphantasm_botplacementsystem.Spawning
                 {
                     var leaderId = group.InitialBot.ProfileId;
         
-                    if (pmcGroups.TryGetValue(leaderId, out var followers) && followers.Contains(botProfileId))
+                    if (allPmcGroups.TryGetValue(leaderId, out var followers) && followers.Contains(botProfileId))
                     {
                         _botSpawner.method_4(bot);
                         return group;
                     }
                 }
             }
-
-            Plugin.LogSource.LogInfo("[ABPS] THIS SHOULD NEVER BE HIT LOL PLEASE REPORT IT IF YOU SEE IT");
+            
             return null;
         }
     }

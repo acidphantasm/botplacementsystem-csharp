@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.5",
+    "ReleaseDate": "November 15, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Option to lock web config behind an authorization code - you cannot enable or change the code in the WebApp. You must do this in the config.json yourself. You can disable it via WebApp, if you have it enabled and have authorized yourself.",
+      "Tweaked Custom Timers for Scav Waves (if you use them)",
+      "Starting Marksman likelihood changes - you should see them more often"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.4",
     "ReleaseDate": "November 4, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Added `Weekly Boss` feature from SPT, with a tiny twist",
       "Added PMC Faction Chance configuration slider"
