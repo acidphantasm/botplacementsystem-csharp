@@ -58,8 +58,14 @@ namespace acidphantasm_botplacementsystem.Patches
             List<IPlayer> pmcList = Utility.GetAllPMCs();
             List<IPlayer> scavList = Utility.GetAllScavs();
             string location = Utility.CurrentLocation ?? "default";
+            location = location.ToLower();
+            
             float distance = GetDistanceForMap(location);
-            List<ISpawnPoint> validSpawnLocations = GetValidSpawnPoints(pmcList, scavList, distance, escortPointCount);
+            var scavDistance =
+                location.Contains("factory4") || location.Contains("laboratory") || location.Contains("labyrinth")
+                    ? 20f
+                    : 50f;
+            List<ISpawnPoint> validSpawnLocations = GetValidSpawnPoints(pmcList, scavList, distance, scavDistance, escortPointCount);
 
             if (validSpawnLocations.Count >= soloPointCount)
             {
@@ -95,7 +101,7 @@ namespace acidphantasm_botplacementsystem.Patches
             return false;
         }
 
-        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, int neededPoints)
+        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
             List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
             List<ISpawnPoint> list = Utility.GetPlayerSpawnPoints();
@@ -116,7 +122,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 }
                 if (!foundInitialPoint && IsValid(checkPoint, pmcPlayers, distance, true))
                 {
-                    if (IsValid(checkPoint, scavPlayers, 50f))
+                    if (IsValid(checkPoint, scavPlayers, scavDistance))
                     {
                         validSpawnPoints.Add(checkPoint);
                         foundInitialPoint = true;
@@ -138,7 +144,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 ISpawnPoint checkPoint = alternativeList[i];
                 if (IsValid(checkPoint, pmcPlayers, distance / 2, true))
                 {
-                    if (IsValid(checkPoint, scavPlayers, 20f))
+                    if (IsValid(checkPoint, scavPlayers, scavDistance * 0.75f))
                     {
                         validSpawnPoints.Add(checkPoint);
                         return validSpawnPoints;
@@ -188,7 +194,6 @@ namespace acidphantasm_botplacementsystem.Patches
 
         private static float GetDistanceForMap(string mapName)
         {
-            mapName = mapName.ToLower();
             float distanceLimit = 50f;
             switch (mapName)
             {
