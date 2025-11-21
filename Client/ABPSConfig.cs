@@ -68,9 +68,9 @@ namespace acidphantasm_botplacementsystem
             // Despawn Settings
             despawnFurthest = config.Bind(
                 DespawnConfig,
-                "Enable Despawning Scavs",
+                "Enable Despawning",
                 false,
-                new ConfigDescription("Allow ABPS to despawn scavs.",
+                new ConfigDescription("Enabling this will only despawn scavs, if you want to also despawn PMCs you must also check the below option.",
                     null,
                     new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.despawnFurthest = despawnFurthest.Value;
@@ -80,7 +80,7 @@ namespace acidphantasm_botplacementsystem
                 DespawnConfig,
                 "Enable Despawning PMCs",
                 false,
-                new ConfigDescription("Allow ABPS to despawn PMCs.\n\n If you enable this and don't turn on PMC waves, then expect to have almost no PMCs in your raids. \nThat's on you.",
+                new ConfigDescription("Allow ABPS to despawn PMCs. \nRequires `Enable Despawning`\n\n If you enable this and don't turn on PMC waves, then expect to have almost no PMCs in your raids. \nThat's on you.",
                     null,
                     new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.despawnPmcs = despawnPmcs.Value;
@@ -89,8 +89,8 @@ namespace acidphantasm_botplacementsystem
             despawnDistance = config.Bind(
                 DespawnConfig,
                 "Despawn Distance",
-                200f,
-                new ConfigDescription("Distance that bots must be to trigger despawning.",
+                250f,
+                new ConfigDescription("Distance that bots must be from player to trigger despawning.",
                     new AcceptableValueRange<float>(100f, 500f),
                     new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.despawnDistance = despawnDistance.Value;
@@ -100,7 +100,7 @@ namespace acidphantasm_botplacementsystem
                 DespawnConfig,
                 "Despawn Timer",
                 300f,
-                new ConfigDescription("Timer for despawning, this is the MINIMUM time between despawning attempts.",
+                new ConfigDescription("Timer for despawning, this is the MINIMUM time between despawning attempts. In Seconds.",
                     new AcceptableValueRange<float>(180f, 600f),
                     new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.despawnTimer = despawnTimer.Value;

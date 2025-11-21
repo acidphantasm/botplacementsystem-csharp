@@ -114,7 +114,8 @@
       "quietTimeMin": 120,
       "quietTimeMax": 180,
       "checkToSpawnTimer": 15,
-      "pendingBotsToTrigger": 3
+      "pendingBotsToTrigger": 3,
+      "nonWaveSpawnBotsLimitPerPlayer": 20
     }
   },
   "bossDifficulty": {

@@ -1085,7 +1085,7 @@
                         <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveEndTimer</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_pmc_WaveEndTimer" ValueLabel="true" Min="0" Max="1200" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                        <MudSlider @bind-Value="_pmc_WaveEndTimer" ValueLabel="true" Min="0" Max="3600" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle &&

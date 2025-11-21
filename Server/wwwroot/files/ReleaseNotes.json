@@ -1,16 +1,20 @@
 ﻿[
   {
     "Version": "2.0.6",
-    "ReleaseDate": "November 20, 2025",
+    "ReleaseDate": "November 21, 2025",
     "IsLatest": true,
     "NewFeatures": [
       "F12 option to despawn bots",
-      "F12 option to allow PMCs to spawn anywhere"
+      "F12 option to allow PMCs to spawn anywhere",
+      "Exposed Scav Wave total bot spawn limit in config"
     ],
     "Changes": [
-      "Added Customs Old & New Gas to Scav Hotzones"
+      "Added Customs Old & New Gas to Scav Hotzones",
+      "Changed PMC & Scav `wave` StopTimer to allow max of 3600 seconds in web config"
     ],
-    "BugFixes": [],
+    "BugFixes": [
+      "Minor UI behaviour fixes on web config"
+    ],
     "KnownIssues": []
   },
   {

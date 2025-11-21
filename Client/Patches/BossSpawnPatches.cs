@@ -109,12 +109,12 @@ namespace acidphantasm_botplacementsystem.Patches
                 if (validPlayerSpawnPoints.Count > 0) return validPlayerSpawnPoints;
                 
                 // Use fallback anywhere, except cut the distances down to try to get valid. If this fails it'll return an empty list, which stops the spawn
-                var validAnywhereSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f);
-                return validAnywhereSpawnPoints;
+                var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f, true);
+                return fallbackSpawnPoints;
             }
             
-            var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance);
-            return fallbackSpawnPoints;
+            var anywhereSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance);
+            return anywhereSpawnPoints;
         }
 
         private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
@@ -150,11 +150,11 @@ namespace acidphantasm_botplacementsystem.Patches
             return validSpawnPoints;;
         }
 
-        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance)
+        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, bool backupToPlayer = false)
         {
             List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
             
-            List<ISpawnPoint> alternativeList = Utility.GetBotNoBossNoSnipeSpawnPoints();
+            List<ISpawnPoint> alternativeList = backupToPlayer ? Utility.GetBotNoBossNoSnipeSpawnPoints() : Utility.GetCombinedPlayerAndBotSpawnPoints();
             alternativeList = alternativeList.OrderBy(_ => Guid.NewGuid()).ToList();
             
             for (int i = 0; i < alternativeList.Count; i++)

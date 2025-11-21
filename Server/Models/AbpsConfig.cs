@@ -379,6 +379,7 @@ public record ScavWaveConfig
     [JsonPropertyName("quietTimeMax")] public int QuietTimeMax { get; set; }
     [JsonPropertyName("checkToSpawnTimer")] public int CheckToSpawnTimer { get; set; }
     [JsonPropertyName("pendingBotsToTrigger")] public int PendingBotsToTrigger { get; set; }
+    [JsonPropertyName("nonWaveSpawnBotsLimitPerPlayer")] public int NonWaveSpawnBotsLimitPerPlayer { get; set; }
 }
 
 public record ScavStartingConfig

@@ -111,9 +111,6 @@ public class VanillaAdjustments
 
             // Bot count required to trigger a spawn
             locationBase.BotSpawnCountStep = 3;
-
-            locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayer = 20;
-            locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE = 20;
         }
         else
         {
@@ -135,10 +132,10 @@ public class VanillaAdjustments
 
             // Bot count required to trigger a spawn
             locationBase.BotSpawnCountStep = ModConfig.Config.ScavConfig.Waves.PendingBotsToTrigger;
-
-            locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayer = 20;
-            locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE = 20;
         }
+        
+        locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayer = ModConfig.Config.ScavConfig.Waves.NonWaveSpawnBotsLimitPerPlayer;
+        locationBase.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE = ModConfig.Config.ScavConfig.Waves.NonWaveSpawnBotsLimitPerPlayer;
     }
 
     public void RemoveExistingWaves(LocationBase locationBase)
