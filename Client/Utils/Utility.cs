@@ -19,7 +19,7 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<ISpawnPoint> allSpawnPoints = new();
         public static List<ISpawnPoint> playerSpawnPoints = new();
         public static List<ISpawnPoint> backupPlayerSpawnPoints = new();
-        private static List<ISpawnPoint> combinedSpawnPoints = new();
+        public static List<ISpawnPoint> combinedSpawnPoints = new();
         public static List<BotZone> currentMapZones = new();
 
         public static Dictionary<string, string[]> mapHotSpots = new()
@@ -93,7 +93,6 @@ namespace acidphantasm_botplacementsystem.Utils
         {
             if (allSpawnPoints.Count == 0)
             {
-                Plugin.LogSource.LogInfo("Getting All SpawnPoints");
                 allSpawnPoints = SpawnPointManagerClass.CreateFromScene().ToList();
             }
             return allSpawnPoints;

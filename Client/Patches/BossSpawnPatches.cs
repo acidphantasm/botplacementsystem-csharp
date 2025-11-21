@@ -33,6 +33,8 @@ namespace acidphantasm_botplacementsystem.Patches
             Utility.allBots.Clear();
             Utility.allSpawnPoints.Clear();
             Utility.playerSpawnPoints.Clear();
+            Utility.backupPlayerSpawnPoints.Clear();
+            Utility.combinedSpawnPoints.Clear();
         }
     }
     internal class PMCDistancePatch : ModulePatch
