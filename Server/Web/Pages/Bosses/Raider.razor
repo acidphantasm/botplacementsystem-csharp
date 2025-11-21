@@ -434,7 +434,7 @@
                                 <MudButton @onclick="undo_Raiders_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                             }
                             else if (MainLayout._appDefaultButtonToggle &&
-                                     _Raider_Labs_SpawnChance != 75)
+                                     _Raider_Labs_SpawnChance != 40)
                             {
                                 <MudButton @onclick="default_Raiders_Labs_SpawnChance" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                             }
@@ -1346,7 +1346,7 @@
         }
     }
     private void undo_Raiders_Labs_SpawnChance() => _Raider_Labs_SpawnChance = ModConfig.OriginalConfig.BossConfig.PmcBot.SpawnChance.Laboratory;
-    private void default_Raiders_Labs_SpawnChance() => _Raider_Labs_SpawnChance = 75;
+    private void default_Raiders_Labs_SpawnChance() => _Raider_Labs_SpawnChance = 40;
     private List<string> _Raider_Labs_SpawnZones
     {
         get

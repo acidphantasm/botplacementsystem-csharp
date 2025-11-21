@@ -10,10 +10,12 @@
     ],
     "Changes": [
       "Added Customs Old & New Gas to Scav Hotzones",
+      "Changed default Raider spawn chance in config - If you have had issues with your skill in labs and have been complaining you can't edit this, you've been wrong this entire time. All you had to do was changed the chance, or disable adding new spawns. Crazy.",
       "Changed PMC & Scav `wave` StopTimer to allow max of 3600 seconds in web config"
     ],
     "BugFixes": [
-      "Minor UI behaviour fixes on web config"
+      "Fixed not properly clearing all cached spawn points between raids",
+      "Fixed minor UI behaviours on web config"
     ],
     "KnownIssues": []
   },

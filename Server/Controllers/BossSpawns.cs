@@ -125,11 +125,11 @@ public class BossSpawns
 
         var difficultyWeights = ModConfig.Config.BossDifficulty;
         var waveMaxPMCCount = location != "laboratory" ? 4 : 10;
-        var waveGroupLimit = 4;
+        var waveGroupLimit = 3;
         var waveGroupSize = 2;
         var waveGroupChance = 100;
         var waveTimer = 450;
-        var endWavesAtRemainingTime = 300;
+        var endWavesAtRemainingTime = 600;
         var waveCount = Math.Floor((((escapeTimeLimit * 60) - endWavesAtRemainingTime)) / waveTimer);
         var currentWaveTime = waveTimer;
         var bossConfigData = (BossLocationInfo)ModConfig.Config.BossConfig["pmcBot"];
