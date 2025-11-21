@@ -1,8 +1,22 @@
 ﻿[
   {
+    "Version": "2.0.6",
+    "ReleaseDate": "November 20, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "F12 option to despawn bots",
+      "F12 option to allow PMCs to spawn anywhere"
+    ],
+    "Changes": [
+      "Added Customs Old & New Gas to Scav Hotzones"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.5",
     "ReleaseDate": "November 15, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Option to lock web config behind an authorization code."
     ],

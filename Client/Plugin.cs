@@ -5,11 +5,16 @@ using BepInEx.Logging;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.5")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.6")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
+
+        public static bool despawnFurthest;
+        public static bool despawnPmcs;
+        public static float despawnDistance;
+        public static float despawnTimer;
         
         public static int customsMapLimit;
         public static int factoryMapLimit;
@@ -27,6 +32,7 @@ namespace acidphantasm_botplacementsystem
         public static int minimumChance;
         public static int maximumChance;
 
+        public static bool pmcSpawnAnywhere;
         public static float customs_PMCSpawnDistanceCheck;
         public static float factory_PMCSpawnDistanceCheck;
         public static float interchange_PMCSpawnDistanceCheck;

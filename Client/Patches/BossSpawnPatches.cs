@@ -27,12 +27,12 @@ namespace acidphantasm_botplacementsystem.Patches
         {
             if (__instance == null) return;
 
-            Utility.currentMapZones = new List<BotZone>();
+            Utility.currentMapZones.Clear();
             Utility.mapName = string.Empty;
-            Utility.allPMCs = new List<IPlayer>();
-            Utility.allBots = new List<IPlayer>();
-            Utility.allSpawnPoints = new List<ISpawnPoint>();
-            Utility.playerSpawnPoints = new List<ISpawnPoint>();
+            Utility.allPMCs.Clear();
+            Utility.allBots.Clear();
+            Utility.allSpawnPoints.Clear();
+            Utility.playerSpawnPoints.Clear();
         }
     }
     internal class PMCDistancePatch : ModulePatch
@@ -103,7 +103,24 @@ namespace acidphantasm_botplacementsystem.Patches
 
         private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
+            if (!Plugin.pmcSpawnAnywhere)
+            {
+                var validPlayerSpawnPoints = GetPlayerSpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance, neededPoints);
+                if (validPlayerSpawnPoints.Count > 0) return validPlayerSpawnPoints;
+                
+                // Use fallback anywhere, except cut the distances down to try to get valid. If this fails it'll return an empty list, which stops the spawn
+                var validAnywhereSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f);
+                return validAnywhereSpawnPoints;
+            }
+            
+            var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance);
+            return fallbackSpawnPoints;
+        }
+
+        private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
+        {
             List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
+            
             List<ISpawnPoint> list = Utility.GetPlayerSpawnPoints();
             list = list.OrderBy(_ => Guid.NewGuid()).ToList();
 
@@ -129,22 +146,23 @@ namespace acidphantasm_botplacementsystem.Patches
                     }
                 }
             }
-            if (foundInitialPoint) return validSpawnPoints;
+
+            return validSpawnPoints;;
+        }
+
+        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance)
+        {
+            List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
             
-            // Get And Return Alternative Points if no Player points found
-            // Uses lower distance checks for everything
-            // Only returns a single point, it'll stack group members
-            // Clear original list, it should already be clear but make sure
-            validSpawnPoints.Clear();
             List<ISpawnPoint> alternativeList = Utility.GetBotNoBossNoSnipeSpawnPoints();
             alternativeList = alternativeList.OrderBy(_ => Guid.NewGuid()).ToList();
             
             for (int i = 0; i < alternativeList.Count; i++)
             {
                 ISpawnPoint checkPoint = alternativeList[i];
-                if (IsValid(checkPoint, pmcPlayers, distance / 2, true))
+                if (IsValid(checkPoint, pmcPlayers, distance, true))
                 {
-                    if (IsValid(checkPoint, scavPlayers, scavDistance * 0.75f))
+                    if (IsValid(checkPoint, scavPlayers, scavDistance))
                     {
                         validSpawnPoints.Add(checkPoint);
                         return validSpawnPoints;
@@ -152,7 +170,6 @@ namespace acidphantasm_botplacementsystem.Patches
                 }
             }
             
-            // No spawn points found at all, return empty list
             return validSpawnPoints;
         }
 

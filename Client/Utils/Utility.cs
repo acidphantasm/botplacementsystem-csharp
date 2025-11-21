@@ -27,7 +27,7 @@ namespace acidphantasm_botplacementsystem.Utils
             {"shoreline", ["ZoneSanatorium1", "ZoneSanatorium2"]},
             {"lighthouse", ["Zone_LongRoad", "Zone_Chalet", "Zone_Village"]},
             {"interchange", ["ZoneCenter", "ZoneCenterBot"]},
-            {"bigmap", ["ZoneDormitory", "ZoneScavBase"]}
+            {"bigmap", ["ZoneDormitory", "ZoneScavBase", "ZoneOldAZS", "ZoneGasStation"]}
         };
 
         public void Awake()
@@ -65,9 +65,8 @@ namespace acidphantasm_botplacementsystem.Utils
                 allPMCs = gameWorld.RegisteredPlayers
                     .Where(x => x.Profile.Side == EPlayerSide.Bear || x.Profile.Side == EPlayerSide.Usec)
                     .ToList();
-                return allPMCs;
             }
-            return new List<IPlayer>();
+            return allPMCs;
         }
 
         public static List<IPlayer> GetAllScavs()
@@ -78,19 +77,15 @@ namespace acidphantasm_botplacementsystem.Utils
                 allScavs = gameWorld.RegisteredPlayers
                     .Where(x => x.Profile.Info.Settings.Role == WildSpawnType.assault)
                     .ToList();
-                return allScavs;
             }
-            return new List<IPlayer>();
+            return allScavs;
         }
-        public static List<IPlayer> GetAllBots()
+        
+        public static List<IPlayer> GetAllCachedBots()
         {
-            var gameWorld = Singleton<GameWorld>.Instance;
-            if (gameWorld != null)
-            {
-                allBots = gameWorld.RegisteredPlayers.ToList();
-                return allBots;
-            }
-            return new List<IPlayer>();
+            return GetAllPMCs()
+                .Concat(GetAllScavs())
+                .ToList();
         }
 
         public static List<ISpawnPoint> GetAllSpawnPoints()

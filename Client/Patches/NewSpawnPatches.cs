@@ -7,7 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Comfort.Common;
+using Systems.Effects;
 using UnityEngine;
+using Object = System.Object;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
@@ -30,6 +33,8 @@ namespace acidphantasm_botplacementsystem.Patches
     }
     internal class NonWavesSpawnScenarioUpdatePatch : ModulePatch
     {
+        private static float _nextDespawnCheckTime = 0f;
+        
         protected override MethodBase GetTargetMethod()
         {
             return AccessTools.Method(typeof(NonWavesSpawnScenario), nameof(NonWavesSpawnScenario.Update));
@@ -123,9 +128,81 @@ namespace acidphantasm_botplacementsystem.Patches
 
                 ___botsController_0.ActivateBotsByWave(botWaveDataClass);
             }
+            
+            if (Time.time >= _nextDespawnCheckTime && Plugin.despawnFurthest)
+            {
+                _nextDespawnCheckTime = Time.time + Plugin.despawnTimer;
+                DespawnFurthestBots(___botsController_0);
+            }
             return false;
         }
+        
+        private static void DespawnFurthestBots(BotsController botsController)
+        {
+            float despawnDistance = Plugin.despawnDistance;
+            var allBotsNoBosses = Utility.GetAllCachedBots();
+            var botsToDespawn = new List<BotOwner>();
+            var centerOfActivePlayerPlayers = GetCenterOfActivePlayers();
+            
+            foreach (var bot in allBotsNoBosses)
+            {
+                if (bot == null) continue;
+                if (!bot.IsAI) continue;
+                if (!Plugin.despawnPmcs && bot.Profile.Info.Side == EPlayerSide.Bear ||
+                    bot.Profile.Info.Side == EPlayerSide.Usec) continue;
+                
+                float dist = Vector3.Distance(bot.Position, centerOfActivePlayerPlayers);
+                if (dist >= despawnDistance)
+                {
+                    botsToDespawn.Add(bot.AIData.BotOwner);
+                }
+            }
 
+            foreach (var botToDespawn in botsToDespawn)
+            {
+                AttemptToDespawnBot(botsController, botToDespawn);
+            }
+        }
+
+        private static Vector3 GetCenterOfActivePlayers()
+        {
+            var allBotsNoBosses = Utility.GetAllCachedBots();
+            Vector3 centerPoint = Vector3.zero;
+            int count = 0;
+
+            foreach (var player in allBotsNoBosses)
+            {
+                if (player == null) continue;
+                if (!player.IsAI) continue;
+
+                centerPoint += player.Position;
+                count++;
+            }
+
+            return count == 0 ? centerPoint : centerPoint / count;
+        }
+
+        private static void AttemptToDespawnBot(BotsController botsController, BotOwner botToDespawn)
+        {
+            var effectsCommutator = Singleton<Effects>.Instance.EffectsCommutator;
+            var gameWorld = Singleton<GameWorld>.Instance;
+
+            if (effectsCommutator is null || gameWorld is null) return;
+
+            var botOwner = botToDespawn;
+            var botPlayer = botToDespawn.GetPlayer;
+            
+            effectsCommutator.StopBleedingForPlayer(botPlayer);
+            gameWorld.UnregisterPlayer(botOwner);
+            gameWorld.UnregisterPlayer(botPlayer);
+            botToDespawn.Deactivate();
+            botToDespawn.Dispose();
+            botsController.BotDied(botOwner);
+            botsController.DestroyInfo(botPlayer);
+            UnityEngine.Object.DestroyImmediate(botOwner.gameObject);
+            UnityEngine.Object.Destroy(botOwner);
+        }
+        
         private static string GetValidBotZone(WildSpawnType botType, int count, BotZone[] allZones, string location, BotsController _botsController)
         {
             List<BotZone> botZones = allZones.ToList().Where(x => !x.SnipeZone).ToList();

@@ -5,9 +5,15 @@ namespace acidphantasm_botplacementsystem
 {
     internal static class ABPSConfig
     {
-        private static int loadOrder = 100;
-
-        private const string GeneralConfig = "1. General Settings";
+        private static int loadOrder = 200;
+        
+        private const string DespawnConfig = "1. Despawn Settings";
+        public static ConfigEntry<bool> despawnFurthest;
+        public static ConfigEntry<bool> despawnPmcs;
+        public static ConfigEntry<float> despawnDistance;
+        public static ConfigEntry<float> despawnTimer;
+        
+        private const string GeneralConfig = "2. General Settings";
         public static ConfigEntry<int> customsMapLimit;
         public static ConfigEntry<int> factoryMapLimit;
         public static ConfigEntry<int> interchangeMapLimit;
@@ -24,7 +30,8 @@ namespace acidphantasm_botplacementsystem
         public static ConfigEntry<int> minimumChance;
         public static ConfigEntry<int> maximumChance;
 
-        private const string PMCConfig = "2. PMC Settings";
+        private const string PMCConfig = "3. PMC Settings";
+        public static ConfigEntry<bool> pmcSpawnAnywhere;
         public static ConfigEntry<float> customs_PMCSpawnDistanceCheck;
         public static ConfigEntry<float> factory_PMCSpawnDistanceCheck;
         public static ConfigEntry<float> interchange_PMCSpawnDistanceCheck;
@@ -37,7 +44,7 @@ namespace acidphantasm_botplacementsystem
         public static ConfigEntry<float> woods_PMCSpawnDistanceCheck;
         public static ConfigEntry<float> labyrinth_PMCSpawnDistanceCheck;
 
-        private const string ScavConfig = "3. Scav Settings";
+        private const string ScavConfig = "4. Scav Settings";
         public static ConfigEntry<int> softCap;
         public static ConfigEntry<int> pScavChance;
         public static ConfigEntry<bool> enableHotzones;
@@ -58,6 +65,47 @@ namespace acidphantasm_botplacementsystem
 
         public static void InitABPSConfig(ConfigFile config)
         {
+            // Despawn Settings
+            despawnFurthest = config.Bind(
+                DespawnConfig,
+                "Enable Despawning Scavs",
+                false,
+                new ConfigDescription("Allow ABPS to despawn scavs.",
+                    null,
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.despawnFurthest = despawnFurthest.Value;
+            despawnFurthest.SettingChanged += ABPS_SettingChanged;
+            
+            despawnPmcs = config.Bind(
+                DespawnConfig,
+                "Enable Despawning PMCs",
+                false,
+                new ConfigDescription("Allow ABPS to despawn PMCs.\n\n If you enable this and don't turn on PMC waves, then expect to have almost no PMCs in your raids. \nThat's on you.",
+                    null,
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.despawnPmcs = despawnPmcs.Value;
+            despawnPmcs.SettingChanged += ABPS_SettingChanged;
+            
+            despawnDistance = config.Bind(
+                DespawnConfig,
+                "Despawn Distance",
+                200f,
+                new ConfigDescription("Distance that bots must be to trigger despawning.",
+                    new AcceptableValueRange<float>(100f, 500f),
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.despawnDistance = despawnDistance.Value;
+            despawnDistance.SettingChanged += ABPS_SettingChanged;
+            
+            despawnTimer = config.Bind(
+                DespawnConfig,
+                "Despawn Timer",
+                300f,
+                new ConfigDescription("Timer for despawning, this is the MINIMUM time between despawning attempts.",
+                    new AcceptableValueRange<float>(180f, 600f),
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.despawnTimer = despawnTimer.Value;
+            despawnTimer.SettingChanged += ABPS_SettingChanged;
+            
             // General Settings
             customsMapLimit = config.Bind(
                 GeneralConfig,
@@ -210,6 +258,16 @@ namespace acidphantasm_botplacementsystem
             maximumChance.SettingChanged += ABPS_SettingChanged;
 
             // PMC Settings
+            pmcSpawnAnywhere = config.Bind(
+                PMCConfig,
+                "Allow PMC Spawn Anywhere",
+                false,
+                new ConfigDescription("Enable this if you want PMCs to spawn at any spawn point instead of Player Spawn points.\nNote that with this disabled, PMCs will still spawn anywhere if there are no player spawn points available.",
+                    null,
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.pmcSpawnAnywhere = pmcSpawnAnywhere.Value;
+            pmcSpawnAnywhere.SettingChanged += ABPS_SettingChanged;
+            
             customs_PMCSpawnDistanceCheck = config.Bind(
                 PMCConfig,
                 "Distance Limit - Customs", 
@@ -487,6 +545,9 @@ namespace acidphantasm_botplacementsystem
         }
         private static void ABPS_SettingChanged(object sender, EventArgs e)
         {
+            Plugin.despawnFurthest = despawnFurthest.Value;
+            Plugin.despawnDistance = despawnDistance.Value;
+            
             Plugin.customsMapLimit = customsMapLimit.Value;
             Plugin.factoryMapLimit = factoryMapLimit.Value;
             Plugin.interchangeMapLimit = interchangeMapLimit.Value;
@@ -504,6 +565,7 @@ namespace acidphantasm_botplacementsystem
             Plugin.minimumChance = minimumChance.Value;
             Plugin.maximumChance = maximumChance.Value;
 
+            Plugin.pmcSpawnAnywhere = pmcSpawnAnywhere.Value;
             Plugin.customs_PMCSpawnDistanceCheck = customs_PMCSpawnDistanceCheck.Value;
             Plugin.factory_PMCSpawnDistanceCheck = factory_PMCSpawnDistanceCheck.Value;
             Plugin.interchange_PMCSpawnDistanceCheck = interchange_PMCSpawnDistanceCheck.Value;
