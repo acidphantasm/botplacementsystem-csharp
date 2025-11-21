@@ -173,7 +173,8 @@ namespace acidphantasm_botplacementsystem.Patches
             foreach (var player in allBotsNoBosses)
             {
                 if (player == null) continue;
-                if (!player.IsAI) continue;
+                if (player.IsAI) continue;
+                if (player.Profile.GetCorrectedNickname().StartsWith("headless_")) continue;
 
                 centerPoint += player.Position;
                 count++;
