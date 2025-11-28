@@ -76,6 +76,10 @@ public class VanillaAdjustments
         locationBase.OfflineNewSpawn = true;
         locationBase.OldSpawn = true;
         locationBase.OfflineOldSpawn = true;
+        if (locationBase.NonWaveGroupScenario is not null)
+        {
+            locationBase.NonWaveGroupScenario.Chance = 0;
+        }
     }
 
     public void DisableAllSpawnSystems(LocationBase locationBase)
