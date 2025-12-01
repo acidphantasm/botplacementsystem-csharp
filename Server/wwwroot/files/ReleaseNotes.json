@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.0.8",
+    "ReleaseDate": "December 1, 2025",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved scavs spawning on Labyrinth when they shouldn't"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.7",
     "ReleaseDate": "November 28, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [
