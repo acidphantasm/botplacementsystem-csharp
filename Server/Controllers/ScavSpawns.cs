@@ -1,6 +1,5 @@
 ﻿using _botplacementsystem.Globals;
 using SPTarkov.DI.Annotations;
-using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
@@ -11,28 +10,12 @@ using SPTarkov.Server.Core.Utils.Collections;
 namespace _botplacementsystem.Controllers;
 
 [Injectable]
-public class ScavSpawns
+public class ScavSpawns(
+    ISptLogger<ScavSpawns> logger,
+    ICloner cloner,
+    RandomUtil randomUtil,
+    DatabaseService databaseService)
 {
-    private ISptLogger<ScavSpawns> _logger;
-    private RandomUtil _randomUtil;
-    private ICloner _cloner;
-    private DatabaseService _databaseService;
-
-    public ScavSpawns
-    (
-        ISptLogger<ScavSpawns> logger,
-        ICloner cloner,
-        RandomUtil randomUtil,
-        DatabaseService databaseService,
-        JsonUtil jsonUtil
-    )
-    {
-        _logger = logger;
-        _cloner = cloner;
-        _randomUtil = randomUtil;
-        _databaseService = databaseService;
-    }
-
     public List<Wave> GetCustomMapData(string location)
     {
         return GetConfigValueForLocation(location);
@@ -62,16 +45,16 @@ public class ScavSpawns
     {
         var scavWaveSpawnInfo = new List<Wave>();
 
-        if (!_databaseService.GetLocations().GetDictionary().TryGetValue(_databaseService.GetLocations().GetMappedKey(location), out var locationData))
+        if (!databaseService.GetLocations().GetDictionary().TryGetValue(databaseService.GetLocations().GetMappedKey(location), out var locationData))
         {
-            _logger.Error($"unable to find location: {location}");
+            logger.Error($"unable to find location: {location}");
             return scavWaveSpawnInfo;
         }
 
         var waveLength = locationData.Base.Waves.Count;
         if (!ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.TryGetValue(location, out var maxStartingSpawns))
         {
-            _logger.Error($"unable to find location MaxBotSpawns: {location}");
+            logger.Error($"unable to find location MaxBotSpawns: {location}");
             return scavWaveSpawnInfo;
         }
         
@@ -79,16 +62,15 @@ public class ScavSpawns
         var playerScavChance = latestart ? 60 : 10;
 
         var availableSpawnZones = botRole == "assault"
-            ? new ExhaustableArray<string>(GetNonMarksmanSpawnZones(location), _randomUtil, _cloner)
-            : new ExhaustableArray<string>(GetMarksmanSpawnZones(location), _randomUtil, _cloner);
+            ? new ExhaustableArray<string>(GetNonMarksmanSpawnZones(location), randomUtil, cloner)
+            : new ExhaustableArray<string>(GetMarksmanSpawnZones(location), randomUtil, cloner);
 
         var marksmanCount = 0;
-        var assaultScavsCount = waveLength + 1;
 
         while (currentCount < scavCap)
         {
             if (currentCount >= maxStartingSpawns) break;
-            var scavDefaultData = _cloner.Clone(ModConfig.ScavDefaults);
+            var scavDefaultData = cloner.Clone(ModConfig.ScavDefaults);
             var selectedSpawnZone =
                 location.Contains("factory") || (botRole == "assault" && location.Contains("sandbox")) || location.Contains("labyrinth") || !availableSpawnZones.HasValues()
                     ? ""
@@ -101,16 +83,17 @@ public class ScavSpawns
                 marksmanCount++;
             }
 
+            if (scavDefaultData is null) continue;
+            
             scavDefaultData.SlotsMin = botRole == "assault" ? 0 : 1;
             scavDefaultData.SlotsMax = botRole == "assault" ? 1 : 2;
             scavDefaultData.TimeMin = -1;
             scavDefaultData.TimeMax = -1;
             scavDefaultData.Number = currentCount;
             scavDefaultData.WildSpawnType = botRole == "assault" ? WildSpawnType.assault : WildSpawnType.marksman;
-            scavDefaultData.IsPlayers = botRole == "assault" && _randomUtil.GetChance100(playerScavChance);
+            scavDefaultData.IsPlayers = botRole == "assault" && randomUtil.GetChance100(playerScavChance);
             scavDefaultData.SpawnPoints = selectedSpawnZone;
 
-            if (botRole.Contains("assault")) assaultScavsCount++;
             currentCount++;
             scavWaveSpawnInfo.Add(scavDefaultData);
         }
@@ -120,62 +103,34 @@ public class ScavSpawns
 
     private List<string>? GetMarksmanSpawnZones(string location)
     {
-        switch (location)
+        return location switch
         {
-            case "bigmap":
-                return ModConfig.MapZoneDefaults.CustomsSnipeSpawnZones;
-            case "lighthouse":
-                return ModConfig.MapZoneDefaults.LighthouseSnipeSpawnZones;
-            case "sandbox":
-            case "sandbox_high":
-                return ModConfig.MapZoneDefaults.GroundZeroSnipeSpawnZones;
-            case "shoreline":
-                return ModConfig.MapZoneDefaults.ShorelineSnipeSpawnZones;
-            case "tarkovstreets":
-                return ModConfig.MapZoneDefaults.StreetsSnipeSpawnZones;
-            case "woods":
-                return ModConfig.MapZoneDefaults.WoodsSnipeSpawnZones;
-            case "labyrinth":
-            case "laboratory":
-            case "interchange":
-            case "rezervbase":
-            case "factory4_day":
-            case "factory4_night":
-            default:
-                return null;
-        }
+            "bigmap" => ModConfig.MapZoneDefaults.CustomsSnipeSpawnZones,
+            "lighthouse" => ModConfig.MapZoneDefaults.LighthouseSnipeSpawnZones,
+            "sandbox" or "sandbox_high" => ModConfig.MapZoneDefaults.GroundZeroSnipeSpawnZones,
+            "shoreline" => ModConfig.MapZoneDefaults.ShorelineSnipeSpawnZones,
+            "tarkovstreets" => ModConfig.MapZoneDefaults.StreetsSnipeSpawnZones,
+            "woods" => ModConfig.MapZoneDefaults.WoodsSnipeSpawnZones,
+            _ => null
+        };
     }
 
     private List<string>? GetNonMarksmanSpawnZones(string location)
     {
-        switch (location)
+        return location switch
         {
-            case "bigmap":
-                return ModConfig.MapZoneDefaults.CustomsSpawnZones;
-            case "factory4_day":
-            case "factory4_night":
-                return ModConfig.MapZoneDefaults.FactorySpawnZones;
-            case "interchange":
-                return ModConfig.MapZoneDefaults.InterchangeSpawnZones;
-            case "laboratory":
-                return ModConfig.MapZoneDefaults.LabsNonGateSpawnZones;
-            case "lighthouse":
-                return ModConfig.MapZoneDefaults.LighthouseNonWaterTreatmentSpawnZones;
-            case "rezervbase":
-                return ModConfig.MapZoneDefaults.ReserveSpawnZones;
-            case "sandbox":
-            case "sandbox_high":
-                return ModConfig.MapZoneDefaults.GroundZeroSpawnZones;
-            case "shoreline":
-                return ModConfig.MapZoneDefaults.ShorelineSpawnZones;
-            case "tarkovstreets":
-                return ModConfig.MapZoneDefaults.StreetsSpawnZones;
-            case "woods":
-                return ModConfig.MapZoneDefaults.WoodsSpawnZones;
-            case "labyrinth":
-                return ModConfig.MapZoneDefaults.LabyrinthSpawnZones;
-            default:
-                return null;
-        }
+            "bigmap" => ModConfig.MapZoneDefaults.CustomsSpawnZones,
+            "factory4_day" or "factory4_night" => ModConfig.MapZoneDefaults.FactorySpawnZones,
+            "interchange" => ModConfig.MapZoneDefaults.InterchangeSpawnZones,
+            "laboratory" => ModConfig.MapZoneDefaults.LabsNonGateSpawnZones,
+            "lighthouse" => ModConfig.MapZoneDefaults.LighthouseNonWaterTreatmentSpawnZones,
+            "rezervbase" => ModConfig.MapZoneDefaults.ReserveSpawnZones,
+            "sandbox" or "sandbox_high" => ModConfig.MapZoneDefaults.GroundZeroSpawnZones,
+            "shoreline" => ModConfig.MapZoneDefaults.ShorelineSpawnZones,
+            "tarkovstreets" => ModConfig.MapZoneDefaults.StreetsSpawnZones,
+            "woods" => ModConfig.MapZoneDefaults.WoodsSpawnZones,
+            "labyrinth" => ModConfig.MapZoneDefaults.LabyrinthSpawnZones,
+            _ => null
+        };
     }
 }

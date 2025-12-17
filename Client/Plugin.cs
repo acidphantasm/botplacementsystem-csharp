@@ -2,10 +2,11 @@
 using BepInEx;
 using BepInEx.Bootstrap;
 using BepInEx.Logging;
+using EFT;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.8")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.9")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -63,6 +64,8 @@ namespace acidphantasm_botplacementsystem
         public static float streets_ScavSpawnDistanceCheck;
         public static float woods_ScavSpawnDistanceCheck;
         public static float labyrinth_ScavSpawnDistanceCheck;
+
+        public static BotSpawner botSpawnerInstance;
 
         internal void Awake()
         {

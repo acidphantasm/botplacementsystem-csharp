@@ -27,7 +27,7 @@ public class ModConfig : IOnLoad
     public static AbpsConfig Config {get; private set;} = null!;
     public static AbpsConfig OriginalConfig {get; private set;} = null!;
     
-    private static int IsActivelyProcessingFlag = 0;
+    private static int _isActivelyProcessingFlag = 0;
     
     public static string? _modPath;
 
@@ -57,7 +57,7 @@ public class ModConfig : IOnLoad
     
     public static async Task<ConfigOperationResult> ReloadConfig()
     {
-        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+        if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
 
         try
@@ -83,13 +83,13 @@ public class ModConfig : IOnLoad
         }
         finally
         {
-            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+            Interlocked.Exchange(ref _isActivelyProcessingFlag, 0);
         }
     }
     
     public static async Task<ConfigOperationResult> SaveConfig()
     {
-        if (Interlocked.CompareExchange(ref IsActivelyProcessingFlag, 1, 0) != 0)
+        if (Interlocked.CompareExchange(ref _isActivelyProcessingFlag, 1, 0) != 0)
             return ConfigOperationResult.ActiveProcess;
 
         try
@@ -106,6 +106,9 @@ public class ModConfig : IOnLoad
             await Task.WhenAll(writeConfigTask);
 
             await Task.Run(() => _mapSpawns.ConfigureInitialData());
+            
+            // Update 'Original' config stuff since we've saved so the 'Undo' function works
+            OriginalConfig = DeepClone(Config);
 
             return ConfigOperationResult.Success;
         }
@@ -115,7 +118,7 @@ public class ModConfig : IOnLoad
         }
         finally
         {
-            Interlocked.Exchange(ref IsActivelyProcessingFlag, 0);
+            Interlocked.Exchange(ref _isActivelyProcessingFlag, 0);
         }
     }
     

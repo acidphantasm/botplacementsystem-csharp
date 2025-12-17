@@ -29,7 +29,7 @@ namespace acidphantasm_botplacementsystem.Utils
         {
             // This method is just lol, but works for this use case.
             _spawnPointMarkers = LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<SpawnPointMarker>().ToList();
-
+            
             foreach (var zone in _spawnPointMarkers)
             {
                 IterateSpawnPoints(zone);

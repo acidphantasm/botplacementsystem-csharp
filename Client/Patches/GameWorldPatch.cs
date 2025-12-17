@@ -22,6 +22,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 return;
             }
 
+            __instance.GetOrAddComponent<BotZoneVisualizer>();
             __instance.GetOrAddComponent<SpawnPointGetter>();
         }
     }

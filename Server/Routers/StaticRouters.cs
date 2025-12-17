@@ -21,7 +21,6 @@ public class StaticRouters : StaticRouter
     private static ISptLogger<StaticRouters> _logger;
 
     public static bool CacheRebuilt = false;
-    public static string MapToRebuild = string.Empty;
     public static Dictionary<string, Dictionary<string, CustomizedObject>>? BossTrackingData = null;
 
     public StaticRouters(
@@ -58,7 +57,6 @@ public class StaticRouters : StaticRouter
                 {
                     var data = (StartLocalRaidRequestData)info;
                     RaidInformation.IsInRaid = true;
-                    MapToRebuild = data.Location;
                     if (CacheRebuilt)
                     {
                         CacheRebuilt = false;

@@ -9,16 +9,16 @@ namespace _botplacementsystem.Models;
 public record AbpsConfig
 {
     // export type DifficultyConfig = "easy" | "normal" | "hard" | "impossible";
-    [JsonPropertyName("pmcDifficulty")] public Dictionary<string, double> PmcDifficulty { get; set; }
-    [JsonPropertyName("pmcType")] public PmcTypeChance PmcType { get; set; }
-    [JsonPropertyName("pmcConfig")] public PMCConfig PmcConfig { get; set; }
-    [JsonPropertyName("scavConfig")] public ScavConfig ScavConfig { get; set; }
-    [JsonPropertyName("bossDifficulty")] public Dictionary<string, double> BossDifficulty { get; set; }
-    [JsonPropertyName("weeklyBoss")] public WeeklyBossConfig WeeklyBoss { get; set; }
-    [JsonPropertyName("bossConfig")] public BossConfig BossConfig { get; set; }
+    [JsonPropertyName("pmcDifficulty")] public required Dictionary<string, double> PmcDifficulty { get; set; }
+    [JsonPropertyName("pmcType")] public required PmcTypeChance PmcType { get; set; }
+    [JsonPropertyName("pmcConfig")] public required PMCConfig PmcConfig { get; set; }
+    [JsonPropertyName("scavConfig")] public required ScavConfig ScavConfig { get; set; }
+    [JsonPropertyName("bossDifficulty")] public required Dictionary<string, double> BossDifficulty { get; set; }
+    [JsonPropertyName("weeklyBoss")] public required WeeklyBossConfig WeeklyBoss { get; set; }
+    [JsonPropertyName("bossConfig")] public required BossConfig BossConfig { get; set; }
 
     [JsonPropertyName("configAppSettings")]
-    public ConfigAppSettings ConfigAppSettings { get; set; }
+    public required ConfigAppSettings ConfigAppSettings { get; set; }
 }
 
 public record PmcTypeChance
@@ -36,24 +36,24 @@ public record ConfigAppSettings
     [JsonPropertyName("disableAnimations")] public bool DisableAnimations { get; set; }
     [JsonPropertyName("allowUpdateChecks")] public bool AllowUpdateChecks { get; set; }
     [JsonPropertyName("requireAuthCode")] public bool RequireAuthCode { get; set; }
-    [JsonPropertyName("authCode")] public string AuthCode { get; set; }
+    [JsonPropertyName("authCode")] public string? AuthCode { get; set; }
 }
 
 public class ValidLocationsMinMax
 {
-    [JsonPropertyName("bigmap")] public MinMax<int> Customs { get; set; }
-    [JsonPropertyName("factory4_day")] public MinMax<int> Factory4Day { get; set; }
-    [JsonPropertyName("factory4_night")] public MinMax<int> Factory4Night { get; set; }
-    [JsonPropertyName("interchange")] public MinMax<int> Interchange { get; set; }
-    [JsonPropertyName("laboratory")] public MinMax<int> Laboratory { get; set; }
-    [JsonPropertyName("lighthouse")] public MinMax<int> Lighthouse { get; set; }
-    [JsonPropertyName("rezervbase")] public MinMax<int> Reserve { get; set; }
-    [JsonPropertyName("sandbox")] public MinMax<int> GroundZero { get; set; }
-    [JsonPropertyName("sandbox_high")] public MinMax<int> GroundZeroHigh { get; set; }
-    [JsonPropertyName("shoreline")] public MinMax<int> Shoreline { get; set; }
-    [JsonPropertyName("tarkovstreets")] public MinMax<int> TarkovStreets { get; set; }
-    [JsonPropertyName("woods")] public MinMax<int> Woods { get; set; }
-    [JsonPropertyName("labyrinth")] public MinMax<int> Labyrinth { get; set; }
+    [JsonPropertyName("bigmap")] public required MinMax<int> Customs { get; set; }
+    [JsonPropertyName("factory4_day")] public required MinMax<int> Factory4Day { get; set; }
+    [JsonPropertyName("factory4_night")] public required MinMax<int> Factory4Night { get; set; }
+    [JsonPropertyName("interchange")] public required MinMax<int> Interchange { get; set; }
+    [JsonPropertyName("laboratory")] public required MinMax<int> Laboratory { get; set; }
+    [JsonPropertyName("lighthouse")] public required MinMax<int> Lighthouse { get; set; }
+    [JsonPropertyName("rezervbase")] public required MinMax<int> Reserve { get; set; }
+    [JsonPropertyName("sandbox")] public required MinMax<int> GroundZero { get; set; }
+    [JsonPropertyName("sandbox_high")] public required MinMax<int> GroundZeroHigh { get; set; }
+    [JsonPropertyName("shoreline")] public required MinMax<int> Shoreline { get; set; }
+    [JsonPropertyName("tarkovstreets")] public required MinMax<int> TarkovStreets { get; set; }
+    [JsonPropertyName("woods")] public required MinMax<int> Woods { get; set; }
+    [JsonPropertyName("labyrinth")] public required MinMax<int> Labyrinth { get; set; }
     
     public MinMax<int> this[string key]
     {
@@ -236,8 +236,8 @@ public record BossLocationInfo
     [JsonPropertyName("addExtraSpawns")] public bool? AddExtraSpawns { get; set; }
     [JsonPropertyName("disableVanillaSpawns")] public bool? DisableVanillaSpawns { get; set; }
     [JsonPropertyName("time")] public long Time { get; set; }
-    [JsonPropertyName("spawnChance")] public ValidLocationInt SpawnChance { get; set; }
-    [JsonPropertyName("bossZone")] public ValidLocationString BossZone { get; set; }
+    [JsonPropertyName("spawnChance")] public required ValidLocationInt SpawnChance { get; set; }
+    [JsonPropertyName("bossZone")] public required ValidLocationString BossZone { get; set; }
 }
 
 public class BossConfig
@@ -342,6 +342,8 @@ public class BossConfig
 public record WaveConfig
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
+    
+    [JsonPropertyName("allowPmcsOnLabyrinth")] public bool AllowPmcsOnLabyrinth { get; set; }
     [JsonPropertyName("ignoreMaxBotCaps")] public bool IgnoreMaxBotCaps { get; set; }
     [JsonPropertyName("groupChance")] public int GroupChance { get; set; }
     [JsonPropertyName("maxGroupSize")] public int MaxGroupSize { get; set; }
@@ -362,7 +364,7 @@ public record PMCStartingConfig
     [JsonPropertyName("groupChance")] public int GroupChance { get; set; }
     [JsonPropertyName("maxGroupSize")] public int MaxGroupSize { get; set; }
     [JsonPropertyName("maxGroupCount")] public int MaxGroupCount { get; set; }
-    [JsonPropertyName("mapLimits")] public ValidLocationsMinMax MapLimits { get; set; }
+    [JsonPropertyName("mapLimits")] public required ValidLocationsMinMax MapLimits { get; set; }
 }
 
 public record ScavWaveConfig
@@ -385,20 +387,20 @@ public record ScavWaveConfig
 public record ScavStartingConfig
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
-    [JsonPropertyName("maxBotSpawns")] public ValidLocationInt MaxBotSpawns { get; set; }
+    [JsonPropertyName("maxBotSpawns")] public required ValidLocationInt MaxBotSpawns { get; set; }
     [JsonPropertyName("startingMarksman")] public bool StartingMarksman { get; set; }
 }
 
 public record ScavConfig
 {
-    [JsonPropertyName("startingScavs")] public ScavStartingConfig StartingScavs { get; set; }
-    [JsonPropertyName("waves")] public ScavWaveConfig Waves { get; set; }
+    [JsonPropertyName("startingScavs")] public required ScavStartingConfig StartingScavs { get; set; }
+    [JsonPropertyName("waves")] public required ScavWaveConfig Waves { get; set; }
 }
 
 public record PMCConfig
 {
-    [JsonPropertyName("startingPMCs")] public PMCStartingConfig StartingPMCs { get; set; }
-    [JsonPropertyName("waves")] public WaveConfig Waves { get; set; }
+    [JsonPropertyName("startingPMCs")] public required PMCStartingConfig StartingPMCs { get; set; }
+    [JsonPropertyName("waves")] public required WaveConfig Waves { get; set; }
 }
 
 public class BossWaveDefaults : Dictionary<string, List<BossLocationSpawn>>
@@ -412,9 +414,9 @@ public record HostilityDefaults : AdditionalHostilitySettings
 public record PmcDefaults
 {
     [JsonPropertyName("pmcUSEC")]
-    public List<BossLocationSpawn> PmcUSEC { get; set; }
+    public required List<BossLocationSpawn> PmcUSEC { get; set; }
     [JsonPropertyName("pmcBEAR")]
-    public List<BossLocationSpawn> PmcBEAR { get; set; }
+    public required List<BossLocationSpawn> PmcBEAR { get; set; }
 }
 
 public record ScavDefaults : Wave
@@ -423,23 +425,23 @@ public record ScavDefaults : Wave
 
 public record MapZoneDefaults
 {
-    public List<string> CustomsSpawnZones { get; set; }
-    public List<string> CustomsSnipeSpawnZones { get; set; }
-    public List<string> FactorySpawnZones { get; set; }
-    public List<string> InterchangeSpawnZones { get; set; }
-    public List<string> LabsGateSpawnZones { get; set; }
-    public List<string> LabsNonGateSpawnZones { get; set; }
-    public List<string> LighthouseNonWaterTreatmentSpawnZones { get; set; }
-    public List<string> LighthouseWaterTreatmentSpawnZones { get; set; }
-    public List<string> LighthouseSnipeSpawnZones { get; set; }
-    public List<string> ReserveSpawnZones { get; set; }
-    public List<string> GroundZeroSpawnZones { get; set; }
-    public List<string> GroundZeroSnipeSpawnZones { get; set; }
-    public List<string> ShorelineSpawnZones { get; set; }
-    public List<string> ShorelineSnipeSpawnZones { get; set; }
-    public List<string> StreetsSpawnZones { get; set; }
-    public List<string> StreetsSnipeSpawnZones { get; set; }
-    public List<string> WoodsSpawnZones { get; set; }
-    public List<string> WoodsSnipeSpawnZones { get; set; }
-    public List<string> LabyrinthSpawnZones { get; set; }
+    public required List<string> CustomsSpawnZones { get; set; }
+    public required List<string> CustomsSnipeSpawnZones { get; set; }
+    public required List<string> FactorySpawnZones { get; set; }
+    public required List<string> InterchangeSpawnZones { get; set; }
+    public required List<string> LabsGateSpawnZones { get; set; }
+    public required List<string> LabsNonGateSpawnZones { get; set; }
+    public required List<string> LighthouseNonWaterTreatmentSpawnZones { get; set; }
+    public required List<string> LighthouseWaterTreatmentSpawnZones { get; set; }
+    public required List<string> LighthouseSnipeSpawnZones { get; set; }
+    public required List<string> ReserveSpawnZones { get; set; }
+    public required List<string> GroundZeroSpawnZones { get; set; }
+    public required List<string> GroundZeroSnipeSpawnZones { get; set; }
+    public required List<string> ShorelineSpawnZones { get; set; }
+    public required List<string> ShorelineSnipeSpawnZones { get; set; }
+    public required List<string> StreetsSpawnZones { get; set; }
+    public required List<string> StreetsSnipeSpawnZones { get; set; }
+    public required List<string> WoodsSpawnZones { get; set; }
+    public required List<string> WoodsSnipeSpawnZones { get; set; }
+    public required List<string> LabyrinthSpawnZones { get; set; }
 }

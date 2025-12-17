@@ -3,37 +3,18 @@ using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Utils;
-using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
 namespace _botplacementsystem.Controllers;
 
 [Injectable]
-public class PmcSpawns
+public class PmcSpawns(
+    ISptLogger<PmcSpawns> logger,
+    ICloner cloner,
+    WeightedRandomHelper weightedRandomHelper,
+    RandomUtil randomUtil)
 {
-    private ISptLogger<PmcSpawns> _logger;
-    private RandomUtil _randomUtil;
-    private ICloner _cloner;
-    private WeightedRandomHelper _weightedRandomHelper;
-    private DatabaseService _databaseService;
-
-    public PmcSpawns
-    (
-        ISptLogger<PmcSpawns> logger,
-        ICloner cloner,
-        WeightedRandomHelper weightedRandomHelper,
-        RandomUtil randomUtil,
-        DatabaseService databaseService
-    )
-    {
-        _logger = logger;
-        _cloner = cloner;
-        _weightedRandomHelper = weightedRandomHelper;
-        _randomUtil = randomUtil;
-        _databaseService = databaseService;
-    }
-
     public List<BossLocationSpawn> GetCustomMapData(string location, double escapeTimeLimit)
     {
         return GetConfigValueForLocation(location, escapeTimeLimit);
@@ -42,26 +23,29 @@ public class PmcSpawns
     private List<BossLocationSpawn> GetConfigValueForLocation(string location, double escapeTimeLimit)
     {
         location = location.ToLowerInvariant();
-        
+
         var pmcSpawnInfo = new List<BossLocationSpawn>();
+
         if (ModConfig.Config.PmcConfig.StartingPMCs.Enable)
         {
-            pmcSpawnInfo = pmcSpawnInfo.Concat(GenerateStartingPMCWaves(location)).ToList();
+            pmcSpawnInfo.AddRange(GenerateStartingPmcWaves(location));
         }
 
-        if (ModConfig.Config.PmcConfig.Waves.Enable)
+        var canGenerateWaves = ModConfig.Config.PmcConfig.Waves.Enable && (location != "labyrinth" || ModConfig.Config.PmcConfig.Waves.AllowPmcsOnLabyrinth);
+        if (canGenerateWaves)
         {
-            pmcSpawnInfo = pmcSpawnInfo.Concat(GeneratePMCWaves(location, escapeTimeLimit)).ToList();
+            pmcSpawnInfo.AddRange(GeneratePmcWaves(location, escapeTimeLimit));
         }
+
         return pmcSpawnInfo;
     }
 
-    private List<BossLocationSpawn> GeneratePMCWaves(string location, double escapeTimeLimit)
+    private List<BossLocationSpawn> GeneratePmcWaves(string location, double escapeTimeLimit)
     {
         var pmcWaveSpawnInfo = new List<BossLocationSpawn>();
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.Waves.IgnoreMaxBotCaps;
         var difficultyWeights = ModConfig.Config.PmcDifficulty;
-        var waveMaxPMCCount = location.Contains("factory") || location.Contains("labyrinth") ? Math.Min(2, ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave - 2) : ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave;
+        var waveMaxPmcCount = location.Contains("factory") || location.Contains("labyrinth") ? Math.Min(2, ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave - 2) : ModConfig.Config.PmcConfig.Waves.MaxBotsPerWave;
         var waveGroupLimit = ModConfig.Config.PmcConfig.Waves.MaxGroupCount;
         var waveGroupSize = ModConfig.Config.PmcConfig.Waves.MaxGroupSize;
         var waveGroupChance = ModConfig.Config.PmcConfig.Waves.GroupChance;
@@ -73,30 +57,32 @@ public class PmcSpawns
         
         for (var i = 1; i <= waveCount; i++)
         {
-            var currentPMCCount = 0;
+            var currentPmcCount = 0;
             var groupCount = 0;
-            while (currentPMCCount < waveMaxPMCCount)
+            while (currentPmcCount < waveMaxPmcCount)
             {
-                var canBeAGroup = groupCount >= waveGroupLimit ? false : true;
+                var canBeAGroup = groupCount < waveGroupLimit;
                 var groupSize = 0;
-                var remainingSpots = waveMaxPMCCount - currentPMCCount;
-                var isAGroup = remainingSpots > 1 ? _randomUtil.GetChance100(waveGroupChance) : false;
+                var remainingSpots = waveMaxPmcCount - currentPmcCount;
+                var isAGroup = remainingSpots > 1 && randomUtil.GetChance100(waveGroupChance);
                 if (isAGroup && canBeAGroup) 
                 {
-                    groupSize = Math.Min(remainingSpots - 1, _randomUtil.GetInt(1, waveGroupSize));
+                    groupSize = Math.Min(remainingSpots - 1, randomUtil.GetInt(1, waveGroupSize));
                     groupCount++;
                 }
 
-                var pmcType = _randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
-                var bossDefaultData = _cloner.Clone(GetDefaultValuesForBoss(pmcType));
+                var pmcType = randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
+                var bossDefaultData = cloner.Clone(GetDefaultValuesForBoss(pmcType));
 
+                if (bossDefaultData is null) continue;
+                
                 bossDefaultData[0].BossEscortAmount = groupSize.ToString();
                 bossDefaultData[0].Time = currentWaveTime;
-                bossDefaultData[0].BossDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
-                bossDefaultData[0].BossEscortDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
+                bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
+                bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
                 bossDefaultData[0].BossZone = "";
                 bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
-                currentPMCCount += groupSize + 1;
+                currentPmcCount += groupSize + 1;
                 pmcWaveSpawnInfo.Add(bossDefaultData[0]);
             }
             
@@ -106,48 +92,50 @@ public class PmcSpawns
         return pmcWaveSpawnInfo;
     }
 
-    private List<BossLocationSpawn> GenerateStartingPMCWaves(string location)
+    private List<BossLocationSpawn> GenerateStartingPmcWaves(string location)
     {
-        var startingPMCWaveInfo = new List<BossLocationSpawn>();
+        var startingPmcWaveInfo = new List<BossLocationSpawn>();
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
         var mapAsMinMax = ModConfig.Config.PmcConfig.StartingPMCs.MapLimits[location];
-        var minPMCCount = mapAsMinMax.Min;
-        var maxPMCCount = mapAsMinMax.Max;
-        var generatedPMCCount = _randomUtil.GetInt(minPMCCount, maxPMCCount);
+        var minPmcCount = mapAsMinMax.Min;
+        var maxPmcCount = mapAsMinMax.Max;
+        var generatedPmcCount = randomUtil.GetInt(minPmcCount, maxPmcCount);
         var groupChance = ModConfig.Config.PmcConfig.StartingPMCs.GroupChance;
         var groupLimit = ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupCount;
         var groupMaxSize = ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize;
         var difficultyWeights = ModConfig.Config.PmcDifficulty;
 
-        var currentPMCCount = 0;
+        var currentPmcCount = 0;
         var groupCount = 0;
 
-        while (currentPMCCount < generatedPMCCount)
+        while (currentPmcCount < generatedPmcCount)
         {
-            var canBeAGroup = groupCount >= groupLimit ? false : true;
+            var canBeAGroup = groupCount < groupLimit;
             var groupSize = 0;
-            var remainingSpots = generatedPMCCount - currentPMCCount;
+            var remainingSpots = generatedPmcCount - currentPmcCount;
 
-            var isAGroup = remainingSpots > 1 ? _randomUtil.GetChance100(groupChance) : false;
+            var isAGroup = remainingSpots > 1 && randomUtil.GetChance100(groupChance);
             if (isAGroup && canBeAGroup) 
             {
-                groupSize = Math.Min(remainingSpots - 1, _randomUtil.GetInt(1, groupMaxSize));
+                groupSize = Math.Min(remainingSpots - 1, randomUtil.GetInt(1, groupMaxSize));
                 groupCount++;
             }
 
-            var pmcType = _randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
-            var bossDefaultData = _cloner.Clone(this.GetDefaultValuesForBoss(pmcType));
+            var isTrue = randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance);
+            var pmcType = randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
+            var bossDefaultData = cloner.Clone(this.GetDefaultValuesForBoss(pmcType));
 
+            if (bossDefaultData is null) continue;
+            
             bossDefaultData[0].BossEscortAmount = groupSize.ToString();
-            bossDefaultData[0].BossDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
-            bossDefaultData[0].BossEscortDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
+            bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
+            bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossZone = "";
             bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
-            currentPMCCount += groupSize + 1;
-            startingPMCWaveInfo.Add(bossDefaultData[0]);
+            currentPmcCount += groupSize + 1;
+            startingPmcWaveInfo.Add(bossDefaultData[0]);
         }
-        
-        return startingPMCWaveInfo;
+        return startingPmcWaveInfo;
     }
 
     private List<BossLocationSpawn>? GetDefaultValuesForBoss(string boss)
@@ -159,59 +147,61 @@ public class PmcSpawns
             case "pmcBEAR":
                 return ModConfig.PmcDefaults.PmcBEAR;
             default:
-                _logger.Error($"[ABPS] PMC not found in config {boss}");
+                logger.Error($"[ABPS] PMC not found in config {boss}");
                 return null;
         }
     }
     
-    public List<BossLocationSpawn> GenerateScavRaidRemainingPMCs(string location, double remainingRaidTime)
+    public List<BossLocationSpawn> GenerateScavRaidRemainingPmcs(string location, double remainingRaidTime)
     {
         location = location.ToLowerInvariant();
         
-        var startingPMCWaveInfo = new List<BossLocationSpawn>();
+        var startingPmcWaveInfo = new List<BossLocationSpawn>();
         var ignoreMaxBotCaps = ModConfig.Config.PmcConfig.StartingPMCs.IgnoreMaxBotCaps;
-        var MapMinMax = ModConfig.Config.PmcConfig.StartingPMCs.MapLimits[location];
-        var minPMCCount = MapMinMax.Min;
-        var maxPMCCount = MapMinMax.Max;
-        var generatedPMCCount = _randomUtil.GetInt(minPMCCount, maxPMCCount);
+        var mapMinMax = ModConfig.Config.PmcConfig.StartingPMCs.MapLimits[location];
+        var minPmcCount = mapMinMax.Min;
+        var maxPmcCount = mapMinMax.Max;
+        var generatedPmcCount = randomUtil.GetInt(minPmcCount, maxPmcCount);
         var groupChance = ModConfig.Config.PmcConfig.StartingPMCs.GroupChance;
         var groupLimit = ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupCount;
         var groupMaxSize = ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize;
         var difficultyWeights = ModConfig.Config.PmcDifficulty;
 
-        var currentPMCCount = 0;
+        var currentPmcCount = 0;
         var groupCount = 0;
 
-        if (remainingRaidTime < 600) generatedPMCCount = _randomUtil.GetInt(1, 3);
-        if (remainingRaidTime < 1200) generatedPMCCount = _randomUtil.GetInt(1, 6);
-        if (remainingRaidTime < 1800) generatedPMCCount = _randomUtil.GetInt(4, 9);
+        if (remainingRaidTime < 600) generatedPmcCount = randomUtil.GetInt(1, 3);
+        if (remainingRaidTime < 1200) generatedPmcCount = randomUtil.GetInt(1, 6);
+        if (remainingRaidTime < 1800) generatedPmcCount = randomUtil.GetInt(4, 9);
 
-        if (location.Contains("factory") && generatedPMCCount > 5) generatedPMCCount -= 2;
+        if (location.Contains("factory") && generatedPmcCount > 5) generatedPmcCount -= 2;
 
-        while (currentPMCCount < generatedPMCCount)
+        while (currentPmcCount < generatedPmcCount)
         {
-            var canBeAGroup = groupCount >= groupLimit ? false : true;
+            var canBeAGroup = groupCount < groupLimit;
             var groupSize = 0;
-            var remainingSpots = generatedPMCCount - currentPMCCount;
-            var isAGroup = remainingSpots > 1 ? _randomUtil.GetChance100(groupChance) : false;
+            var remainingSpots = generatedPmcCount - currentPmcCount;
+            var isAGroup = remainingSpots > 1 && randomUtil.GetChance100(groupChance);
             if (isAGroup && canBeAGroup) 
             {
-                groupSize = Math.Min(remainingSpots - 1, _randomUtil.GetInt(1, groupMaxSize));
+                groupSize = Math.Min(remainingSpots - 1, randomUtil.GetInt(1, groupMaxSize));
                 groupCount++;
             }
 
-            var pmcType = _randomUtil.GetChance100(50) ? "pmcUSEC" : "pmcBEAR";
-            var bossDefaultData = _cloner.Clone(GetDefaultValuesForBoss(pmcType));
+            var pmcType = randomUtil.GetChance100(50) ? "pmcUSEC" : "pmcBEAR";
+            var bossDefaultData = cloner.Clone(GetDefaultValuesForBoss(pmcType));
 
+            if (bossDefaultData is null) continue;
+            
             bossDefaultData[0].BossEscortAmount = groupSize.ToString();
-            bossDefaultData[0].BossDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
-            bossDefaultData[0].BossEscortDifficulty = _weightedRandomHelper.GetWeightedValue(difficultyWeights);
+            bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
+            bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossZone = "";
             bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
-            currentPMCCount += groupSize + 1;
-            startingPMCWaveInfo.Add(bossDefaultData[0]);
+            currentPmcCount += groupSize + 1;
+            startingPmcWaveInfo.Add(bossDefaultData[0]);
         }
         
-        return startingPMCWaveInfo;
+        return startingPmcWaveInfo;
     }
 }

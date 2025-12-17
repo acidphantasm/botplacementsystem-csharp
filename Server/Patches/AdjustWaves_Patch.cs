@@ -42,7 +42,7 @@ public class AdjustWaves_Patch : AbstractPatch
             }
 
             var totalRemainingTime = raidAdjustments.RaidTimeMinutes * 60;
-            var newStartingPMCs = pmcSpawns.GenerateScavRaidRemainingPMCs(locationName,
+            var newStartingPMCs = pmcSpawns.GenerateScavRaidRemainingPmcs(locationName,
                 totalRemainingTime.GetValueOrDefault());
 
             foreach (var spawn in newStartingPMCs)

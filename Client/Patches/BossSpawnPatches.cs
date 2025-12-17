@@ -47,6 +47,10 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPrefix]
         private static bool PatchPrefix(BossSpawnerClass __instance, BossLocationSpawn wave, BotSpawnParams spawnParams, BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
         {
+            if (Plugin.botSpawnerInstance == null)
+            {
+                Plugin.botSpawnerInstance = __instance.BotSpawner_0;
+            }
             if (wave.BossType != WildSpawnType.pmcBEAR && wave.BossType != WildSpawnType.pmcUSEC)
             {
                 return true;

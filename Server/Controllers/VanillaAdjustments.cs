@@ -10,42 +10,22 @@ using SPTarkov.Server.Core.Utils.Cloners;
 namespace _botplacementsystem.Controllers;
 
 [Injectable]
-public class VanillaAdjustments
+public class VanillaAdjustments(
+    ICloner cloner,
+    ConfigServer configServer,
+    DatabaseServer databaseServer)
 {
-    public LocationConfig LocationConfig { get; set; }
-    public PmcConfig PmcConfig { get; set; }
-    public BotConfig BotConfig { get; set; }
-
-    private ISptLogger<VanillaAdjustments> _logger { get; set; }
-    private ICloner _cloner { get; set; }
-    private DatabaseServer _databaseServer { get; set; }
-    private JsonUtil _jsonUtil { get; set; }
-
-    public VanillaAdjustments
-    (
-        ISptLogger<VanillaAdjustments> logger,
-        ICloner cloner,
-        ConfigServer configServer,
-        DatabaseServer databaseServer,
-        JsonUtil jsonUtil
-    )
-    {
-        _logger = logger;
-        _cloner = cloner;
-        _jsonUtil = jsonUtil;
-        _databaseServer = databaseServer;
-        LocationConfig = configServer.GetConfig<LocationConfig>();
-        PmcConfig = configServer.GetConfig<PmcConfig>();
-        BotConfig = configServer.GetConfig<BotConfig>();
-    }
+    private readonly LocationConfig _locationConfig = configServer.GetConfig<LocationConfig>();
+    private readonly PmcConfig _pmcConfig = configServer.GetConfig<PmcConfig>();
+    private readonly BotConfig _botConfig = configServer.GetConfig<BotConfig>();
 
     public void DisableVanillaSettings()
     {
         // LocationConfig.SplitWaveIntoSingleSpawnSettins.Enabled = false;
-        LocationConfig.RogueLighthouseSpawnTimeSettings.Enabled = false;
-        LocationConfig.AddOpenZonesToAllMaps = false;
-        LocationConfig.AddCustomBotWavesToMaps = false;
-        LocationConfig.EnableBotTypeLimits = false;
+        _locationConfig.RogueLighthouseSpawnTimeSettings.Enabled = false;
+        _locationConfig.AddOpenZonesToAllMaps = false;
+        _locationConfig.AddCustomBotWavesToMaps = false;
+        _locationConfig.EnableBotTypeLimits = false;
     }
 
     public void DisableNewSpawnSystem(LocationBase locationBase)
@@ -149,14 +129,14 @@ public class VanillaAdjustments
 
     public void CheckAndAddScavBrainTypes()
     {
-        if (!BotConfig.PlayerScavBrainType.ContainsKey("labyrinth"))
+        if (!_botConfig.PlayerScavBrainType.ContainsKey("labyrinth"))
         {
-            BotConfig.PlayerScavBrainType["labyrinth"] = _cloner.Clone(BotConfig.PlayerScavBrainType["laboratory"]);
+            _botConfig.PlayerScavBrainType["labyrinth"] = cloner.Clone(_botConfig.PlayerScavBrainType["laboratory"]);
         }
         
-        if (!BotConfig.AssaultBrainType.ContainsKey("labyrinth"))
+        if (!_botConfig.AssaultBrainType.ContainsKey("labyrinth"))
         {
-            BotConfig.AssaultBrainType["labyrinth"] = _cloner.Clone(BotConfig.AssaultBrainType["laboratory"]);
+            _botConfig.AssaultBrainType["labyrinth"] = cloner.Clone(_botConfig.AssaultBrainType["laboratory"]);
         }
     }
 
@@ -169,7 +149,7 @@ public class VanillaAdjustments
             {
                 if (hostility[bot].BotRole == "pmcUSEC" || hostility[bot].BotRole == "pmcBEAR")
                 {
-                    var newHostilitySettings = _cloner.Clone(ModConfig.HostilityDefaults);
+                    var newHostilitySettings = cloner.Clone(ModConfig.HostilityDefaults);
                     newHostilitySettings.BotRole = hostility[bot].BotRole;
                     hostility[bot] = newHostilitySettings;
                 }
@@ -177,7 +157,7 @@ public class VanillaAdjustments
                 // Fix scav hostility settings for every map
                 if (hostility[bot].BotRole == "assault" || hostility[bot].BotRole == "marksman")
                 {
-                    var newHostilitySettings = _cloner.Clone(ModConfig.HostilityDefaults);
+                    var newHostilitySettings = cloner.Clone(ModConfig.HostilityDefaults);
                     newHostilitySettings.BotRole = hostility[bot].BotRole;
                     foreach (var botType in newHostilitySettings.AlwaysEnemies)
                     {
@@ -191,7 +171,7 @@ public class VanillaAdjustments
             }
         }
 
-        var databaseBots = _databaseServer.GetTables().Bots.Types;
+        var databaseBots = databaseServer.GetTables().Bots.Types;
         foreach (var (bot, data) in databaseBots)
         {
             if (bot.Contains("assault") || bot.Contains("marksman"))
@@ -208,25 +188,25 @@ public class VanillaAdjustments
             }
         }
 
-        foreach (var (bot, data) in PmcConfig.HostilitySettings)
+        foreach (var (bot, data) in _pmcConfig.HostilitySettings)
         {
-            if (PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes is not null)
+            if (_pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes is not null)
             {
-                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("assault")) 
-                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("assault");
+                if (!_pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("assault")) 
+                    _pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("assault");
                 
-                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcBEAR")) 
-                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcBEAR");
+                if (!_pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcBEAR")) 
+                    _pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcBEAR");
                 
-                if (!PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcUSEC")) 
-                    PmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcUSEC");
+                if (!_pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Contains("pmcUSEC")) 
+                    _pmcConfig.HostilitySettings[bot].AdditionalEnemyTypes.Add("pmcUSEC");
             }
-            PmcConfig.HostilitySettings[bot].SavageEnemyChance = 100;
-            PmcConfig.HostilitySettings[bot].BearEnemyChance = 100;
-            PmcConfig.HostilitySettings[bot].UsecEnemyChance = 100;
-            PmcConfig.HostilitySettings[bot].SavagePlayerBehaviour = "AlwaysEnemies";
+            _pmcConfig.HostilitySettings[bot].SavageEnemyChance = 100;
+            _pmcConfig.HostilitySettings[bot].BearEnemyChance = 100;
+            _pmcConfig.HostilitySettings[bot].UsecEnemyChance = 100;
+            _pmcConfig.HostilitySettings[bot].SavagePlayerBehaviour = "AlwaysEnemies";
 
-            foreach (var chancedEnemy in PmcConfig.HostilitySettings[bot].ChancedEnemies)
+            foreach (var chancedEnemy in _pmcConfig.HostilitySettings[bot].ChancedEnemies)
             {
                 chancedEnemy.EnemyChance = 100;
             }
@@ -235,7 +215,7 @@ public class VanillaAdjustments
     
     public void RemoveCustomPMCWaves()
     {
-        PmcConfig.RemoveExistingPmcWaves = false;
-        PmcConfig.CustomPmcWaves = new Dictionary<string, List<BossLocationSpawn>>();
+        _pmcConfig.RemoveExistingPmcWaves = false;
+        _pmcConfig.CustomPmcWaves = new Dictionary<string, List<BossLocationSpawn>>();
     }
 }

@@ -1,8 +1,25 @@
 ﻿[
   {
+    "Version": "2.0.9",
+    "ReleaseDate": "December 17, 2025",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Added boolean toggle for disabling Pmc waves on Labyrinth"
+    ],
+    "Changes": [
+      "Many little changes in code for readability and consistency",
+      "Many fields marked required for config that were missing designation"
+    ],
+    "BugFixes": [
+      "Resolved WebConfig undo button not undoing changes properly",
+      "Resolved WebConfig displaying Default button when not enabled in some instances"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.8",
     "ReleaseDate": "December 1, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [

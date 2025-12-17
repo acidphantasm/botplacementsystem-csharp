@@ -9,7 +9,14 @@ using SPTarkov.Server.Core.Utils.Cloners;
 namespace _botplacementsystem.Controllers;
 
 [Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
-public class MapSpawns
+public class MapSpawns(
+    ISptLogger<MapSpawns> logger,
+    BossSpawns bossSpawns,
+    ScavSpawns scavSpawns,
+    PmcSpawns pmcSpawns,
+    VanillaAdjustments vanillaAdjustments,
+    ICloner cloner,
+    DatabaseService databaseService)
 {
     private List<string> _validMaps =
     [
@@ -28,80 +35,54 @@ public class MapSpawns
         "labyrinth"
     ];
 
-    public Dictionary<string, List<BossLocationSpawn>> BotMapCache = new();
-    public Dictionary<string, List<Wave>> ScavMapCache = new();
-    public Dictionary<string, Location> LocationData = new();
+    private readonly Dictionary<string, List<BossLocationSpawn>> _botMapCache = new();
+    private readonly Dictionary<string, List<Wave>> _scavMapCache = new();
+    private Dictionary<string, Location> _locationData = new();
 
-    private ISptLogger<MapSpawns> _logger;
-    private BossSpawns _bossSpawns;
-    private ScavSpawns _scavSpawns;
-    private PmcSpawns _pmcSpawns;
-    private VanillaAdjustments _vanillaAdjustments;
-    private ICloner _cloner;
-    private DatabaseService _databaseService;
-
-    public MapSpawns
-    (
-        ISptLogger<MapSpawns> logger,
-        BossSpawns bossSpawns,
-        ScavSpawns scavSpawns,
-        PmcSpawns pmcSpawns,
-        VanillaAdjustments vanillaAdjustments,
-        ICloner cloner,
-        DatabaseService databaseService
-    )
-    {
-        _logger = logger;
-        _bossSpawns = bossSpawns;
-        _scavSpawns = scavSpawns;
-        _pmcSpawns = pmcSpawns;
-        _vanillaAdjustments = vanillaAdjustments;
-        _cloner = cloner;
-        _databaseService = databaseService;
-    }
+    private ISptLogger<MapSpawns> _logger = logger;
 
     public void ConfigureInitialData()
     {
-        LocationData = _databaseService.GetLocations().GetDictionary();
+        _locationData = databaseService.GetLocations().GetDictionary();
 
         foreach (var map in _validMaps)
         {
-            var actualkey = _databaseService.GetLocations().GetMappedKey(map);
-            LocationData[actualkey].Base.BossLocationSpawn = [];
-            BotMapCache[map] = [];
-            ScavMapCache[map] = [];
+            var actualKey = databaseService.GetLocations().GetMappedKey(map);
+            _locationData[actualKey].Base.BossLocationSpawn = [];
+            _botMapCache[map] = [];
+            _scavMapCache[map] = [];
             if (ModConfig.Config.ScavConfig.Waves.Enable && ModConfig.Config.ScavConfig.StartingScavs.Enable)
             {
-                _vanillaAdjustments.EnableAllSpawnSystems(LocationData[actualkey].Base);
+                vanillaAdjustments.EnableAllSpawnSystems(_locationData[actualKey].Base);
             }
             else if (!ModConfig.Config.ScavConfig.Waves.Enable && ModConfig.Config.ScavConfig.StartingScavs.Enable)
             {
-                _vanillaAdjustments.DisableNewSpawnSystem(LocationData[actualkey].Base);
+                vanillaAdjustments.DisableNewSpawnSystem(_locationData[actualKey].Base);
             }
             else if (!ModConfig.Config.ScavConfig.Waves.Enable && !ModConfig.Config.ScavConfig.StartingScavs.Enable)
             {
-                _vanillaAdjustments.DisableAllSpawnSystems(LocationData[actualkey].Base);
+                vanillaAdjustments.DisableAllSpawnSystems(_locationData[actualKey].Base);
             }
             else if (ModConfig.Config.ScavConfig.Waves.Enable && !ModConfig.Config.ScavConfig.StartingScavs.Enable)
             {
-                _vanillaAdjustments.DisableOldSpawnSystem(LocationData[actualkey].Base);
+                vanillaAdjustments.DisableOldSpawnSystem(_locationData[actualKey].Base);
             }
 
-            _vanillaAdjustments.RemoveExistingWaves(LocationData[actualkey].Base);
-            _vanillaAdjustments.FixPMCHostility(LocationData[actualkey].Base);
-            _vanillaAdjustments.AdjustNewWaveSettings(LocationData[actualkey].Base);
+            vanillaAdjustments.RemoveExistingWaves(_locationData[actualKey].Base);
+            vanillaAdjustments.FixPMCHostility(_locationData[actualKey].Base);
+            vanillaAdjustments.AdjustNewWaveSettings(_locationData[actualKey].Base);
         }
 
-        _vanillaAdjustments.CheckAndAddScavBrainTypes();
-        _vanillaAdjustments.DisableVanillaSettings();
-        _vanillaAdjustments.RemoveCustomPMCWaves();
+        vanillaAdjustments.CheckAndAddScavBrainTypes();
+        vanillaAdjustments.DisableVanillaSettings();
+        vanillaAdjustments.RemoveCustomPMCWaves();
         BuildInitialCache();
     }
 
-    public void BuildInitialCache()
+    private void BuildInitialCache()
     {
         BuildBossWaves();
-        BuildPMCWaves();
+        BuildPmcWaves();
         BuildStartingScavs();
         ReplaceOriginalLocations();
     }
@@ -110,36 +91,36 @@ public class MapSpawns
     {
         foreach (var map in _validMaps)
         {
-            var actualKey = _databaseService.GetLocations().GetMappedKey(map);
+            var actualKey = databaseService.GetLocations().GetMappedKey(map);
             
             var mapData =
-                _bossSpawns.GetCustomMapData(map, LocationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault());
+                bossSpawns.GetCustomMapData(map, _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault());
 
             if (mapData.Any())
             {
                 foreach (var spawn in mapData)
                 {
-                    BotMapCache[map].Add(spawn);
+                    _botMapCache[map].Add(spawn);
                 }
             }
         }
     }
 
-    private void BuildPMCWaves()
+    private void BuildPmcWaves()
     {
         foreach (var map in _validMaps)
         {
-            var actualKey = _databaseService.GetLocations().GetMappedKey(map);
+            var actualKey = databaseService.GetLocations().GetMappedKey(map);
             
-            var mapData = _pmcSpawns.GetCustomMapData(map,
-                LocationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault()
+            var mapData = pmcSpawns.GetCustomMapData(map,
+                _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault()
             );
             
             if (mapData.Any())
             {
                 foreach (var spawn in mapData)
                 {
-                    BotMapCache[map].Add(spawn);
+                    _botMapCache[map].Add(spawn);
                 }
             }
         }
@@ -152,13 +133,13 @@ public class MapSpawns
             if ((map == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || 
                 (map == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) continue;
             
-            var mapData = _scavSpawns.GetCustomMapData(map);
+            var mapData = scavSpawns.GetCustomMapData(map);
             
             if (mapData.Any())
             {
                 foreach (var spawn in mapData)
                 {
-                    ScavMapCache[map].Add(spawn);
+                    _scavMapCache[map].Add(spawn);
                 }
             }
         }
@@ -168,9 +149,9 @@ public class MapSpawns
     {
         foreach (var map in _validMaps)
         {
-            var actualKey = _databaseService.GetLocations().GetMappedKey(map);
-            LocationData[actualKey].Base.BossLocationSpawn = _cloner.Clone(BotMapCache[map]);
-            LocationData[actualKey].Base.Waves = _cloner.Clone(ScavMapCache[map]);
+            var actualKey = databaseService.GetLocations().GetMappedKey(map);
+            _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[map]);
+            _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[map]);
         }
     }
 }
