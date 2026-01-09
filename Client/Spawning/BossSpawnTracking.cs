@@ -38,20 +38,24 @@ namespace acidphantasm_botplacementsystem.Spawning
 
         public static void UpdateBossSpawnChance(WildSpawnType boss)
         {
-            CustomizedObject values = new CustomizedObject();
-            string bossName = boss.ToString();
+            var bossName = boss.ToString();
 
-            values.SpawnedLastRaid = true;
-            values.Chance = Plugin.minimumChance;
+            if (!BossInfoForProfile.TryGetValue(bossName, out var info))
+            {
+                info = new CustomizedObject
+                {
+                    Chance = Plugin.minimumChance,
+                    SpawnedLastRaid = true
+                };
 
-            if (!BossInfoForProfile.ContainsKey(bossName)) BossInfoForProfile.Add(bossName, values);
+                BossInfoForProfile.Add(bossName, info);
+            }
             else
             {
-                BossInfoForProfile[bossName].SpawnedLastRaid = values.SpawnedLastRaid;
-                BossInfoForProfile[bossName].Chance = values.Chance;
+                info.SpawnedLastRaid = true;
             }
-
         }
+
         public static void EndRaidMergeData()
         {
             BossInfoOutOfRaid = BossInfoForProfile;

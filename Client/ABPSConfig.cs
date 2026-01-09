@@ -25,12 +25,15 @@ namespace acidphantasm_botplacementsystem
         public static ConfigEntry<int> streetsMapLimit;
         public static ConfigEntry<int> woodsMapLimit;
         public static ConfigEntry<int> labyrinthMapLimit;
+        
+        private const string BossConfig = "3. Boss Settings";
+        public static ConfigEntry<bool> regressiveChances;
         public static ConfigEntry<bool> progressiveChances;
         public static ConfigEntry<int> chanceStep;
         public static ConfigEntry<int> minimumChance;
         public static ConfigEntry<int> maximumChance;
 
-        private const string PMCConfig = "3. PMC Settings";
+        private const string PMCConfig = "4. PMC Settings";
         public static ConfigEntry<bool> pmcSpawnAnywhere;
         public static ConfigEntry<float> customs_PMCSpawnDistanceCheck;
         public static ConfigEntry<float> factory_PMCSpawnDistanceCheck;
@@ -44,7 +47,7 @@ namespace acidphantasm_botplacementsystem
         public static ConfigEntry<float> woods_PMCSpawnDistanceCheck;
         public static ConfigEntry<float> labyrinth_PMCSpawnDistanceCheck;
 
-        private const string ScavConfig = "4. Scav Settings";
+        private const string ScavConfig = "5. Scav Settings";
         public static ConfigEntry<int> softCap;
         public static ConfigEntry<int> pScavChance;
         public static ConfigEntry<bool> enableHotzones;
@@ -217,41 +220,53 @@ namespace acidphantasm_botplacementsystem
             Plugin.labyrinthMapLimit = labyrinthMapLimit.Value;
             labyrinthMapLimit.SettingChanged += ABPS_SettingChanged;
 
+            
+            // Boss stuff
+            regressiveChances = config.Bind(
+                BossConfig,
+                "Regressive Boss Chances",
+                false,
+                new ConfigDescription("If a boss spawned in the previous raid, lower their chance by the Step Count.\nChanges do not take effect until next raid.",
+                    null,
+                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+            Plugin.regressiveChances = regressiveChances.Value;
+            regressiveChances.SettingChanged += ABPS_SettingChanged;
+
             progressiveChances = config.Bind(
-                GeneralConfig,
+                BossConfig,
                 "Progressive Boss Chances",
                 false,
-                new ConfigDescription("Whether or not bosses will have progressive chances.\nChanges do not take effect until next raid.",
+                new ConfigDescription("If a boss didn't spawn in the previous raid, raise their chance by the Step Count.\nChanges do not take effect until next raid.",
                 null,
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.progressiveChances = progressiveChances.Value;
             progressiveChances.SettingChanged += ABPS_SettingChanged;
 
             chanceStep = config.Bind(
-                GeneralConfig,
-                "Progressive - Step Increase",
+                BossConfig,
+                "Step Count",
                 5,
-                new ConfigDescription("If a boss fails to spawn, how much to increase their spawn chance by.\nChanges do not take effect until next raid.",
+                new ConfigDescription("Progressive: If a boss fails to spawn, how much to increase their spawn chance by.\n\nRegressive: The spawn chance is decreased by this amount if they spawned last raid.\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 15),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.chanceStep = chanceStep.Value;
             chanceStep.SettingChanged += ABPS_SettingChanged;
 
             minimumChance = config.Bind(
-                GeneralConfig,
-                "Progressive - Minimum Chance",
+                BossConfig,
+                "Minimum Chance",
                 5,
-                new ConfigDescription("The value that a bosses chance will reset to if it spawns.\nChanges do not take effect until next raid.",
+                new ConfigDescription("If only Progressive Chances are enabled, a boss that spawns will reset to this value.\n\nIf Regressive Chances are enabled, spawn chance instead decays toward this value if they spawned in the previous raid.\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(1, 25),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.minimumChance = minimumChance.Value;
             minimumChance.SettingChanged += ABPS_SettingChanged;
 
             maximumChance = config.Bind(
-                GeneralConfig,
-                "Progressive - Maximum Chance",
+                BossConfig,
+                "Maximum Chance",
                 100,
-                new ConfigDescription("The maximum value that a boss can have to spawn.\nChanges do not take effect until next raid.",
+                new ConfigDescription("The highest value a boss's spawn chance can reach when progressive chances are enabled.\nChanges do not take effect until next raid.",
                 new AcceptableValueRange<int>(25, 100),
                 new ConfigurationManagerAttributes { Order = loadOrder-- }));
             Plugin.maximumChance = maximumChance.Value;
@@ -560,6 +575,7 @@ namespace acidphantasm_botplacementsystem
             Plugin.woodsMapLimit = woodsMapLimit.Value;
             Plugin.labyrinthMapLimit = labyrinthMapLimit.Value;
 
+            Plugin.regressiveChances = regressiveChances.Value;
             Plugin.progressiveChances = progressiveChances.Value;
             Plugin.chanceStep = chanceStep.Value;
             Plugin.minimumChance = minimumChance.Value;

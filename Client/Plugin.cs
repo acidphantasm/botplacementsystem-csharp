@@ -6,7 +6,7 @@ using EFT;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.9")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.10")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -28,6 +28,8 @@ namespace acidphantasm_botplacementsystem
         public static int streetsMapLimit;
         public static int woodsMapLimit;
         public static int labyrinthMapLimit;
+        
+        public static bool regressiveChances;
         public static bool progressiveChances;
         public static int chanceStep;
         public static int minimumChance;

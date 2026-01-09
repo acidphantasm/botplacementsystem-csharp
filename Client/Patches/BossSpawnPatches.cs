@@ -273,7 +273,7 @@ namespace acidphantasm_botplacementsystem.Patches
             if (data.Profiles[0].Info.Settings.Role.IsBoss())
             {
                 var bossName = data.Profiles[0].Info.Settings.Role;
-                if (BossSpawnTracking.TrackedBosses.Contains(bossName) && Plugin.progressiveChances)
+                if (BossSpawnTracking.TrackedBosses.Contains(bossName) && (Plugin.progressiveChances || Plugin.regressiveChances))
                 {
                     Logger.LogInfo($"Saving boss as spawned: {bossName}");
                     BossSpawnTracking.UpdateBossSpawnChance(bossName);

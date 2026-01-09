@@ -16,53 +16,49 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPrefix]
         private static void PatchPrefix(BossLocationSpawn[] bossWaves, Action<BossLocationSpawn> spawnBossAction)
         {
-            if (Plugin.progressiveChances)
+            if (!Plugin.progressiveChances && !Plugin.regressiveChances) return;
+            
+            foreach (var wave in bossWaves)
             {
-                foreach (var wave in bossWaves)
+                var currentBossLocationSpawn = wave;
+                var bossName = currentBossLocationSpawn.BossType.ToString();
+
+                if (!TrackedBosses.Contains(currentBossLocationSpawn.BossType)) continue;
+
+                if (BossInfoForProfile.TryGetValue(bossName, out var info))
                 {
-                    BossLocationSpawn currentBossSpawn = wave;
-                    string bossName = currentBossSpawn.BossType.ToString();
+                    var didBossSpawnLastRaid = info.SpawnedLastRaid;
 
-                    if (!TrackedBosses.Contains(currentBossSpawn.BossType)) continue;
-
-                    float chance = currentBossSpawn.BossChance;
-
-                    if (BossInfoForProfile.ContainsKey(bossName))
+                    if (didBossSpawnLastRaid)
                     {
-                        int newChance = 0;
-                        bool didBossSpawnLastRaid = BossInfoForProfile[bossName].SpawnedLastRaid;
-
-                        if (didBossSpawnLastRaid)
+                        if (Plugin.regressiveChances)
                         {
-                            BossInfoForProfile[bossName].SpawnedLastRaid = false;
-                            newChance = Plugin.minimumChance;
+                            info.Chance = Math.Max(Plugin.minimumChance, info.Chance - Plugin.chanceStep);
                         }
                         else
                         {
-                            if (BossInfoForProfile[bossName].Chance + Plugin.chanceStep > Plugin.maximumChance)
-                            {
-                                BossInfoForProfile[bossName].Chance = Plugin.maximumChance;
-                                newChance = Plugin.maximumChance;
-                            }
-                            else
-                            {
-                                BossInfoForProfile[bossName].Chance += Plugin.chanceStep;
-                                newChance = BossInfoForProfile[bossName].Chance;
-                            }
+                            info.Chance = Plugin.minimumChance;
                         }
 
-                        chance = newChance;
-                        Plugin.LogSource.LogInfo($"Setting chance to {newChance} for {bossName}");
+                        info.SpawnedLastRaid = false;
                     }
-                    else
+                    else if (Plugin.progressiveChances)
                     {
-                        Plugin.LogSource.LogInfo($"Setting chance to {Plugin.minimumChance} for {bossName}");
-                        CustomizedObject values = new CustomizedObject();
-                        values.SpawnedLastRaid = false;
-                        values.Chance = Plugin.minimumChance;
-                        BossInfoForProfile.Add(bossName, values);
-                        chance = values.Chance;
+                        info.Chance = Math.Min(Plugin.maximumChance, info.Chance + Plugin.chanceStep);
                     }
+                    
+                    currentBossLocationSpawn.BossChance = info.Chance;
+                        
+                    Plugin.LogSource.LogInfo($"Setting chance to {currentBossLocationSpawn.BossChance} for {bossName} - Did spawn last raid? {didBossSpawnLastRaid}");
+                }
+                else
+                {
+                    Plugin.LogSource.LogInfo($"Setting chance to {Plugin.minimumChance} for {bossName}");
+                    CustomizedObject values = new CustomizedObject();
+                    values.SpawnedLastRaid = false;
+                    values.Chance = Plugin.minimumChance;
+                    BossInfoForProfile.Add(bossName, values);
+                    currentBossLocationSpawn.BossChance = values.Chance;
                 }
             }
         }

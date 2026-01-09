@@ -1,8 +1,21 @@
 ﻿[
   {
+    "Version": "2.0.10",
+    "ReleaseDate": "January 9, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Added Regressive Chance toggle in F12"
+    ],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved small bug in Progressive Chances"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.9",
     "ReleaseDate": "December 17, 2025",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Added boolean toggle for disabling Pmc waves on Labyrinth"
     ],
