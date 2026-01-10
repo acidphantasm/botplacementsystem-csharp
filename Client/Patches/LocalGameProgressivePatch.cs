@@ -25,40 +25,45 @@ namespace acidphantasm_botplacementsystem.Patches
 
                 if (!TrackedBosses.Contains(currentBossLocationSpawn.BossType)) continue;
 
+                if (currentBossLocationSpawn.BossChance >= 99.9f)
+                {
+                    Plugin.LogSource.LogInfo($"{bossName} is 100% chance. Skipping progressive/regressive changes. Probably a weekly boss? Or you set it to 100% in the config.");
+                    continue;
+                }
+                
                 if (BossInfoForProfile.TryGetValue(bossName, out var info))
                 {
                     var didBossSpawnLastRaid = info.SpawnedLastRaid;
 
                     if (didBossSpawnLastRaid)
                     {
-                        if (Plugin.regressiveChances)
-                        {
-                            info.Chance = Math.Max(Plugin.minimumChance, info.Chance - Plugin.chanceStep);
-                        }
-                        else
-                        {
-                            info.Chance = Plugin.minimumChance;
-                        }
+                        info.Chance = Plugin.regressiveChances ? Math.Max(Plugin.minimumChance, info.Chance - Plugin.chanceStep) : Plugin.minimumChance;
 
-                        info.SpawnedLastRaid = false;
+                        currentBossLocationSpawn.BossChance = info.Chance;
+                        Plugin.LogSource.LogInfo($"{bossName} spawned last raid. New Chance: {currentBossLocationSpawn.BossChance}");
                     }
                     else if (Plugin.progressiveChances)
                     {
                         info.Chance = Math.Min(Plugin.maximumChance, info.Chance + Plugin.chanceStep);
+                        currentBossLocationSpawn.BossChance = info.Chance;
+                        Plugin.LogSource.LogInfo($"{bossName} did not spawn last raid. New Chance: {currentBossLocationSpawn.BossChance}");
                     }
                     
-                    currentBossLocationSpawn.BossChance = info.Chance;
-                        
-                    Plugin.LogSource.LogInfo($"Setting chance to {currentBossLocationSpawn.BossChance} for {bossName} - Did spawn last raid? {didBossSpawnLastRaid}");
+                    info.SpawnedLastRaid = false;
                 }
                 else
                 {
-                    Plugin.LogSource.LogInfo($"Setting chance to {Plugin.minimumChance} for {bossName}");
-                    CustomizedObject values = new CustomizedObject();
-                    values.SpawnedLastRaid = false;
-                    values.Chance = Plugin.minimumChance;
+                    var initialChance = (int)Math.Round(currentBossLocationSpawn.BossChance);
+
+                    Plugin.LogSource.LogInfo($"Storing {bossName} with existing chance {initialChance}");
+
+                    CustomizedObject values = new CustomizedObject
+                    {
+                        SpawnedLastRaid = false,
+                        Chance = initialChance
+                    };
+
                     BossInfoForProfile.Add(bossName, values);
-                    currentBossLocationSpawn.BossChance = values.Chance;
                 }
             }
         }

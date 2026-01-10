@@ -1,8 +1,20 @@
 ﻿[
   {
+    "Version": "2.0.11",
+    "ReleaseDate": "January 10, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved Regressive Chances resetting boss to minimum spawn chance if they didn't spawn in prior raid",
+      "Resolved Progressive/Regressive chances impacting Weekly Boss config option"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.10",
     "ReleaseDate": "January 9, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Added Regressive Chance toggle in F12"
     ],
