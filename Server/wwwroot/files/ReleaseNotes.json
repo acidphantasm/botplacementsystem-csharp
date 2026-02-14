@@ -6,8 +6,13 @@
     "NewFeatures": [
       "Webconfig toggle for each boss to disable their followers"
     ],
-    "Changes": [],
-    "BugFixes": [],
+    "Changes": [
+      "F12 moved Despawn options into Advanced Menu",
+      "Renamed `Group Size` in PMC Group config for clarity"
+    ],
+    "BugFixes": [
+      "Resolved the Per Player Scav Spawn Limit not being implemented by BSG"
+    ],
     "KnownIssues": []
   },
   {
