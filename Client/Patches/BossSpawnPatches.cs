@@ -35,6 +35,8 @@ namespace acidphantasm_botplacementsystem.Patches
             Utility.playerSpawnPoints.Clear();
             Utility.backupPlayerSpawnPoints.Clear();
             Utility.combinedSpawnPoints.Clear();
+            Utility.botsSpawnedPerPlayer = 0.0;
+            Utility.connectedPlayerCount = 0;
         }
     }
     internal class PMCDistancePatch : ModulePatch

@@ -100,6 +100,16 @@ namespace acidphantasm_botplacementsystem.Patches
                 }
                 return false;
             }
+            
+            if (Utility.connectedPlayerCount == 0)
+            {
+                SetConnectedPlayerCount();
+            }
+            
+            if (___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE > Utility.botsSpawnedPerPlayer)
+            {
+                return false;
+            }
 
             num = ___gclass1876_0.TrySpawn(num, ___botsController_0, ___gclass1881_0);
 
@@ -126,6 +136,7 @@ namespace acidphantasm_botplacementsystem.Patches
                     ChanceGroup = 0,
                 };
 
+                Utility.botsSpawnedPerPlayer += 1d / Math.Max(1, Utility.connectedPlayerCount);
                 ___botsController_0.ActivateBotsByWave(botWaveDataClass);
             }
             
@@ -162,6 +173,23 @@ namespace acidphantasm_botplacementsystem.Patches
             {
                 AttemptToDespawnBot(botsController, botToDespawn);
             }
+        }
+        
+        private static void SetConnectedPlayerCount()
+        {
+            var allBotsNoBosses = Utility.GetAllCachedBots();
+            var playerCount = 0;
+            
+            foreach (var player in allBotsNoBosses)
+            {
+                if (player == null) continue;
+                if (player.IsAI) continue;
+                if (player.Profile.GetCorrectedNickname().StartsWith("headless_")) continue;
+
+                playerCount++;
+            }
+
+            Utility.connectedPlayerCount = playerCount;
         }
 
         private static Vector3 GetCenterOfActivePlayers()

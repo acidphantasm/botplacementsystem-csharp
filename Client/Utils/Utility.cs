@@ -21,6 +21,8 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<ISpawnPoint> backupPlayerSpawnPoints = new();
         public static List<ISpawnPoint> combinedSpawnPoints = new();
         public static List<BotZone> currentMapZones = new();
+        public static double botsSpawnedPerPlayer;
+        public static int connectedPlayerCount;
 
         public static Dictionary<string, string[]> mapHotSpots = new()
         {
