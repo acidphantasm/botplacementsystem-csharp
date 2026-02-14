@@ -1,8 +1,19 @@
 ﻿[
   {
-    "Version": "2.0.12",
+    "Version": "2.0.13",
     "ReleaseDate": "February 14, 2026",
     "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [],
+    "BugFixes": [
+      "Resolved the Per Player Scav Spawn Limit check being flipped"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.12",
+    "ReleaseDate": "February 14, 2026",
+    "IsLatest": false,
     "NewFeatures": [
       "Webconfig toggle for each boss to disable their followers"
     ],
