@@ -75,7 +75,7 @@ namespace acidphantasm_botplacementsystem
                 false,
                 new ConfigDescription("Enabling this will only despawn scavs, if you want to also despawn PMCs you must also check the below option.",
                     null,
-                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+                    new ConfigurationManagerAttributes { IsAdvanced = true, Order = loadOrder-- }));
             Plugin.despawnFurthest = despawnFurthest.Value;
             despawnFurthest.SettingChanged += ABPS_SettingChanged;
             
@@ -85,7 +85,7 @@ namespace acidphantasm_botplacementsystem
                 false,
                 new ConfigDescription("Allow ABPS to despawn PMCs. \nRequires `Enable Despawning`\n\n If you enable this and don't turn on PMC waves, then expect to have almost no PMCs in your raids. \nThat's on you.",
                     null,
-                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+                    new ConfigurationManagerAttributes { IsAdvanced = true, Order = loadOrder-- }));
             Plugin.despawnPmcs = despawnPmcs.Value;
             despawnPmcs.SettingChanged += ABPS_SettingChanged;
             
@@ -95,7 +95,7 @@ namespace acidphantasm_botplacementsystem
                 250f,
                 new ConfigDescription("Distance that bots must be from player to trigger despawning.",
                     new AcceptableValueRange<float>(100f, 500f),
-                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+                    new ConfigurationManagerAttributes { IsAdvanced = true, Order = loadOrder-- }));
             Plugin.despawnDistance = despawnDistance.Value;
             despawnDistance.SettingChanged += ABPS_SettingChanged;
             
@@ -105,7 +105,7 @@ namespace acidphantasm_botplacementsystem
                 300f,
                 new ConfigDescription("Timer for despawning, this is the MINIMUM time between despawning attempts. In Seconds.",
                     new AcceptableValueRange<float>(180f, 600f),
-                    new ConfigurationManagerAttributes { Order = loadOrder-- }));
+                    new ConfigurationManagerAttributes { IsAdvanced = true, Order = loadOrder-- }));
             Plugin.despawnTimer = despawnTimer.Value;
             despawnTimer.SettingChanged += ABPS_SettingChanged;
             
