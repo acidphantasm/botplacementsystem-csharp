@@ -233,6 +233,7 @@ public class ValidLocationString
 public record BossLocationInfo
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
+    [JsonPropertyName("disableFollowers")] public bool DisableFollowers { get; set; }
     [JsonPropertyName("addExtraSpawns")] public bool? AddExtraSpawns { get; set; }
     [JsonPropertyName("disableVanillaSpawns")] public bool? DisableVanillaSpawns { get; set; }
     [JsonPropertyName("time")] public long Time { get; set; }

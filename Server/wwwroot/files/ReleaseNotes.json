@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.0.12",
+    "ReleaseDate": "February 14, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Webconfig toggle for each boss to disable their followers"
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.11",
     "ReleaseDate": "January 10, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [

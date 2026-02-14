@@ -43,6 +43,32 @@
             {
                 <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="General" Expanded=true>
                     <MudGrid>
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Disables the bosses followers (if any). They will spawn alone." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Disable Followers</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_killa_DisableFollowers" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_killa_DisableFollowers</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_killa_DisableFollowers"))
+                            {
+                                <MudButton @onclick="undo_Killa_DisableFollowers" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _killa_DisableFollowers != false)
+                            {
+                                <MudButton @onclick="default_Killa_DisableFollowers" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
                         <MudItem xs="1"/>
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
@@ -1085,6 +1111,17 @@
     }
     private void undo_Killa_Enable() => _killa_Enabled = ModConfig.OriginalConfig.BossConfig.BossKilla.Enable;
     private void default_Killa_Enable() => _killa_Enabled = true;
+    private bool _killa_DisableFollowers
+    {
+        get => ModConfig.Config.BossConfig.BossKilla.DisableFollowers;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.BossKilla.DisableFollowers);
+            ModConfig.Config.BossConfig.BossKilla.DisableFollowers = value;
+        }
+    }
+    private void undo_Killa_DisableFollowers() => _killa_DisableFollowers = ModConfig.OriginalConfig.BossConfig.BossKilla.DisableFollowers;
+    private void default_Killa_DisableFollowers() => _killa_DisableFollowers = false;
     private long _killa_Time
     {
         get => ModConfig.Config.BossConfig.BossKilla.Time;

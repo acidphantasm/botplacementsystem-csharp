@@ -37,7 +37,13 @@ public class BossSpawns(
 
             if (!bossData.Enable) continue;
             if (bossDefaultData is null) continue;
-
+            if (bossData.DisableFollowers)
+            {
+                bossDefaultData[0].BossEscortAmount = "0";
+                bossDefaultData[0].BossEscortType = bossDefaultData[0].BossName;
+                bossDefaultData[0].Supports = null!;
+            }
+            
             if (boss == "exUsec" && !(bossData.DisableVanillaSpawns ?? false) && location == "lighthouse" ||
                 boss == "pmcBot" && !(bossData.DisableVanillaSpawns ?? false) && (location == "laboratory" || location == "rezervbase") ||
                 boss == "tagillaHelperAgro" && !(bossData.DisableVanillaSpawns ?? false) && location == "labyrinth")
@@ -81,6 +87,7 @@ public class BossSpawns(
                 }
                 else bossDefaultData[0].BossChance = bossData.SpawnChance[location];
             }
+
             bossDefaultData[0].BossZone = (string?)bossData.BossZone[location];
             bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
@@ -149,6 +156,14 @@ public class BossSpawns(
                 bossDefaultData[0].Time = currentWaveTime;
                 currentBotCount += groupSize + 1;
                 groupCount++;
+                
+                if (bossConfigData.DisableFollowers)
+                {
+                    bossDefaultData[0].BossEscortAmount = "0";
+                    bossDefaultData[0].BossEscortType = bossDefaultData[0].BossName;
+                    bossDefaultData[0].Supports = null!;
+                }
+                
                 pmcWaveSpawnInfo.Add(bossDefaultData[0]);
             }
             

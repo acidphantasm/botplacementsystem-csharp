@@ -46,6 +46,32 @@
                         <MudItem xs="1" />
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Disables the bosses followers (if any). They will spawn alone." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Disable Followers</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_Rogue_DisableFollowers" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_Rogue_DisableFollowers</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_Rogue_DisableFollowers"))
+                            {
+                                <MudButton @onclick="undo_Rogues_DisableFollowers" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _Rogue_DisableFollowers != false)
+                            {
+                                <MudButton @onclick="default_Rogues_DisableFollowers" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                                 <MudTooltip Text="Adds additional spawns that you configure below per map." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                     <MudText>Add Extra Spawns</MudText>
                                 </MudTooltip>
@@ -1131,6 +1157,17 @@
     }
     private void undo_Rogues_Enable() => _Rogue_Enabled = ModConfig.OriginalConfig.BossConfig.ExUsec.Enable;
     private void default_Rogues_Enable() => _Rogue_Enabled = true;
+    private bool _Rogue_DisableFollowers
+    {
+        get => ModConfig.Config.BossConfig.ExUsec.DisableFollowers;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.ExUsec.DisableFollowers);
+            ModConfig.Config.BossConfig.ExUsec.DisableFollowers = value;
+        }
+    }
+    private void undo_Rogues_DisableFollowers() => _Rogue_DisableFollowers = ModConfig.OriginalConfig.BossConfig.ExUsec.DisableFollowers;
+    private void default_Rogues_DisableFollowers() => _Rogue_DisableFollowers = false;
     private bool? _Rogue_AddExtraSpawns
     {
         get => ModConfig.Config.BossConfig.ExUsec.AddExtraSpawns;

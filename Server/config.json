@@ -131,6 +131,7 @@
   "bossConfig": {
     "bossKnight": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 30,
@@ -165,6 +166,7 @@
     },
     "bossBully": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 30,
@@ -199,6 +201,7 @@
     },
     "bossTagilla": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -233,6 +236,7 @@
     },
     "bossKilla": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -267,6 +271,7 @@
     },
     "bossZryachiy": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -300,6 +305,7 @@
     },
     "bossGluhar": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -334,6 +340,7 @@
     },
     "bossSanitar": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -368,6 +375,7 @@
     },
     "bossKolontay": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -402,6 +410,7 @@
     },
     "bossBoar": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -436,6 +445,7 @@
     },
     "bossKojaniy": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -470,6 +480,7 @@
     },
     "bossTagillaAgro": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -504,6 +515,7 @@
     },
     "bossKillaAgro": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,
@@ -538,6 +550,7 @@
     },
     "tagillaHelperAgro": {
       "enable": true,
+      "disableFollowers": false,
       "addExtraSpawns": false,
       "disableVanillaSpawns": false,
       "time": -1,
@@ -574,6 +587,7 @@
     },
     "bossPartisan": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 30,
@@ -608,6 +622,7 @@
     },
     "sectantPriest": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 15,
@@ -642,6 +657,7 @@
     },
     "arenaFighterEvent": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 5,
@@ -676,6 +692,7 @@
     },
     "pmcBot": {
       "enable": true,
+      "disableFollowers": false,
       "addExtraSpawns": true,
       "disableVanillaSpawns": false,
       "time": -1,
@@ -712,6 +729,7 @@
     },
     "exUsec": {
       "enable": true,
+      "disableFollowers": false,
       "addExtraSpawns": false,
       "disableVanillaSpawns": false,
       "time": -1,
@@ -748,6 +766,7 @@
     },
     "gifter": {
       "enable": true,
+      "disableFollowers": false,
       "time": -1,
       "spawnChance": {
         "bigmap": 0,

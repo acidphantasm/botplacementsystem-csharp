@@ -46,6 +46,32 @@
                         <MudItem xs="1" />
                         <MudItem xs="4">
                             <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                <MudTooltip Text="Disables the bosses followers (if any). They will spawn alone." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                    <MudText>Disable Followers</MudText>
+                                </MudTooltip>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                <MudSwitch T="bool" @bind-Value="_raider_DisableFollowers" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_raider_DisableFollowers</MudSwitch>
+                            </MudPaper>
+                        </MudItem>
+                        <MudItem xs="1">
+                            @if (MainLayout._appUndoButtonToggle &&
+                                 MainLayout.pendingChanges.Contains("_raider_DisableFollowers"))
+                            {
+                                <MudButton @onclick="undo_Raiders_DisableFollowers" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            }
+                            else if (MainLayout._appDefaultButtonToggle &&
+                                     _raider_DisableFollowers != false)
+                            {
+                                <MudButton @onclick="default_Raiders_DisableFollowers" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            }
+                        </MudItem>
+
+                        <MudItem xs="1" />
+                        <MudItem xs="4">
+                            <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                                 <MudTooltip Text="Adds additional spawns that you configure below per map." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
                                     <MudText>Add Extra Spawns</MudText>
                                 </MudTooltip>
@@ -1134,6 +1160,17 @@
     }
     private void undo_Raiders_Enable() => _Raider_Enabled = ModConfig.OriginalConfig.BossConfig.PmcBot.Enable;
     private void default_Raiders_Enable() => _Raider_Enabled = true;
+    private bool _raider_DisableFollowers
+    {
+        get => ModConfig.Config.BossConfig.PmcBot.DisableFollowers;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.BossConfig.PmcBot.DisableFollowers);
+            ModConfig.Config.BossConfig.PmcBot.DisableFollowers = value;
+        }
+    }
+    private void undo_Raiders_DisableFollowers() => _raider_DisableFollowers = ModConfig.OriginalConfig.BossConfig.PmcBot.DisableFollowers;
+    private void default_Raiders_DisableFollowers() => _raider_DisableFollowers = false;
     private bool? _raiders_AddExtraSpawns
     {
         get => ModConfig.Config.BossConfig.PmcBot.AddExtraSpawns;
