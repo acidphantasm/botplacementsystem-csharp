@@ -106,7 +106,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 SetConnectedPlayerCount();
             }
             
-            if (___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE > Utility.botsSpawnedPerPlayer)
+            if (Utility.botsSpawnedPerPlayer > ___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE)
             {
                 return false;
             }
