@@ -1,8 +1,19 @@
 ﻿[
   {
+    "Version": "2.0.14",
+    "ReleaseDate": "April 1, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Nothing at all I promise"
+    ],
+    "Changes": [],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.13",
     "ReleaseDate": "February 14, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [],
     "BugFixes": [
