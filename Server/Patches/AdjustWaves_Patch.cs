@@ -25,44 +25,29 @@ public class AdjustWaves_Patch : AbstractPatch
     {
         var pmcSpawns = ServiceLocator.ServiceProvider.GetService<PmcSpawns>();
         var scavSpawns = ServiceLocator.ServiceProvider.GetService<ScavSpawns>();
-        
         var locationName = mapBase.Id.ToLowerInvariant();
-        if (raidAdjustments.SimulatedRaidStartSeconds > 60)
+
+        var simulatedStart = raidAdjustments.SimulatedRaidStartSeconds ?? 0d;
+        var totalRaidSeconds = (raidAdjustments.RaidTimeMinutes ?? 0d) * 60;
+        var remainingTime = totalRaidSeconds - simulatedStart;
+
+        if (simulatedStart > 60d)
         {
-            var mapBosses = mapBase.BossLocationSpawn.Where((x) =>
-                x.Time == -1 && x.BossName != "pmcUSEC" && x.BossName != "pmcBEAR");
+            var mapBosses = mapBase.BossLocationSpawn
+                .Where(x => x.Time == -1
+                            && !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase))
+                .ToList();
 
-            mapBase.BossLocationSpawn = mapBase.BossLocationSpawn.Where((x) =>
-                x.Time > raidAdjustments.SimulatedRaidStartSeconds &&
-                (x.BossName == "pmcUSEC" || x.BossName == "pmcBEAR")).ToList();
+            var newPmcs = pmcSpawns.GenerateScavRaidRemainingPmcs(locationName, remainingTime);
+            mapBase.BossLocationSpawn = newPmcs;
 
-            foreach (var bossWave in mapBase.BossLocationSpawn)
-            {
-                bossWave.Time -= Math.Max(raidAdjustments.SimulatedRaidStartSeconds.GetValueOrDefault(), 0);
-            }
+            foreach (var boss in mapBosses)
+                mapBase.BossLocationSpawn.Add(boss);
 
-            var totalRemainingTime = raidAdjustments.RaidTimeMinutes * 60;
-            var newStartingPMCs = pmcSpawns.GenerateScavRaidRemainingPmcs(locationName,
-                totalRemainingTime.GetValueOrDefault());
-
-            foreach (var spawn in newStartingPMCs)
-            {
-                mapBase.BossLocationSpawn.Add(spawn);
-            }
-
-            foreach (var spawn in mapBosses)
-            {
-                mapBase.BossLocationSpawn.Add(spawn);
-            }
-
-            var newStartingScavs = scavSpawns.GenerateStartingScavs(locationName, "assault", true, mapBase.Waves.Count);
-
-            foreach (var spawn in newStartingScavs)
-            {
-                mapBase.Waves.Add(spawn);
-            }
+            mapBase.Waves = scavSpawns.GetLateStartMapData(locationName);
         }
-        
+
         return false;
     }
 }

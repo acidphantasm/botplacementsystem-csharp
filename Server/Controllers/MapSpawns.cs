@@ -51,21 +51,20 @@ public class MapSpawns(
             _locationData[actualKey].Base.BossLocationSpawn = [];
             _botMapCache[map] = [];
             _scavMapCache[map] = [];
-            if (ModConfig.Config.ScavConfig.Waves.Enable && ModConfig.Config.ScavConfig.StartingScavs.Enable)
+            switch (ModConfig.Config.ScavConfig.Waves.Enable)
             {
-                vanillaAdjustments.EnableAllSpawnSystems(_locationData[actualKey].Base);
-            }
-            else if (!ModConfig.Config.ScavConfig.Waves.Enable && ModConfig.Config.ScavConfig.StartingScavs.Enable)
-            {
-                vanillaAdjustments.DisableNewSpawnSystem(_locationData[actualKey].Base);
-            }
-            else if (!ModConfig.Config.ScavConfig.Waves.Enable && !ModConfig.Config.ScavConfig.StartingScavs.Enable)
-            {
-                vanillaAdjustments.DisableAllSpawnSystems(_locationData[actualKey].Base);
-            }
-            else if (ModConfig.Config.ScavConfig.Waves.Enable && !ModConfig.Config.ScavConfig.StartingScavs.Enable)
-            {
-                vanillaAdjustments.DisableOldSpawnSystem(_locationData[actualKey].Base);
+                case true when ModConfig.Config.ScavConfig.StartingScavs.Enable:
+                    vanillaAdjustments.EnableAllSpawnSystems(_locationData[actualKey].Base);
+                    break;
+                case false when ModConfig.Config.ScavConfig.StartingScavs.Enable:
+                    vanillaAdjustments.DisableNewSpawnSystem(_locationData[actualKey].Base);
+                    break;
+                case false when !ModConfig.Config.ScavConfig.StartingScavs.Enable:
+                    vanillaAdjustments.DisableAllSpawnSystems(_locationData[actualKey].Base);
+                    break;
+                case true when !ModConfig.Config.ScavConfig.StartingScavs.Enable:
+                    vanillaAdjustments.DisableOldSpawnSystem(_locationData[actualKey].Base);
+                    break;
             }
 
             vanillaAdjustments.RemoveExistingWaves(_locationData[actualKey].Base);
@@ -96,12 +95,14 @@ public class MapSpawns(
             var mapData =
                 bossSpawns.GetCustomMapData(map, _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault());
 
-            if (mapData.Any())
+            if (mapData.Count == 0)
             {
-                foreach (var spawn in mapData)
-                {
-                    _botMapCache[map].Add(spawn);
-                }
+                continue;
+            }
+            
+            foreach (var spawn in mapData)
+            {
+                _botMapCache[map].Add(spawn);
             }
         }
     }
@@ -115,13 +116,15 @@ public class MapSpawns(
             var mapData = pmcSpawns.GetCustomMapData(map,
                 _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault()
             );
-            
-            if (mapData.Any())
+
+            if (mapData.Count == 0)
             {
-                foreach (var spawn in mapData)
-                {
-                    _botMapCache[map].Add(spawn);
-                }
+                continue;
+            }
+            
+            foreach (var spawn in mapData)
+            {
+                _botMapCache[map].Add(spawn);
             }
         }
     }
@@ -134,13 +137,15 @@ public class MapSpawns(
                 (map == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) continue;
             
             var mapData = scavSpawns.GetCustomMapData(map);
-            
-            if (mapData.Any())
+
+            if (mapData.Count == 0)
             {
-                foreach (var spawn in mapData)
-                {
-                    _scavMapCache[map].Add(spawn);
-                }
+                continue;
+            }
+            
+            foreach (var spawn in mapData)
+            {
+                _scavMapCache[map].Add(spawn);
             }
         }
     }

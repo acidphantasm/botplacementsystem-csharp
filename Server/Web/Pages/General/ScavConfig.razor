@@ -769,7 +769,7 @@
                             <MudButton @onclick="undo_Scav_Wave_PendingSpawnTrigger" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
                         else if (MainLayout._appDefaultButtonToggle &&
-                        _scav_Wave_PendingSpawnTrigger != 3)
+                        _scav_Wave_PendingSpawnTrigger != 1)
                         {
                             <MudButton @onclick="default_Scav_Wave_PendingSpawnTrigger" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -1116,7 +1116,7 @@
         }
     }
     private void undo_Scav_Wave_PendingSpawnTrigger() => _scav_Wave_PendingSpawnTrigger = ModConfig.OriginalConfig.ScavConfig.Waves.PendingBotsToTrigger;
-    private void default_Scav_Wave_PendingSpawnTrigger() => _scav_Wave_PendingSpawnTrigger = 3;
+    private void default_Scav_Wave_PendingSpawnTrigger() => _scav_Wave_PendingSpawnTrigger = 1;
 
     private int _scav_Wave_WaveSpawnLimit
     {

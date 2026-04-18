@@ -56,159 +56,150 @@ namespace acidphantasm_botplacementsystem.Patches
             ref float ___float_2,
             ref float ___float_0)
         {
-            if (__instance == null || !___bool_1) return true;
+            ref var isActive = ref ___bool_1;
+            ref var isAtBotCap = ref ___bool_0;
+            ref var isInSpawnWindow = ref ___bool_2;
+            ref var nextWindowToggleTime = ref ___nullable_0;
+            ref var spawnAttemptInterval = ref ___float_2;
+            ref var lastSpawnAttemptTime = ref ___float_0;
+            ref GClass1881<BotDifficulty> difficultyWeights = ref ___gclass1881_0;
+
+            if (__instance == null || !isActive) return true;
 
             if (___abstractGame_0.PastTime < (float)___location_0.BotStart || ___abstractGame_0.PastTime > (float)___location_0.BotStop)
+                return false;
+
+            if (nextWindowToggleTime.Equals(null) || nextWindowToggleTime <= ___abstractGame_0.PastTime)
+            {
+                isInSpawnWindow = !isInSpawnWindow;
+                nextWindowToggleTime = ___abstractGame_0.PastTime + (isInSpawnWindow
+                    ? GClass856.Random((float)___location_0.BotSpawnTimeOnMin, (float)___location_0.BotSpawnTimeOnMax)
+                    : GClass856.Random((float)___location_0.BotSpawnTimeOffMin, (float)___location_0.BotSpawnTimeOffMax));
+            }
+
+            if (!isInSpawnWindow)
             {
                 return false;
             }
-            if (___nullable_0.Equals(null) || ___nullable_0 <= ___abstractGame_0.PastTime)
-            {
-                ___bool_2 = !___bool_2;
-                float newFloat = (___abstractGame_0.PastTime + (___bool_2 ? GClass856.Random((float)___location_0.BotSpawnTimeOnMin, (float)___location_0.BotSpawnTimeOnMax) : GClass856.Random((float)___location_0.BotSpawnTimeOffMin, (float)___location_0.BotSpawnTimeOffMax)));
-                ___nullable_0 = newFloat;
-            }
-            if (!___bool_2)
+
+            if (___abstractGame_0.PastTime - lastSpawnAttemptTime < spawnAttemptInterval)
             {
                 return false;
             }
-            if (___abstractGame_0.PastTime - ___float_0 < ___float_2)
+            lastSpawnAttemptTime = ___abstractGame_0.PastTime;
+
+            var freeSlots = (___botsController_0.MaxCount - Plugin.softCap) - ___botsController_0.AliveLoadingDelayedBotsCount;
+
+            if (isAtBotCap)
             {
-                return false;
-            }
-            ___float_0 = ___abstractGame_0.PastTime;
-            int num = (___botsController_0.MaxCount - Plugin.softCap) - ___botsController_0.AliveLoadingDelayedBotsCount;
-            if (___bool_0)
-            {
-                if (num < ___location_0.BotSpawnCountStep)
+                if (freeSlots < ___location_0.BotSpawnCountStep)
                 {
                     return false;
                 }
-                ___float_2 = 10f;
-                ___bool_0 = false;
+                spawnAttemptInterval = 15f;
+                isAtBotCap = false;
             }
-            else if (num <= 0)
+            else if (freeSlots <= 0)
             {
-                if (!___bool_0)
-                {
-                    ___float_2 = (float)___location_0.BotSpawnPeriodCheck;
-                    if (___float_2 < 10f)
-                    {
-                        ___float_2 = 10f;
-                    }
-                    ___bool_0 = ___botsController_0.MaxCount - ___botsController_0.AliveAndLoadingBotsCount <= 0;
-                }
+                spawnAttemptInterval = Math.Max((float)___location_0.BotSpawnPeriodCheck, 15f);
+                isAtBotCap = ___botsController_0.MaxCount - ___botsController_0.AliveAndLoadingBotsCount <= 0;
                 return false;
             }
             
-            if (Utility.connectedPlayerCount == 0)
-            {
-                SetConnectedPlayerCount();
-            }
-            
-            if (Utility.botsSpawnedPerPlayer > ___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE)
+            if (Utility.BotsSpawnedPerPlayer > ___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE)
             {
                 return false;
             }
-
-            num = ___gclass1876_0.TrySpawn(num, ___botsController_0, ___gclass1881_0);
-
-            for (int i = 0; i < num; i++)
+            
+            var mapName = Utility.CurrentLocation.ToLower();
+            if (Utility.CurrentMapZones.Count == 0)
             {
-                var wildSpawn = WildSpawnType.assault;
-                string mapName = Utility.CurrentLocation.ToLower();
-                if (Utility.currentMapZones.Count == 0)
-                {
-                    Utility.currentMapZones = ___botsController_0.BotSpawner.AllBotZones.ToList();
-                }
-                var botZone = GetValidBotZone(wildSpawn, 1, ___botsController_0.BotSpawner.AllBotZones, mapName, ___botsController_0);
+                Utility.CurrentMapZones = ___botsController_0.BotSpawner.AllBotZones.ToList();
+            }
 
-                BotWaveDataClass botWaveDataClass = new BotWaveDataClass
-                {
-                    BotsCount = 1,
-                    Time = Time.time,
-                    Difficulty = ___gclass1881_0.Random(),
-                    IsPlayers = GClass856.IsTrue100(Plugin.pScavChance),
-                    Side = EPlayerSide.Savage,
-                    WildSpawnType = wildSpawn,
-                    SpawnAreaName = botZone,
-                    WithCheckMinMax = false,
-                    ChanceGroup = 0,
-                };
+            var botZone = GetValidBotZone(WildSpawnType.assault, 1, ___botsController_0.BotSpawner.AllBotZones, mapName, ___botsController_0);
+            ___botsController_0.ActivateBotsByWave(new BotWaveDataClass
+            {
+                BotsCount = 1,
+                Time = Time.time,
+                Difficulty = ___gclass1881_0.Random(),
+                IsPlayers = GClass856.IsTrue100(Plugin.pScavChance),
+                Side = EPlayerSide.Savage,
+                WildSpawnType = WildSpawnType.assault,
+                SpawnAreaName = botZone,
+                WithCheckMinMax = false,
+                ChanceGroup = 0,
+            });
+            Utility.BotsSpawnedPerPlayer += 1d / Math.Max(1, Utility.ConnectedPlayerCount);
 
-                Utility.botsSpawnedPerPlayer += 1d / Math.Max(1, Utility.connectedPlayerCount);
-                ___botsController_0.ActivateBotsByWave(botWaveDataClass);
+            if (!(Time.time >= _nextDespawnCheckTime) || !Plugin.despawnFurthest)
+            {
+                return false;
             }
             
-            if (Time.time >= _nextDespawnCheckTime && Plugin.despawnFurthest)
-            {
-                _nextDespawnCheckTime = Time.time + Plugin.despawnTimer;
-                DespawnFurthestBots(___botsController_0);
-            }
+            _nextDespawnCheckTime = Time.time + Plugin.despawnTimer;
+            var (count, center) = GetPlayerCountAndCenter();
+            Utility.ConnectedPlayerCount = count;
+            DespawnFurthestBots(___botsController_0, center);
+
             return false;
         }
         
-        private static void DespawnFurthestBots(BotsController botsController)
+        private static void DespawnFurthestBots(BotsController botsController, Vector3 centerOfPlayers)
         {
-            float despawnDistance = Plugin.despawnDistance;
-            var allBotsNoBosses = Utility.GetAllCachedBots();
-            var botsToDespawn = new List<BotOwner>();
-            var centerOfActivePlayerPlayers = GetCenterOfActivePlayers();
-            
-            foreach (var bot in allBotsNoBosses)
+            var despawnDistance = Plugin.despawnDistance;
+
+            if (Plugin.despawnPmcs)
             {
-                if (bot == null) continue;
-                if (!bot.IsAI) continue;
-                if (!Plugin.despawnPmcs && bot.Profile.Info.Side == EPlayerSide.Bear ||
-                    bot.Profile.Info.Side == EPlayerSide.Usec) continue;
-                
-                float dist = Vector3.Distance(bot.Position, centerOfActivePlayerPlayers);
-                if (dist >= despawnDistance)
+                foreach (var pmc in Utility.GetAllPMCs())
                 {
-                    botsToDespawn.Add(bot.AIData.BotOwner);
+                    if (pmc == null) continue;
+                    if (Vector3.Distance(pmc.Position, centerOfPlayers) >= despawnDistance)
+                        AttemptToDespawnBot(botsController, pmc.AIData.BotOwner);
                 }
             }
 
-            foreach (var botToDespawn in botsToDespawn)
+            foreach (var scav in Utility.GetAllScavs())
             {
-                AttemptToDespawnBot(botsController, botToDespawn);
+                if (scav == null) continue;
+                if (Vector3.Distance(scav.Position, centerOfPlayers) >= despawnDistance)
+                    AttemptToDespawnBot(botsController, scav.AIData.BotOwner);
             }
         }
         
-        private static void SetConnectedPlayerCount()
+        private static (int playerCount, Vector3 center) GetPlayerCountAndCenter()
         {
-            var allBotsNoBosses = Utility.GetAllCachedBots();
-            var playerCount = 0;
-            
-            foreach (var player in allBotsNoBosses)
-            {
-                if (player == null) continue;
-                if (player.IsAI) continue;
-                if (player.Profile.GetCorrectedNickname().StartsWith("headless_")) continue;
+            var centerPoint = Vector3.zero;
+            var count = 0;
 
-                playerCount++;
+            foreach (var player in Utility.GetAllPMCs())
+            {
+                if (player == null || player.IsAI)
+                {
+                    continue;
+                }
+                if (player.Profile.Info.MemberCategory == EMemberCategory.UnitTest)
+                {
+                    continue;
+                }
+                centerPoint += player.Position;
+                count++;
             }
-
-            Utility.connectedPlayerCount = playerCount;
-        }
-
-        private static Vector3 GetCenterOfActivePlayers()
-        {
-            var allBotsNoBosses = Utility.GetAllCachedBots();
-            Vector3 centerPoint = Vector3.zero;
-            int count = 0;
-
-            foreach (var player in allBotsNoBosses)
+            foreach (var player in Utility.GetAllScavs())
             {
-                if (player == null) continue;
-                if (player.IsAI) continue;
-                if (player.Profile.GetCorrectedNickname().StartsWith("headless_")) continue;
-
+                if (player == null || player.IsAI)
+                {
+                    continue;
+                }
+                if (player.Profile.Info.MemberCategory == EMemberCategory.UnitTest)
+                {
+                    continue;
+                }
                 centerPoint += player.Position;
                 count++;
             }
 
-            return count == 0 ? centerPoint : centerPoint / count;
+            return (count, count == 0 ? centerPoint : centerPoint / count);
         }
 
         private static void AttemptToDespawnBot(BotsController botsController, BotOwner botToDespawn)
@@ -218,34 +209,35 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (effectsCommutator is null || gameWorld is null) return;
 
-            var botOwner = botToDespawn;
             var botPlayer = botToDespawn.GetPlayer;
             
             effectsCommutator.StopBleedingForPlayer(botPlayer);
-            gameWorld.UnregisterPlayer(botOwner);
+            gameWorld.UnregisterPlayer(botToDespawn);
             gameWorld.UnregisterPlayer(botPlayer);
             botToDespawn.Deactivate();
             botToDespawn.Dispose();
-            botsController.BotDied(botOwner);
+            botsController.BotDied(botToDespawn);
             botsController.DestroyInfo(botPlayer);
-            UnityEngine.Object.DestroyImmediate(botOwner.gameObject);
-            UnityEngine.Object.Destroy(botOwner);
+            UnityEngine.Object.DestroyImmediate(botToDespawn.gameObject);
+            UnityEngine.Object.Destroy(botToDespawn);
         }
         
         private static string GetValidBotZone(WildSpawnType botType, int count, BotZone[] allZones, string location, BotsController _botsController)
         {
-            List<BotZone> botZones = allZones.ToList().Where(x => !x.SnipeZone).ToList();
-            botZones = botZones.OrderBy(_ => Guid.NewGuid()).ToList();
-
-            if (Plugin.enableHotzones && GClass856.IsTrue100(Plugin.hotzoneScavChance) && Utility.mapHotSpots.ContainsKey(location))
+            if (Utility.CachedNonSnipeZones == null || Utility.CachedNonSnipeZones.Count == 0)
             {
-                var hotSpotZone = Utility.mapHotSpots[location].RandomElement();
+                Utility.CachedNonSnipeZones = allZones.Where(x => !x.SnipeZone).ToList();
+            }
+            var botZones = Utility.CachedNonSnipeZones.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
+
+            if (Plugin.enableHotzones && GClass856.IsTrue100(Plugin.hotzoneScavChance) && Utility.MapHotSpots.ContainsKey(location))
+            {
+                var hotSpotZone = Utility.MapHotSpots[location].RandomElement();
                 return hotSpotZone;
             }
-            for (int i = 0; i < botZones.Count; i++)
+            foreach (var currentZone in botZones)
             {
-                BotZone currentZone = botZones[i];
-                if (_botsController.Bots.GetListByZone(currentZone).Where(x => x.IsRole(WildSpawnType.assault)).ToList().Count < Plugin.zoneScavCap)
+                if (_botsController.Bots.GetListByZone(currentZone).Count(x => x.IsRole(WildSpawnType.assault)) < Plugin.zoneScavCap)
                 {
                     return currentZone.NameZone;
                 }
@@ -264,175 +256,142 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPrefix]
         private static void PatchPrefix(BotSpawner __instance, BotZone botZone, BotCreationDataClass data, bool withCheckMinMax, bool newWave, ref List<ISpawnPoint> pointsToSpawn, bool forcedSpawn = false)
         {
-            if (data.IsValidSpawnType(WildSpawnType.assault) && pointsToSpawn == null)
+            if (!data.IsValidSpawnType(WildSpawnType.assault) || pointsToSpawn != null) return;
+
+            var botType = data.Profiles[0].Info.Settings.Role;
+            var mapName = Utility.CurrentLocation.ToLower();
+            
+            var pmcList = Utility.GetAllPMCs();
+            var pmcDistance = GetDistanceForMap(mapName);
+            var scavList = Utility.GetAllScavs();
+
+            var mapHasHotzone = DoesMapHaveHotzones(mapName);
+            var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, botZone.NameZone);
+
+            var isSmallMap = mapName.Contains("factory") || mapName.Contains("sandbox") || mapName.Contains("labyrinth") || mapName.Contains("laboratory");
+            var scavDistance = hotZoneSelected ? 10f : isSmallMap ? 20f : 40f;
+
+            pointsToSpawn = GetValidSpawnPoints(botZone, mapName, pmcList, pmcDistance, scavList, scavDistance, botType);
+
+            if (!isSmallMap)
             {
-                //Logger.LogInfo("TryToSpawnInZoneAndDelay Hit with empty spawn points and is a scav/marksman");
+                var allMapZones = __instance.AllBotZones.ToList();
+                var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Count(x => x.IsRole(WildSpawnType.assault));
 
-                WildSpawnType botType = data.Profiles[0].Info.Settings.Role;
-                string mapName = Utility.CurrentLocation.ToLower();
-
-                List<IPlayer> pmcList = Utility.GetAllPMCs();
-                float pmcDistance = GetDistanceForMap(mapName);
-
-                List<IPlayer> scavList = Utility.GetAllScavs();
-                float scavDistance = mapName.Contains("factory") || mapName.Contains("sandbox") || mapName.Contains("labyrinth") || mapName.Contains("laboratory") ? 20f : 40f;
-
-                bool mapHasHotzone = DoesMapHaveHotzones(mapName);
-                bool hotZoneSelected = mapHasHotzone ? IsZoneHotzone(mapName, botZone.NameZone) : false;
-                List<BotZone> allMapZones = __instance.AllBotZones.ToList();
-
-                if (mapHasHotzone && hotZoneSelected) scavDistance = 10f;
-                pointsToSpawn = GetValidSpawnPoints(botZone, mapName, pmcList, pmcDistance, scavList, scavDistance, botType);
-
-                if (!mapName.Contains("factory") && !mapName.Contains("sandbox") && !mapName.Contains("labyrinth") && !mapName.Contains("laboratory"))
+                if (scavsInZone >= Plugin.zoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) || scavsInZone >= Plugin.hotzoneScavCap && mapHasHotzone && hotZoneSelected)
                 {
-                    var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Where(x => x.IsRole(WildSpawnType.assault)).ToList().Count;
-
-                    if (scavsInZone >= Plugin.zoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone))
-                    {
-                        var newBotZone = GetNewValidBotZone(allMapZones);
-                        pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
-                        botZone = newBotZone;
-                    }
-                    else if (scavsInZone >= Plugin.hotzoneScavCap && mapHasHotzone && hotZoneSelected)
-                    {
-                        var newBotZone = GetNewValidBotZone(allMapZones);
-                        pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
-                        botZone = newBotZone;
-                    }
-
-                    if (pointsToSpawn.Count == 0)
-                    {
-                        var maxTries = 5;
-                        for (int i = 0; i < maxTries; i++)
-                        {
-                            var newBotZone = GetNewValidBotZone(allMapZones);
-                            pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
-                            botZone = newBotZone;
-                            if (pointsToSpawn.Count > 0) break;
-                        }
-
-                        if (pointsToSpawn.Count == 0)
-                        {
-                            Plugin.LogSource.LogInfo($"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
-                            pointsToSpawn = null;
-                        }
-                    }
+                    var newBotZone = GetNewValidBotZone(allMapZones);
+                    pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
+                    botZone = newBotZone;
                 }
+
+                if (pointsToSpawn.Count != 0)
+                {
+                    return;
+                }
+                
+                var validZones = allMapZones.Where(x => !x.SnipeZone).ToList();
+                for (var i = 0; i < 5; i++)
+                {
+                    var newBotZone = validZones.OrderBy(_ => GClass856.Random(0, int.MaxValue)).FirstOrDefault();
+                    pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
+                    botZone = newBotZone;
+                    if (pointsToSpawn.Count > 0) break;
+                }
+
+                if (pointsToSpawn.Count != 0)
+                {
+                    return;
+                }
+                    
+                Plugin.LogSource.LogInfo($"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
+                pointsToSpawn = null;
             }
         }
 
         private static List<ISpawnPoint> GetValidSpawnPoints(BotZone botZone, string location, IReadOnlyCollection<IPlayer> pmcList, float pmcDistance, IReadOnlyCollection<IPlayer> scavList, float scavDistance, WildSpawnType botType)
         {
-            List<ISpawnPoint> validSpawnPoints = new List<ISpawnPoint>();
-            List<ISpawnPoint> allSpawnPoints = botZone.SpawnPoints.ToList()
+            var validSpawnPoints = new List<ISpawnPoint>();
+            var allSpawnPoints = botZone.SpawnPoints
                 .Where(x => x.Categories == ESpawnCategoryMask.All || x.Categories.ContainBotCategory())
+                .OrderBy(_ => GClass856.Random(0, int.MaxValue))
                 .ToList();
 
-            allSpawnPoints = allSpawnPoints.OrderBy(_ => Guid.NewGuid()).ToList();
-
-            int count = 0;
-            for (int i = 0; i < allSpawnPoints.Count; i++)
+            foreach (var checkPoint in allSpawnPoints)
             {
-                ISpawnPoint checkPoint = allSpawnPoints[i];
-                count++;
-                //Logger.LogInfo($"Checking spawn point: {count}/{allSpawnPoints.Count}");
-                if (IsValid(checkPoint, pmcList, pmcDistance) && IsValid(checkPoint, scavList, scavDistance))
+                if (!IsValid(checkPoint, pmcList, pmcDistance) || !IsValid(checkPoint, scavList, scavDistance))
                 {
-                    //Logger.LogInfo($"Adding initial point: {count}/{allSpawnPoints.Count}");
-                    validSpawnPoints.Add(checkPoint); 
-                    return validSpawnPoints;
+                    continue;
                 }
+                validSpawnPoints.Add(checkPoint); 
+                return validSpawnPoints;
             }
             return validSpawnPoints;
         }
         private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance)
         {
-            if (spawnPoint == null) return false;
-            if (spawnPoint.Collider == null) return false;
-            if (players != null && players.Count != 0)
+            if (spawnPoint?.Collider == null)
             {
-                foreach (IPlayer player in players)
-                {
-                    if (player == null || player.Profile.GetCorrectedNickname().StartsWith("headless_"))
-                    {
-                        //Logger.LogInfo("Player is null or headless client, skip");
-                        continue;
-                    }
-                    if (spawnPoint.Collider.Contains(player.Position))
-                    {
-                        return false;
-                    }
-                    if (Vector3.Distance(spawnPoint.Position, player.Position) < distance)
-                    {
-                        return false;
-                    }
-                }
-                //Logger.LogInfo($"Point is valid after checking {players.Count}");
+                return false;
+            }
+
+            if (players == null || players.Count == 0)
+            {
                 return true;
+            }
+            
+            foreach (var player in players)
+            {
+                if (player == null || player.Profile.GetCorrectedNickname().StartsWith("headless_"))
+                {
+                    continue;
+                }
+                if (spawnPoint.Collider.Contains(player.Position))
+                {
+                    return false;
+                }
+                if (Vector3.Distance(spawnPoint.Position, player.Position) < distance)
+                {
+                    return false;
+                }
             }
             return true;
         }
         private static float GetDistanceForMap(string mapName)
         {
-            float distanceLimit = 10f;
-            switch (mapName)
+            return mapName switch
             {
-                case "bigmap":
-                    distanceLimit = Plugin.customs_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "factory4_day":
-                case "factory4_night":
-                    distanceLimit = Plugin.factory_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "interchange":
-                    distanceLimit = Plugin.interchange_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "laboratory":
-                    distanceLimit = Plugin.labs_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "lighthouse":
-                    distanceLimit = Plugin.lighthouse_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "rezervbase":
-                    distanceLimit = Plugin.reserve_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "sandbox":
-                case "sandbox_high":
-                    distanceLimit = Plugin.groundZero_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "shoreline":
-                    distanceLimit = Plugin.shoreline_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "tarkovstreets":
-                    distanceLimit = Plugin.streets_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "woods":
-                    distanceLimit = Plugin.woods_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                case "labyrinth":
-                    distanceLimit = Plugin.labyrinth_ScavSpawnDistanceCheck;
-                    return distanceLimit;
-                default:
-                    return distanceLimit;
-            }
+                "bigmap"                        => Plugin.customs_ScavSpawnDistanceCheck,
+                "factory4_day" or "factory4_night" => Plugin.factory_ScavSpawnDistanceCheck,
+                "interchange"                   => Plugin.interchange_ScavSpawnDistanceCheck,
+                "laboratory"                    => Plugin.labs_ScavSpawnDistanceCheck,
+                "lighthouse"                    => Plugin.lighthouse_ScavSpawnDistanceCheck,
+                "rezervbase"                    => Plugin.reserve_ScavSpawnDistanceCheck,
+                "sandbox" or "sandbox_high"     => Plugin.groundZero_ScavSpawnDistanceCheck,
+                "shoreline"                     => Plugin.shoreline_ScavSpawnDistanceCheck,
+                "tarkovstreets"                 => Plugin.streets_ScavSpawnDistanceCheck,
+                "woods"                         => Plugin.woods_ScavSpawnDistanceCheck,
+                "labyrinth"                     => Plugin.labyrinth_ScavSpawnDistanceCheck,
+                _                               => 10f,
+            };
         }
-        private static Boolean DoesMapHaveHotzones(string mapName)
+        
+        private static bool DoesMapHaveHotzones(string mapName)
         {
-            return Plugin.enableHotzones ? Utility.mapHotSpots.ContainsKey(mapName) : false;
+            return Plugin.enableHotzones && Utility.MapHotSpots.ContainsKey(mapName);
         }
-        private static Boolean IsZoneHotzone(string mapName, string botZone)
+        private static bool IsZoneHotzone(string mapName, string botZone)
         {
-            return Utility.mapHotSpots[mapName].Contains(botZone);
+            return Utility.MapHotSpots[mapName].Contains(botZone);
         }
         private static BotZone GetNewValidBotZone(List<BotZone> botZones)
         {
-            return botZones.Where(x => !x.SnipeZone).ToList().OrderBy(_ => Guid.NewGuid()).FirstOrDefault();
+            return botZones.Where(x => !x.SnipeZone).OrderBy(_ => GClass856.Random(0, int.MaxValue)).FirstOrDefault();
         }
         private static List<ISpawnPoint> GetNewSpawnPoints(string mapName, BotZone oldBotZone, BotZone newBotZone, bool mapHasHotzone, IReadOnlyCollection<IPlayer> pmcList, float pmcDistance, IReadOnlyCollection<IPlayer> scavList, float scavDistance, WildSpawnType botType)
         {
             Logger.LogInfo($"Old BotZone: {oldBotZone.NameZone} -> New BotZone: {newBotZone.NameZone}");
-            bool hotZoneSelected = mapHasHotzone ? IsZoneHotzone(mapName, newBotZone.NameZone) : false;
+            var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, newBotZone.NameZone);
             if (mapHasHotzone && hotZoneSelected) scavDistance = 10f;
 
             var newPoints = GetValidSpawnPoints(newBotZone, mapName, pmcList, pmcDistance, scavList, scavDistance, botType);

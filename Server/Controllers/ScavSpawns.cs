@@ -40,10 +40,34 @@ public class ScavSpawns(
 
         return scavSpawnInfo;
     }
+    
+    public List<Wave> GetLateStartMapData(string location)
+    {
+        var scavSpawnInfo = new List<Wave>();
+        var lateStartCap = 10;
+    
+        if (ModConfig.Config.ScavConfig.StartingScavs.StartingMarksman)
+        {
+            var marksmanSpawn = GenerateStartingScavs(location, "marksman", true);
+            if (marksmanSpawn.Any())
+                scavSpawnInfo.AddRange(marksmanSpawn);
+        }
 
-    public List<Wave> GenerateStartingScavs(string location, string? botRole = "assault", bool latestart = false, int currentCount = 0)
+        if (ModConfig.Config.ScavConfig.StartingScavs.Enable)
+        {
+            // Pass lateStartCap as the max, scavSpawnInfo.Count as current so marksman count against the cap
+            var assaultSpawn = GenerateStartingScavs(location, "assault", true, scavSpawnInfo.Count, lateStartCap);
+            if (assaultSpawn.Any())
+                scavSpawnInfo.AddRange(assaultSpawn);
+        }
+
+        return scavSpawnInfo;
+    }
+
+    public List<Wave> GenerateStartingScavs(string location, string? botRole = "assault", bool lateStart = false, int currentCount = 0, int? capOverride = null)
     {
         var scavWaveSpawnInfo = new List<Wave>();
+
 
         if (!databaseService.GetLocations().GetDictionary().TryGetValue(databaseService.GetLocations().GetMappedKey(location), out var locationData))
         {
@@ -58,8 +82,9 @@ public class ScavSpawns(
             return scavWaveSpawnInfo;
         }
         
-        var scavCap = latestart ? maxStartingSpawns * 0.75 : maxStartingSpawns;
-        var playerScavChance = latestart ? 60 : 10;
+        var hardCap = capOverride ?? maxStartingSpawns;
+        var scavCap = capOverride ?? (double)maxStartingSpawns;
+        var playerScavChance = lateStart ? 60 : 10;
 
         var availableSpawnZones = botRole == "assault"
             ? new ExhaustableArray<string>(GetNonMarksmanSpawnZones(location), randomUtil, cloner)
@@ -69,7 +94,7 @@ public class ScavSpawns(
 
         while (currentCount < scavCap)
         {
-            if (currentCount >= maxStartingSpawns) break;
+            if (currentCount >= hardCap) break;
             var scavDefaultData = cloner.Clone(ModConfig.ScavDefaults);
             var selectedSpawnZone =
                 location.Contains("factory") || (botRole == "assault" && location.Contains("sandbox")) || location.Contains("labyrinth") || !availableSpawnZones.HasValues()
@@ -78,7 +103,7 @@ public class ScavSpawns(
 
             if (botRole != "assault")
             {
-                if (!availableSpawnZones.HasValues() && (selectedSpawnZone == String.Empty || selectedSpawnZone is null)) break;
+                if (!availableSpawnZones.HasValues() && string.IsNullOrEmpty(selectedSpawnZone)) break;
                 if (marksmanCount >= 3) break;
                 marksmanCount++;
             }

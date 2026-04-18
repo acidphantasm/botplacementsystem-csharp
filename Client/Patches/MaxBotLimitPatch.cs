@@ -22,56 +22,32 @@ namespace acidphantasm_botplacementsystem.Patches
             var location = gameWorld.LocationId;
             if (string.IsNullOrEmpty(location)) return;
 
-            switch (location.ToLower())
+            maxCount = location.ToLower() switch
             {
-                case "bigmap":
-                    maxCount = Plugin.customsMapLimit;
-                    break;
-                case "factory4_day":
-                case "factory4_night":
-                    maxCount = Plugin.factoryMapLimit;
-                    break;
-                case "interchange":
-                    maxCount = Plugin.interchangeMapLimit;
-                    break;
-                case "laboratory":
-                    maxCount = Plugin.labsMapLimit;
-                    break;
-                case "lighthouse":
-                    maxCount = Plugin.lighthouseMapLimit;
-                    break;
-                case "rezervbase":
-                    maxCount = Plugin.reserveMapLimit;
-                    break;
-                case "sandbox":
-                case "sandbox_high":
-                    maxCount = Plugin.groundZeroMapLimit;
-                    break;
-                case "shoreline":
-                    maxCount = Plugin.shorelineMapLimit;
-                    break;
-                case "tarkovstreets":
-                    maxCount = Plugin.streetsMapLimit;
-                    break;
-                case "woods":
-                    maxCount = Plugin.woodsMapLimit;
-                    break;
-                case "labyrinth":
-                    maxCount = Plugin.labyrinthMapLimit;
-                    break;
-                default:
-                    maxCount = 0;
-                    break;
-            }
+                "bigmap" => Plugin.customsMapLimit,
+                "factory4_day" or "factory4_night" => Plugin.factoryMapLimit,
+                "interchange" => Plugin.interchangeMapLimit,
+                "laboratory" => Plugin.labsMapLimit,
+                "lighthouse" => Plugin.lighthouseMapLimit,
+                "rezervbase" => Plugin.reserveMapLimit,
+                "sandbox" or "sandbox_high" => Plugin.groundZeroMapLimit,
+                "shoreline" => Plugin.shorelineMapLimit,
+                "tarkovstreets" => Plugin.streetsMapLimit,
+                "woods" => Plugin.woodsMapLimit,
+                "labyrinth" => Plugin.labyrinthMapLimit,
+                _ => 0
+            };
 
             Plugin.LogSource.LogInfo($"[ABPS] Setting max bots to {maxCount} on {location.ToLower()}");
             __instance.MaxCount = maxCount;
 
-            if (__instance.BotSpawner != null)
+            if (__instance.BotSpawner == null)
             {
-                __instance.BotSpawner.SetMaxBots(__instance.MaxCount);
-                __instance.ZonesLeaveController.SetMaxBots(__instance.MaxCount);
+                return;
             }
+            
+            __instance.BotSpawner.SetMaxBots(__instance.MaxCount);
+            __instance.ZonesLeaveController.SetMaxBots(__instance.MaxCount);
         }
     }
 }
