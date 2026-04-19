@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
-using acidphantasm_botplacementsystem.Spawning;
 using acidphantasm_botplacementsystem.Utils;
+using Comfort.Common;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
@@ -17,13 +17,9 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPostfix]
         private static void PatchPostfix(Player __instance)
         {
-            if (__instance == null || Utility.IsPlayerHeadless(__instance)) 
+            if (__instance == null || Utility.IsPlayerHeadless(__instance) || !__instance.IsAI) 
                 return;
-
-            if (!__instance.IsAI)
-            {
-                Utility.CachedConnectedPlayers.Add(__instance);
-            }
+            
             if (__instance.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
             {
                 Utility.CachedPmcs.Add(__instance);

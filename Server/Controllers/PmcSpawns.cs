@@ -138,6 +138,7 @@ public class PmcSpawns(
             bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossZone = "";
             bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
+            bossDefaultData[0].Time = 1;
             currentPmcCount += groupSize + 1;
             startingPmcWaveInfo.Add(bossDefaultData[0]);
         }

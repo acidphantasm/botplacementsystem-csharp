@@ -38,6 +38,8 @@ namespace acidphantasm_botplacementsystem.Patches
         {
             if (iPlayer.IsYourPlayer)
             {
+                PmcGroupSpawner.IsReset = false;
+                Utility.Initialized = false;
                 BossSpawnTracking.EndRaidMergeData();
             }
         }

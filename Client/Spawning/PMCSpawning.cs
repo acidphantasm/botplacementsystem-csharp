@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using acidphantasm_botplacementsystem.Utils;
 using UnityEngine;
 
 namespace acidphantasm_botplacementsystem.Spawning
@@ -20,12 +21,43 @@ namespace acidphantasm_botplacementsystem.Spawning
         public static readonly Dictionary<string, HashSet<string>> AllPmcGroups = new Dictionary<string, HashSet<string>>();
         private static readonly Dictionary<string, string> FollowerToLeader = new Dictionary<string, string>();
         private static readonly Dictionary<string, BossSpawnerClass.Class332> WavePmcGroupClassData = new Dictionary<string, BossSpawnerClass.Class332>();
+
+        public static bool IsReset;
+        
+        public static void Reset(BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
+        {
+            AllPmcGroups.Clear();
+            FollowerToLeader.Clear();
+            WavePmcGroupClassData.Clear();
+            
+            _bossSpawnerClass = bossSpawnerClass;
+            _botSpawner = botSpawner;
+            _iBotCreator = botCreator;
+            
+            var gameWorld = Singleton<GameWorld>.Instance;
+            foreach (var iPlayer in gameWorld.RegisteredPlayers)
+            {
+                var player = iPlayer as Player;
+                if (player != null && !player.IsAI && !Utility.IsPlayerHeadless(player) && player.Profile.Info.Settings.Role != WildSpawnType.marksman)
+                {
+                    Plugin.LogSource.LogInfo($"{player.Profile.Info.Nickname}");
+                    Utility.CachedConnectedPlayers.Add(player);
+                    if (player.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
+                    {
+                        Utility.CachedPmcs.Add(player);
+                    }
+                    else
+                    {
+                        Utility.CachedAssaultBots.Add(player);
+                    }
+                }
+            }
+            
+            IsReset = true;
+        }
         
         public static async Task StartSpawnPMCGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions, BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
         {
-            _bossSpawnerClass ??= bossSpawnerClass;
-            _botSpawner ??= botSpawner;
-            _iBotCreator ??= botCreator;
 
             BossSpawnerClass.Class332 @class = new BossSpawnerClass.Class332();
             @class.BossSpawnerClass = _bossSpawnerClass;

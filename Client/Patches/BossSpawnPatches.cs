@@ -24,7 +24,13 @@ namespace acidphantasm_botplacementsystem.Patches
             BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
         {
             Plugin.botSpawnerInstance ??= __instance.BotSpawner_0;
-
+            
+            if (!PmcGroupSpawner.IsReset)
+            {
+                Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
+                PmcGroupSpawner.Reset(__instance, __instance.BotSpawner_0, __instance.IBotCreator);
+            }
+            
             if (wave.BossType != WildSpawnType.pmcBEAR && wave.BossType != WildSpawnType.pmcUSEC)
             {
                 return true;
@@ -96,6 +102,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 }
 
                 // Use fallback anywhere, except cut the distances down to try to get valid. If this fails it'll return an empty list, which stops the spawn
+                Plugin.LogSource.LogInfo($"Falling back PMC group to anywhere");
                 var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f, true);
                 return fallbackSpawnPoints;
             }
@@ -125,7 +132,7 @@ namespace acidphantasm_botplacementsystem.Patches
                     case true when Vector3.Distance(checkPoint.Position, validSpawnPoints[0].Position) <= 10f:
                         validSpawnPoints.Add(checkPoint);
                         break;
-                    case false when IsValid(checkPoint, pmcPlayers, distance, true):
+                    case false when IsValid(checkPoint, pmcPlayers, distance):
                     {
                         if (IsValid(checkPoint, scavPlayers, scavDistance))
                         {
@@ -150,7 +157,7 @@ namespace acidphantasm_botplacementsystem.Patches
 
             foreach (var checkPoint in alternativeList)
             {
-                if (!IsValid(checkPoint, pmcPlayers, distance, true))
+                if (!IsValid(checkPoint, pmcPlayers, distance))
                 {
                     continue;
                 }
@@ -167,39 +174,16 @@ namespace acidphantasm_botplacementsystem.Patches
             return validSpawnPoints;
         }
 
-        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance,
-            bool checkAgainstMainPlayer = false)
+        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance)
         {
-            if (spawnPoint == null)
+            if (spawnPoint?.Collider == null)
             {
                 return false;
             }
-
-            if (spawnPoint.Collider == null)
-            {
-                return false;
-            }
-
-            var mainPlayer = Singleton<GameWorld>.Instance.MainPlayer;
-            if (mainPlayer != null)
-            {
-                if (checkAgainstMainPlayer && mainPlayer.Side == EPlayerSide.Savage)
-                {
-                    if (Vector3.Distance(spawnPoint.Position, mainPlayer.Position) < distance)
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            if (players == null || players.Count == 0)
-            {
-                return true;
-            }
-            
+    
             foreach (var player in players)
             {
-                if (player == null || Utility.IsPlayerHeadless(player))
+                if (player == null || Utility.IsPlayerHeadless(player) || !player.HealthController.IsAlive)
                 {
                     continue;
                 }
@@ -208,7 +192,6 @@ namespace acidphantasm_botplacementsystem.Patches
                 {
                     return false;
                 }
-
                 if (Vector3.Distance(spawnPoint.Position, player.Position) < distance)
                 {
                     return false;

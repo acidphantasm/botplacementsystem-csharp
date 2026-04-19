@@ -157,10 +157,11 @@ namespace acidphantasm_botplacementsystem.Patches
 
             foreach (var player in Utility.CachedConnectedPlayers.ToList())
             {
-                if (player == null)
+                if (player == null || !player.HealthController.IsAlive)
                 {
                     continue;
                 }
+                
                 centerPoint += player.Position;
                 count++;
             }

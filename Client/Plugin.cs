@@ -69,10 +69,16 @@ namespace acidphantasm_botplacementsystem
 
         public static BotSpawner botSpawnerInstance;
 
+        private bool _testVersion = true;
+
         internal void Awake()
         {
             LogSource = Logger;
 
+            if (_testVersion)
+            {
+                LogSource.LogInfo($"Loading test version 1");
+            }
             /*
              * This patch is only for development purposes in specific scenarios (or it would be in IFDEBUG)
             */

@@ -110,7 +110,7 @@ namespace acidphantasm_botplacementsystem.Patches
             
             foreach (var player in players)
             {
-                if (player == null || Utility.IsPlayerHeadless(player))
+                if (player == null || Utility.IsPlayerHeadless(player) || !player.HealthController.IsAlive)
                 {
                     continue;
                 }
