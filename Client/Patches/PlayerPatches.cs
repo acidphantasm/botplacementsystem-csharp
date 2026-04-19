@@ -23,7 +23,6 @@ namespace acidphantasm_botplacementsystem.Patches
             if (!__instance.IsAI)
             {
                 Utility.CachedConnectedPlayers.Add(__instance);
-                return;
             }
             if (__instance.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
             {

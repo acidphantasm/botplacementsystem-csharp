@@ -25,7 +25,7 @@ namespace acidphantasm_botplacementsystem.Patches
             var botType = data.Profiles[0].Info.Settings.Role;
             var mapName = Utility.CurrentLocation.ToLower();
             
-            var pmcList = Utility.CachedPmcs.ToList().Concat(Utility.CachedConnectedPlayers).ToList();
+            var pmcList = Utility.CachedPmcs.ToList();
             var pmcDistance = GetDistanceForMap(mapName);
             var scavList = Utility.CachedAssaultBots.ToList();
 
