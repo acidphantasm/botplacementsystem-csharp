@@ -21,7 +21,6 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (!Utility.Initialized)
             {
-                Plugin.LogSource.LogInfo($"InitializeSpawnPoints from BotsController.Init {__instance.BotSpawner.AllBotZones.Length}");
                 Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
             }
         }

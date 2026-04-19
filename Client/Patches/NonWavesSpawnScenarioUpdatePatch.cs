@@ -89,7 +89,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 return false;
             }
             
-            if (Utility.BotsSpawnedPerPlayer > ___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE)
+            if (Utility.BotsSpawnedPerPlayer >= ___botsController_0.BotLocationModifier.NonWaveSpawnBotsLimitPerPlayerPvE)
             {
                 return false;
             }
@@ -113,7 +113,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 WithCheckMinMax = false,
                 ChanceGroup = 0,
             });
-            Utility.BotsSpawnedPerPlayer += 1d / Math.Max(1, Utility.ConnectedPlayerCount);
+            Utility.BotsSpawnedPerPlayer += 1d / Math.Max(1, Utility.CachedConnectedPlayers.Count);
 
             if (!(Time.time >= _nextDespawnCheckTime) || !Plugin.despawnFurthest)
             {
@@ -121,8 +121,7 @@ namespace acidphantasm_botplacementsystem.Patches
             }
             
             _nextDespawnCheckTime = Time.time + Plugin.despawnTimer;
-            var (count, center) = GetPlayerCountAndCenter();
-            Utility.ConnectedPlayerCount = count;
+            var center = GetPlayerCountAndCenter();
             DespawnFurthestBots(___botsController_0, center);
 
             return false;
@@ -134,28 +133,28 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (Plugin.despawnPmcs)
             {
-                foreach (var pmc in Utility.CachedPmcs.ToList())
+                foreach (var pmc in Utility.CachedPmcs)
                 {
-                    if (pmc == null) continue;
+                    if (pmc == null || !pmc.HealthController.IsAlive) continue;
                     if (Vector3.Distance(pmc.Position, centerOfPlayers) >= despawnDistance)
                         AttemptToDespawnBot(botsController, pmc.AIData.BotOwner);
                 }
             }
 
-            foreach (var scav in Utility.CachedAssaultBots.ToList())
+            foreach (var scav in Utility.CachedAssaultBots)
             {
-                if (scav == null) continue;
+                if (scav == null || !scav.HealthController.IsAlive) continue;
                 if (Vector3.Distance(scav.Position, centerOfPlayers) >= despawnDistance)
                     AttemptToDespawnBot(botsController, scav.AIData.BotOwner);
             }
         }
         
-        private static (int playerCount, Vector3 center) GetPlayerCountAndCenter()
+        private static Vector3 GetPlayerCountAndCenter()
         {
             var centerPoint = Vector3.zero;
             var count = 0;
 
-            foreach (var player in Utility.CachedConnectedPlayers.ToList())
+            foreach (var player in Utility.CachedConnectedPlayers)
             {
                 if (player == null || !player.HealthController.IsAlive)
                 {
@@ -166,7 +165,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 count++;
             }
 
-            return (count, count == 0 ? centerPoint : centerPoint / count);
+            return count == 0 ? centerPoint : centerPoint / count;
         }
 
         private static void AttemptToDespawnBot(BotsController botsController, BotOwner botToDespawn)
@@ -195,7 +194,7 @@ namespace acidphantasm_botplacementsystem.Patches
             {
                 Utility.CachedNonSnipeZones = allZones.Where(x => !x.SnipeZone).ToList();
             }
-            var botZones = Utility.CachedNonSnipeZones.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
+            var botZones = Utility.CachedNonSnipeZones.OrderBy(_ => GClass856.Random(0f, 1f)).ToList();
 
             if (Plugin.enableHotzones && GClass856.IsTrue100(Plugin.hotzoneScavChance) && Utility.MapHotSpots.ContainsKey(location))
             {

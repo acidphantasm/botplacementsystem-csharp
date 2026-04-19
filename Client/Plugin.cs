@@ -69,53 +69,28 @@ namespace acidphantasm_botplacementsystem
 
         public static BotSpawner botSpawnerInstance;
 
-        private bool _testVersion = true;
 
         internal void Awake()
         {
             LogSource = Logger;
 
-            if (_testVersion)
-            {
-                LogSource.LogInfo($"Loading test version 1");
-            }
             /*
              * This patch is only for development purposes in specific scenarios (or it would be in IFDEBUG)
             */
             //new OnGameStartedPatch().Enable();
 
-            // Trigger /apbs/save
             new UnregisterPlayerPatch().Enable();
-            
-            // Bot spawn/death tracking
             new SetOwnerToAIDataPatch().Enable();
             new OnDeadPatch().Enable();
-
-            // Trigger /apbs/load
             new MenuLoadPatch().Enable();
-
-            // Set bot limits
             new SetSettingsPatch().Enable();
-
-            // Progressive Chances patches
             new BossSpawnScenarioPatch().Enable();
             new BossAddProgressionPatch().Enable();
-
-            // Main PMC Method Patch to trigger ABPS spawning instead
             new PmcDistancePatch().Enable();
-
-            // If assaultgroup, make assault instead. This stops the "wave" of scavs that spawn in NewSpawn mode that track and rush the player
             new AssaultGroupPatch().Enable();
-
-            // Patch the NewSpawn primary method (it's in Update) to spawn scavs differently
             new NonWavesSpawnScenarioUpdatePatch().Enable();
-
-            // Zone Reselector for Scavs - primarily for redistribution based on active scavs in a zone and hotzone configuration
             new TryToSpawnInZonePatch().Enable();
-            
-            // Check enemy patch to prevent bots in the same group being enemies, but allow other groups containing the same PMC type to be enemies
             new IsPlayerEnemyPatch().Enable();
-
             new BotsControllerInitPatch().Enable();
             
             ABPSConfig.InitABPSConfig(Config);

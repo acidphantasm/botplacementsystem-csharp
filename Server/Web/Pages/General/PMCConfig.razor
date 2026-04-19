@@ -249,27 +249,27 @@
                     <MudItem xs="1" />
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="The maximum size of a group that a starting PMC can have." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Group Size</MudText>
+                            <MudTooltip Text="Leader + Follower Count = Group Size. Set to 0 to have solo PMC groups." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Follower Count Limit</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_StartingPMCsEnabled">@_pmc_StartingGroupSize</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_StartingPMCsEnabled">@_pmc_Starting_FollowerCount</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_pmc_StartingGroupSize" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_StartingPMCsEnabled" />
+                        <MudSlider @bind-Value="_pmc_Starting_FollowerCount" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_StartingPMCsEnabled" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle &&
                         MainLayout.pendingChanges.Contains("_pmc_StartingGroupSize"))
                         {
-                            <MudButton @onclick="undo_PMC_Starting_GroupSize" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="undo_PMC_Starting_FollowerCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
                         else if (MainLayout._appDefaultButtonToggle &&
-                        _pmc_StartingGroupSize != 3)
+                        _pmc_Starting_FollowerCount != 3)
                         {
-                            <MudButton @onclick="default_PMC_Starting_GroupSize" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="default_PMC_Starting_FollowerCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
 
@@ -288,7 +288,7 @@
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                             <MudTooltip Text="The maximum amount of PMC Groups that can possibly spawn at the start." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Group Count</MudText>
+                                <MudText>Group Count Limit</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
@@ -374,7 +374,7 @@
                             <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
                                 <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryDay_Max" Label="Max Limit" Variant="Variant.Filled"
                                                  Min="_pmc_Starting_MapLimits_FactoryDay_Min"
-                                                 Max="15" />
+                                                 Max="8" />
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
@@ -415,7 +415,7 @@
                             <MudTooltip Text="Maximum spawn chance." Color="Color.Primary" Placement="Placement.Bottom" Arrow="true">
                                 <MudNumericField Margin="Margin.Dense" HideSpinButtons="true" @bind-Value="_pmc_Starting_MapLimits_FactoryNight_Max" Label="Max Limit" Variant="Variant.Filled"
                                                  Min="_pmc_Starting_MapLimits_FactoryNight_Min"
-                                                 Max="15" />
+                                                 Max="8" />
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
@@ -967,35 +967,46 @@
                     <MudItem xs="1" />
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
-                            <MudTooltip Text="Leader + Follower Count = Group Size. Set to 0 to have solo PMC groups." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Follower Count</MudText>
+                            <MudTooltip Text="Leader + Follower Count = Group Size. Set to 0 to have solo PMC groups. Groups are chosen based on chance & 1 to limit" Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <MudText>Follower Count Limit</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
                     <MudItem xs="1">
-                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveGroupSize</MudButton>
+                        <MudButton Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small" Disabled="!_pmc_WavePMCsEnabled">@_pmc_WaveFollowerCount</MudButton>
                     </MudItem>
                     <MudItem xs="5">
-                        <MudSlider @bind-Value="_pmc_WaveGroupSize" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
+                        <MudSlider @bind-Value="_pmc_WaveFollowerCount" ValueLabel="true" Min="0" Max="5" Color="Color.Info" Size="Size.Medium" Disabled="!_pmc_WavePMCsEnabled" />
                     </MudItem>
                     <MudItem xs="1">
                         @if (MainLayout._appUndoButtonToggle &&
                         MainLayout.pendingChanges.Contains("_pmc_WaveGroupSize"))
                         {
-                            <MudButton @onclick="undo_PMC_Wave_GroupSize" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                            <MudButton @onclick="undo_PMC_Wave_FollowerCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
                         else if (MainLayout._appDefaultButtonToggle &&
-                        _pmc_WaveGroupSize != 2)
+                        _pmc_WaveFollowerCount != 1)
                         {
-                            <MudButton @onclick="default_PMC_Wave_GroupSize" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                            <MudButton @onclick="default_PMC_Wave_FollowerCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
                     </MudItem>
-
-                    <MudItem xs="1" />
+                    
+                    <MudItem xs="1">
+                        <MudPaper Class="d-flex justify-center mud-width-full ma-1" Elevation="0">
+                            <MudTooltip Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                <ChildContent>
+                                    <MudIconButton Icon="@Icons.Material.Filled.Warning" Size="Size.Small" />
+                                </ChildContent>
+                                <TooltipContent>
+                                    <MudText Typo="Typo.caption">This is group count, not total count. When limit is hit, all remaining spawns are solo.</MudText>
+                                </TooltipContent>
+                            </MudTooltip>
+                        </MudPaper>
+                    </MudItem>
                     <MudItem xs="4">
                         <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
                             <MudTooltip Text="The maximum amount of PMC Groups that can possibly spawn per wave." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
-                                <MudText>Group Count</MudText>
+                                <MudText>Group Count Limit</MudText>
                             </MudTooltip>
                         </MudPaper>
                     </MudItem>
@@ -1039,7 +1050,7 @@
                             <MudButton @onclick="undo_PMC_Wave_MaxPMCCount" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
                         }
                         else if (MainLayout._appDefaultButtonToggle &&
-                        _pmc_WaveBotsPerWave != 5)
+                        _pmc_WaveBotsPerWave != 4)
                         {
                             <MudButton @onclick="default_PMC_Wave_MaxPMCCount" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
                         }
@@ -1228,7 +1239,7 @@
     private void undo_PMC_Starting_GroupChance() => _pmc_StartingGroupChance = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.GroupChance;
     private void default_PMC_Starting_GroupChance() => _pmc_StartingGroupChance = 25;
 
-    private int _pmc_StartingGroupSize
+    private int _pmc_Starting_FollowerCount
     {
         get => ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize;
         set
@@ -1237,8 +1248,8 @@
             ModConfig.Config.PmcConfig.StartingPMCs.MaxGroupSize = value;
         }
     }
-    private void undo_PMC_Starting_GroupSize() => _pmc_StartingGroupSize = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupSize;
-    private void default_PMC_Starting_GroupSize() => _pmc_StartingGroupSize = 3;
+    private void undo_PMC_Starting_FollowerCount() => _pmc_Starting_FollowerCount = ModConfig.OriginalConfig.PmcConfig.StartingPMCs.MaxGroupSize;
+    private void default_PMC_Starting_FollowerCount() => _pmc_Starting_FollowerCount = 3;
 
     private int _pmc_StartingGroupCount
     {
@@ -1689,7 +1700,7 @@
     private void undo_PMC_Wave_GroupChance() => _pmc_WaveGroupChance = ModConfig.OriginalConfig.PmcConfig.Waves.GroupChance;
     private void default_PMC_Wave_GroupChance() => _pmc_WaveGroupChance = 10;
 
-    private int _pmc_WaveGroupSize
+    private int _pmc_WaveFollowerCount
     {
         get => ModConfig.Config.PmcConfig.Waves.MaxGroupSize;
         set
@@ -1698,8 +1709,8 @@
             ModConfig.Config.PmcConfig.Waves.MaxGroupSize = value;
         }
     }
-    private void undo_PMC_Wave_GroupSize() => _pmc_WaveGroupSize = ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupSize;
-    private void default_PMC_Wave_GroupSize() => _pmc_WaveGroupSize = 2;
+    private void undo_PMC_Wave_FollowerCount() => _pmc_WaveFollowerCount = ModConfig.OriginalConfig.PmcConfig.Waves.MaxGroupSize;
+    private void default_PMC_Wave_FollowerCount() => _pmc_WaveFollowerCount = 1;
 
     private int _pmc_WaveGroupCount
     {
@@ -1723,7 +1734,7 @@
         }
     }
     private void undo_PMC_Wave_MaxPMCCount() => _pmc_WaveBotsPerWave = ModConfig.OriginalConfig.PmcConfig.Waves.MaxBotsPerWave;
-    private void default_PMC_Wave_MaxPMCCount() => _pmc_WaveBotsPerWave = 5;
+    private void default_PMC_Wave_MaxPMCCount() => _pmc_WaveBotsPerWave = 4;
 
     private int _pmc_WaveDelayTimer
     {

@@ -178,14 +178,19 @@ public class PmcSpawns(
         var groupCount = 0;
         var spawnTime = 1d;
 
+        
         generatedPmcCount = remainingRaidTime switch
         {
+            >= 3000 => randomUtil.GetInt(minPmcCount, maxPmcCount),
+            >= 2400 => randomUtil.GetInt(minPmcCount - 1, maxPmcCount - 1),
             >= 1800 => randomUtil.GetInt(5, 8),
             >= 1200 => randomUtil.GetInt(3, 6),
-            >= 600 => randomUtil.GetInt(2, 4),
-            _ => randomUtil.GetInt(1, 2)
+            >= 600  => randomUtil.GetInt(2, 4),
+            _       => randomUtil.GetInt(1, 2)
         };
 
+        logger.Info($"Remaining Time: {remainingRaidTime} -- pmc count {generatedPmcCount}");
+        
         if (location.Contains("factory") && generatedPmcCount > 5) generatedPmcCount -= 2;
 
         while (currentPmcCount < generatedPmcCount)

@@ -20,7 +20,7 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<ISpawnPoint> PlayerSpawnPoints = new();
         public static List<ISpawnPoint> BackupPlayerSpawnPoints = new();
         public static List<ISpawnPoint> CombinedSpawnPoints = new();
-        private static Dictionary<string, List<ISpawnPoint>> CachedZoneSpawnPoints = new();
+        private static readonly Dictionary<string, List<ISpawnPoint>> CachedZoneSpawnPoints = new();
         
         // Zones
         public static List<BotZone> CurrentMapZones = new();
@@ -32,7 +32,6 @@ namespace acidphantasm_botplacementsystem.Utils
         public static readonly List<Player> CachedBosses = new();
         public static readonly List<Player> CachedConnectedPlayers = new();
         public static double BotsSpawnedPerPlayer = 0.0d;
-        public static int ConnectedPlayerCount = 0;
 
         public static readonly Dictionary<string, string[]> MapHotSpots = new()
         {
@@ -84,7 +83,6 @@ namespace acidphantasm_botplacementsystem.Utils
             CachedZoneSpawnPoints.Clear();
             
             BotsSpawnedPerPlayer = 0.0;
-            ConnectedPlayerCount = 0;
             
             // Recache spawn points now
             _allSpawnPoints = SpawnPointManagerClass.CreateFromScene().ToList();
@@ -121,11 +119,6 @@ namespace acidphantasm_botplacementsystem.Utils
                     list.Add(spawnPoint);
                 }
             }
-
-            foreach (var (zone, points) in CachedZoneSpawnPoints) 
-                Plugin.LogSource.LogInfo($"{points.Count} spawn points cached for {zone}"); 
-            
-            Plugin.LogSource.LogInfo($"AllSpawnPoints: {_allSpawnPoints.Count} - Player SpawnPoints: {PlayerSpawnPoints.Count} - Backup Player SpawnPoints: {BackupPlayerSpawnPoints.Count} - Combined SpawnPoints: {CombinedSpawnPoints.Count}");
             
             Initialized = true;
         }
@@ -133,6 +126,12 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<ISpawnPoint> GetZoneSpawnPoints(BotZone botZone)
         {
             return CachedZoneSpawnPoints.TryGetValue(botZone.NameZone, out var points) ? points : new List<ISpawnPoint>();
+        }
+        
+        public static BotZone GetNewValidBotZone()
+        {
+            var randomIndex = UnityEngine.Random.Range(0, CachedNonSnipeZones.Count);
+            return CachedNonSnipeZones[randomIndex];
         }
 
         public static bool IsPlayerHeadless(Player player)

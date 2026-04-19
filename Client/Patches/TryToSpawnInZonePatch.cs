@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using acidphantasm_botplacementsystem.Utils;
@@ -25,9 +26,9 @@ namespace acidphantasm_botplacementsystem.Patches
             var botType = data.Profiles[0].Info.Settings.Role;
             var mapName = Utility.CurrentLocation.ToLower();
             
-            var pmcList = Utility.CachedPmcs.ToList();
+            var pmcList = Utility.CachedPmcs;
             var pmcDistance = GetDistanceForMap(mapName);
-            var scavList = Utility.CachedAssaultBots.ToList();
+            var scavList = Utility.CachedAssaultBots;
 
             var mapHasHotzone = DoesMapHaveHotzones(mapName);
             var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, botZone.NameZone);
@@ -39,12 +40,11 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (!isSmallMap)
             {
-                var allMapZones = __instance.AllBotZones.ToList();
                 var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Count(x => x.IsRole(WildSpawnType.assault));
 
                 if (scavsInZone >= Plugin.zoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) || scavsInZone >= Plugin.hotzoneScavCap && mapHasHotzone && hotZoneSelected)
                 {
-                    var newBotZone = GetNewValidBotZone(allMapZones);
+                    var newBotZone = Utility.GetNewValidBotZone();
                     pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
                     botZone = newBotZone;
                 }
@@ -53,14 +53,16 @@ namespace acidphantasm_botplacementsystem.Patches
                 {
                     return;
                 }
+
+                var validZones = Utility.CachedNonSnipeZones;
                 
-                var validZones = allMapZones.Where(x => !x.SnipeZone).ToList();
-                for (var i = 0; i < 5; i++)
+                for (var i = 0; i < Math.Min(5, validZones.Count); i++)
                 {
-                    var newBotZone = validZones.OrderBy(_ => GClass856.Random(0, int.MaxValue)).FirstOrDefault();
+                    var newBotZone = validZones[i];
                     pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
                     botZone = newBotZone;
-                    if (pointsToSpawn.Count > 0) break;
+                    if (pointsToSpawn.Count > 0) 
+                        break;
                 }
 
                 if (pointsToSpawn.Count != 0)
@@ -82,6 +84,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 // fallback to vanilla
                 allSpawnPoints = botZone.SpawnPoints
                     .Where(x => x.Categories == ESpawnCategoryMask.All || x.Categories.ContainBotCategory())
+                    .OrderBy(_ => GClass856.Random(0f, 1f))
                     .ToList();
             }
 
@@ -151,10 +154,6 @@ namespace acidphantasm_botplacementsystem.Patches
         private static bool IsZoneHotzone(string mapName, string botZone)
         {
             return Utility.MapHotSpots[mapName].Contains(botZone);
-        }
-        private static BotZone GetNewValidBotZone(List<BotZone> botZones)
-        {
-            return botZones.Where(x => !x.SnipeZone).OrderBy(_ => GClass856.Random(0, int.MaxValue)).FirstOrDefault();
         }
         private static List<ISpawnPoint> GetNewSpawnPoints(string mapName, BotZone oldBotZone, BotZone newBotZone, bool mapHasHotzone, IReadOnlyCollection<IPlayer> pmcList, float pmcDistance, IReadOnlyCollection<IPlayer> scavList, float scavDistance, WildSpawnType botType)
         {

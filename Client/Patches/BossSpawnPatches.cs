@@ -41,8 +41,8 @@ namespace acidphantasm_botplacementsystem.Patches
             var soloPointCount = 1;
             var escortPointCount = 1 + wave.EscortCount;
 
-            var pmcList = Utility.CachedPmcs.ToList();
-            var scavList = Utility.CachedAssaultBots.ToList().Concat(Utility.CachedBosses).ToList();
+            var pmcList = Utility.CachedPmcs;
+            var scavList = Utility.CachedAssaultBots.Concat(Utility.CachedBosses).ToList();
             var location = Utility.CurrentLocation ?? "default";
             location = location.ToLower();
 
@@ -102,7 +102,6 @@ namespace acidphantasm_botplacementsystem.Patches
                 }
 
                 // Use fallback anywhere, except cut the distances down to try to get valid. If this fails it'll return an empty list, which stops the spawn
-                Plugin.LogSource.LogInfo($"Falling back PMC group to anywhere");
                 var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f, true);
                 return fallbackSpawnPoints;
             }
@@ -116,7 +115,7 @@ namespace acidphantasm_botplacementsystem.Patches
             var validSpawnPoints = new List<ISpawnPoint>();
 
             var list = Utility.PlayerSpawnPoints;
-            list = list.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
+            list = list.OrderBy(_ => GClass856.Random(0f, 1f)).ToList();
 
             var foundInitialPoint = false;
 
@@ -153,7 +152,7 @@ namespace acidphantasm_botplacementsystem.Patches
             var validSpawnPoints = new List<ISpawnPoint>();
 
             var alternativeList = backupToPlayer ? Utility.BackupPlayerSpawnPoints : Utility.CombinedSpawnPoints;
-            alternativeList = alternativeList.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
+            alternativeList = alternativeList.OrderBy(_ => GClass856.Random(0f, 1f)).ToList();
 
             foreach (var checkPoint in alternativeList)
             {

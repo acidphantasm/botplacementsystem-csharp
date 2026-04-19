@@ -33,7 +33,7 @@ public class ScavSpawns(
 
         if (ModConfig.Config.ScavConfig.StartingScavs.Enable)
         {
-            var assaultSpawn = GenerateStartingScavs(location, "assault", false, scavSpawnInfo.Count);
+            var assaultSpawn = GenerateStartingScavs(location, "assault", scavSpawnInfo.Count);
             if (assaultSpawn.Any())
                 scavSpawnInfo.AddRange(assaultSpawn);
         }
@@ -41,14 +41,26 @@ public class ScavSpawns(
         return scavSpawnInfo;
     }
     
-    public List<Wave> GetLateStartMapData(string location)
+    public List<Wave> GetLateStartMapData(string location, double remainingRaidTime)
     {
         var scavSpawnInfo = new List<Wave>();
-        var lateStartCap = 10;
-    
+        
+        if (!ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.TryGetValue(location, out var maxStartingSpawns))
+        {
+            logger.Error($"unable to find location MaxBotSpawns: {location}");
+            return scavSpawnInfo;
+        }
+        var lateStartCap = remainingRaidTime switch
+        {
+            >= 1800 => randomUtil.GetInt(maxStartingSpawns, maxStartingSpawns),
+            >= 1200 => randomUtil.GetInt(5, 8),
+            >= 600  => randomUtil.GetInt(3, 5),
+            _       => randomUtil.GetInt(2, 3)
+        };
+        
         if (ModConfig.Config.ScavConfig.StartingScavs.StartingMarksman)
         {
-            var marksmanSpawn = GenerateStartingScavs(location, "marksman", true);
+            var marksmanSpawn = GenerateStartingScavs(location, "marksman");
             if (marksmanSpawn.Any())
                 scavSpawnInfo.AddRange(marksmanSpawn);
         }
@@ -56,7 +68,7 @@ public class ScavSpawns(
         if (ModConfig.Config.ScavConfig.StartingScavs.Enable)
         {
             // Pass lateStartCap as the max, scavSpawnInfo.Count as current so marksman count against the cap
-            var assaultSpawn = GenerateStartingScavs(location, "assault", true, scavSpawnInfo.Count, lateStartCap);
+            var assaultSpawn = GenerateStartingScavs(location, "assault", scavSpawnInfo.Count, lateStartCap);
             if (assaultSpawn.Any())
                 scavSpawnInfo.AddRange(assaultSpawn);
         }
@@ -64,7 +76,7 @@ public class ScavSpawns(
         return scavSpawnInfo;
     }
 
-    public List<Wave> GenerateStartingScavs(string location, string? botRole = "assault", bool lateStart = false, int currentCount = 0, int? capOverride = null)
+    private List<Wave> GenerateStartingScavs(string location, string? botRole = "assault", int currentCount = 0, int? capOverride = null)
     {
         var scavWaveSpawnInfo = new List<Wave>();
 
@@ -75,7 +87,6 @@ public class ScavSpawns(
             return scavWaveSpawnInfo;
         }
 
-        var waveLength = locationData.Base.Waves.Count;
         if (!ModConfig.Config.ScavConfig.StartingScavs.MaxBotSpawns.TryGetValue(location, out var maxStartingSpawns))
         {
             logger.Error($"unable to find location MaxBotSpawns: {location}");
@@ -83,8 +94,7 @@ public class ScavSpawns(
         }
         
         var hardCap = capOverride ?? maxStartingSpawns;
-        var scavCap = capOverride ?? (double)maxStartingSpawns;
-        var playerScavChance = lateStart ? 60 : 10;
+        var scavCap = capOverride ?? maxStartingSpawns;
 
         var availableSpawnZones = botRole == "assault"
             ? new ExhaustableArray<string>(GetNonMarksmanSpawnZones(location), randomUtil, cloner)
@@ -116,7 +126,7 @@ public class ScavSpawns(
             scavDefaultData.TimeMax = botRole == "assault" ? 5 : -1;
             scavDefaultData.Number = currentCount;
             scavDefaultData.WildSpawnType = botRole == "assault" ? WildSpawnType.assault : WildSpawnType.marksman;
-            scavDefaultData.IsPlayers = botRole == "assault" && randomUtil.GetChance100(playerScavChance);
+            scavDefaultData.IsPlayers = botRole == "assault" && randomUtil.GetChance100(10); // <- This doesn't actually matter because the client handles it in this version
             scavDefaultData.SpawnPoints = selectedSpawnZone;
 
             currentCount++;
