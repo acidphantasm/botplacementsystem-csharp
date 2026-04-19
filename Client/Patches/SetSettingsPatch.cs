@@ -6,7 +6,7 @@ using Comfort.Common;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class MaxBotLimitPatch : ModulePatch
+    internal class SetSettingsPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {

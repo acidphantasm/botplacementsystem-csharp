@@ -80,22 +80,23 @@ namespace acidphantasm_botplacementsystem
 
             // Trigger /apbs/save
             new UnregisterPlayerPatch().Enable();
+            
+            // Bot spawn/death tracking
+            new SetOwnerToAIDataPatch().Enable();
+            new OnDeadPatch().Enable();
 
             // Trigger /apbs/load
             new MenuLoadPatch().Enable();
 
             // Set bot limits
-            new MaxBotLimitPatch().Enable();
+            new SetSettingsPatch().Enable();
 
             // Progressive Chances patches
-            new LocalGameProgressivePatch().Enable();
+            new BossSpawnScenarioPatch().Enable();
             new BossAddProgressionPatch().Enable();
 
-            // Patch to build new lists for everything
-            new PMCWaveCountPatch().Enable();
-
             // Main PMC Method Patch to trigger ABPS spawning instead
-            new PMCDistancePatch().Enable();
+            new PmcDistancePatch().Enable();
 
             // If assaultgroup, make assault instead. This stops the "wave" of scavs that spawn in NewSpawn mode that track and rush the player
             new AssaultGroupPatch().Enable();
@@ -108,6 +109,8 @@ namespace acidphantasm_botplacementsystem
             
             // Check enemy patch to prevent bots in the same group being enemies, but allow other groups containing the same PMC type to be enemies
             new IsPlayerEnemyPatch().Enable();
+
+            new BotsControllerInitPatch().Enable();
             
             ABPSConfig.InitABPSConfig(Config);
         }

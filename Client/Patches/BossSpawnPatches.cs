@@ -5,44 +5,14 @@ using EFT;
 using EFT.Game.Spawning;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class PMCWaveCountPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.Method(typeof(BossSpawnScenario), nameof(BossSpawnScenario.method_0));
-        }
-
-        [PatchPostfix]
-        private static void PatchPostfix(BossSpawnScenario __instance, BossLocationSpawn[] bossWaves)
-        {
-            if (__instance == null) return;
-
-            Utility.CurrentMapZones.Clear();
-            Utility.MapName = string.Empty;
-            Utility.AllPmcs.Clear();
-            Utility.AllScavs.Clear();
-            Utility.AllBots.Clear();
-            Utility.AllSpawnPoints.Clear();
-            Utility.PlayerSpawnPoints.Clear();
-            Utility.BackupPlayerSpawnPoints.Clear();
-            Utility.CombinedSpawnPoints.Clear();
-            Utility.BotsSpawnedPerPlayer = 0.0;
-            Utility.ConnectedPlayerCount = 0;
-            Utility.CachedNonSnipeZones.Clear();
-        }
-    }
-
-    internal class PMCDistancePatch : ModulePatch
+    internal class PmcDistancePatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
@@ -60,14 +30,13 @@ namespace acidphantasm_botplacementsystem.Patches
                 return true;
             }
 
-            Logger.LogInfo(
-                $"Spawn Point Attempt: {creationData.Profiles[0].Nickname} | WildSpawnType: {wave.BossType} | Count: {1 + wave.EscortCount}");
+            Logger.LogInfo($"Spawn Point Attempt: {creationData.Profiles[0].Nickname} | WildSpawnType: {wave.BossType} | Count: {1 + wave.EscortCount}");
 
             var soloPointCount = 1;
             var escortPointCount = 1 + wave.EscortCount;
 
-            var pmcList = Utility.GetAllPMCs();
-            var scavList = Utility.GetAllScavs();
+            var pmcList = Utility.CachedPmcs.ToList();
+            var scavList = Utility.CachedAssaultBots.ToList().Concat(Utility.CachedBosses).ToList();
             var location = Utility.CurrentLocation ?? "default";
             location = location.ToLower();
 
@@ -103,8 +72,8 @@ namespace acidphantasm_botplacementsystem.Patches
                     }
 
                     //__instance.method_3(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
-                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone,
-                        validSpawnLocations, __instance, __instance.BotSpawner_0, __instance.IBotCreator);
+                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations, __instance, __instance.BotSpawner_0, __instance.IBotCreator);
+                    
                     __result = true;
                     return false;
                 }
@@ -116,18 +85,18 @@ namespace acidphantasm_botplacementsystem.Patches
             return false;
         }
 
-        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers,
-            IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
+        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
             if (!Plugin.pmcSpawnAnywhere)
             {
-                var validPlayerSpawnPoints =
-                    GetPlayerSpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance, neededPoints);
-                if (validPlayerSpawnPoints.Count > 0) return validPlayerSpawnPoints;
+                var validPlayerSpawnPoints = GetPlayerSpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance, neededPoints);
+                if (validPlayerSpawnPoints.Count > 0)
+                {
+                    return validPlayerSpawnPoints;
+                }
 
                 // Use fallback anywhere, except cut the distances down to try to get valid. If this fails it'll return an empty list, which stops the spawn
-                var fallbackSpawnPoints =
-                    GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f, true);
+                var fallbackSpawnPoints = GetAnySpawnPoints(pmcPlayers, scavPlayers, distance * 0.75f, scavDistance * 0.75f, true);
                 return fallbackSpawnPoints;
             }
 
@@ -135,12 +104,11 @@ namespace acidphantasm_botplacementsystem.Patches
             return anywhereSpawnPoints;
         }
 
-        private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers,
-            IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
+        private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
             var validSpawnPoints = new List<ISpawnPoint>();
 
-            var list = Utility.GetPlayerSpawnPoints();
+            var list = Utility.PlayerSpawnPoints;
             list = list.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
 
             var foundInitialPoint = false;
@@ -173,14 +141,11 @@ namespace acidphantasm_botplacementsystem.Patches
             return validSpawnPoints;
         }
 
-        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers,
-            IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, bool backupToPlayer = false)
+        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, bool backupToPlayer = false)
         {
             var validSpawnPoints = new List<ISpawnPoint>();
 
-            var alternativeList = backupToPlayer
-                ? Utility.GetBotNoBossNoSnipeSpawnPoints()
-                : Utility.GetCombinedPlayerAndBotSpawnPoints();
+            var alternativeList = backupToPlayer ? Utility.BackupPlayerSpawnPoints : Utility.CombinedSpawnPoints;
             alternativeList = alternativeList.OrderBy(_ => GClass856.Random(0, int.MaxValue)).ToList();
 
             foreach (var checkPoint in alternativeList)
@@ -234,7 +199,7 @@ namespace acidphantasm_botplacementsystem.Patches
             
             foreach (var player in players)
             {
-                if (player == null || player.Profile.GetCorrectedNickname().StartsWith("headless_"))
+                if (player == null || Utility.IsPlayerHeadless(player))
                 {
                     continue;
                 }
