@@ -6,7 +6,7 @@ using EFT;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.14")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.15")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -69,6 +69,7 @@ namespace acidphantasm_botplacementsystem
 
         public static BotSpawner botSpawnerInstance;
 
+
         internal void Awake()
         {
             LogSource = Logger;
@@ -78,36 +79,19 @@ namespace acidphantasm_botplacementsystem
             */
             //new OnGameStartedPatch().Enable();
 
-            // Trigger /apbs/save
             new UnregisterPlayerPatch().Enable();
-
-            // Trigger /apbs/load
+            new SetOwnerToAIDataPatch().Enable();
+            new OnDeadPatch().Enable();
             new MenuLoadPatch().Enable();
-
-            // Set bot limits
-            new MaxBotLimitPatch().Enable();
-
-            // Progressive Chances patches
-            new LocalGameProgressivePatch().Enable();
+            new SetSettingsPatch().Enable();
+            new BossSpawnScenarioPatch().Enable();
             new BossAddProgressionPatch().Enable();
-
-            // Patch to build new lists for everything
-            new PMCWaveCountPatch().Enable();
-
-            // Main PMC Method Patch to trigger ABPS spawning instead
-            new PMCDistancePatch().Enable();
-
-            // If assaultgroup, make assault instead. This stops the "wave" of scavs that spawn in NewSpawn mode that track and rush the player
+            new PmcDistancePatch().Enable();
             new AssaultGroupPatch().Enable();
-
-            // Patch the NewSpawn primary method (it's in Update) to spawn scavs differently
             new NonWavesSpawnScenarioUpdatePatch().Enable();
-
-            // Zone Reselector for Scavs - primarily for redistribution based on active scavs in a zone and hotzone configuration
             new TryToSpawnInZonePatch().Enable();
-            
-            // Check enemy patch to prevent bots in the same group being enemies, but allow other groups containing the same PMC type to be enemies
             new IsPlayerEnemyPatch().Enable();
+            new BotsControllerInitPatch().Enable();
             
             ABPSConfig.InitABPSConfig(Config);
         }

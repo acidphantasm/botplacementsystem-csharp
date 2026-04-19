@@ -75,9 +75,9 @@
       "allowPmcsOnLabyrinth": false,
       "ignoreMaxBotCaps": false,
       "groupChance": 10,
-      "maxGroupSize": 2,
+      "maxGroupSize": 1,
       "maxGroupCount": 3,
-      "maxBotsPerWave": 5,
+      "maxBotsPerWave": 4,
       "delayBeforeFirstWave": 500,
       "secondsBetweenWaves": 360,
       "stopWavesBeforeEndOfRaidLimit": 300
@@ -115,7 +115,7 @@
       "quietTimeMin": 120,
       "quietTimeMax": 180,
       "checkToSpawnTimer": 15,
-      "pendingBotsToTrigger": 3,
+      "pendingBotsToTrigger": 1,
       "nonWaveSpawnBotsLimitPerPlayer": 20
     }
   },

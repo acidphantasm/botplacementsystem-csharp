@@ -52,6 +52,8 @@ public class PmcSpawns(
         var firstWaveTimer = ModConfig.Config.PmcConfig.Waves.DelayBeforeFirstWave;
         var waveTimer = ModConfig.Config.PmcConfig.Waves.SecondsBetweenWaves;
         var endWavesAtRemainingTime = ModConfig.Config.PmcConfig.Waves.StopWavesBeforeEndOfRaidLimit;
+        var spawnStaggerMin = 5;
+        var spawnStaggerMax = 15;
         var waveCount = Math.Floor((double) (((escapeTimeLimit * 60) - endWavesAtRemainingTime) - firstWaveTimer) / waveTimer);
         var currentWaveTime = firstWaveTimer;
         
@@ -59,6 +61,8 @@ public class PmcSpawns(
         {
             var currentPmcCount = 0;
             var groupCount = 0;
+            var currentSpawnOffset = 0d;
+            
             while (currentPmcCount < waveMaxPmcCount)
             {
                 var canBeAGroup = groupCount < waveGroupLimit;
@@ -77,13 +81,15 @@ public class PmcSpawns(
                 if (bossDefaultData is null) continue;
                 
                 bossDefaultData[0].BossEscortAmount = groupSize.ToString();
-                bossDefaultData[0].Time = currentWaveTime;
+                bossDefaultData[0].Time = currentWaveTime + currentSpawnOffset;
                 bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
                 bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
                 bossDefaultData[0].BossZone = "";
                 bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
                 currentPmcCount += groupSize + 1;
                 pmcWaveSpawnInfo.Add(bossDefaultData[0]);
+                
+                currentSpawnOffset += randomUtil.GetInt(spawnStaggerMin, spawnStaggerMax);
             }
             
             currentWaveTime += waveTimer;
@@ -132,6 +138,7 @@ public class PmcSpawns(
             bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossZone = "";
             bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
+            bossDefaultData[0].Time = 1;
             currentPmcCount += groupSize + 1;
             startingPmcWaveInfo.Add(bossDefaultData[0]);
         }
@@ -169,12 +176,20 @@ public class PmcSpawns(
 
         var currentPmcCount = 0;
         var groupCount = 0;
+        var spawnTime = 1d;
 
-        if (remainingRaidTime < 600) generatedPmcCount = randomUtil.GetInt(1, 3);
-        if (remainingRaidTime < 1200) generatedPmcCount = randomUtil.GetInt(1, 6);
-        if (remainingRaidTime < 1800) generatedPmcCount = randomUtil.GetInt(4, 9);
-
-        if (location.Contains("factory") && generatedPmcCount > 5) generatedPmcCount -= 2;
+        
+        generatedPmcCount = remainingRaidTime switch
+        {
+            >= 3000 => randomUtil.GetInt(7, 10),
+            >= 2400 => randomUtil.GetInt(6, 9),
+            >= 1800 => randomUtil.GetInt(5, 8),
+            >= 1200 => randomUtil.GetInt(4, 6),
+            >= 600  => randomUtil.GetInt(2, 4),
+            _       => randomUtil.GetInt(1, 2)
+        };
+        
+        if ((location.Contains("factory") || location.Contains("labyrinth") || location.Contains("laboratory")) && generatedPmcCount >= 8) generatedPmcCount -= 2;
 
         while (currentPmcCount < generatedPmcCount)
         {
@@ -188,12 +203,13 @@ public class PmcSpawns(
                 groupCount++;
             }
 
-            var pmcType = randomUtil.GetChance100(50) ? "pmcUSEC" : "pmcBEAR";
+            var pmcType = randomUtil.GetChance100(ModConfig.Config.PmcType.UsecChance) ? "pmcUSEC" : "pmcBEAR";
             var bossDefaultData = cloner.Clone(GetDefaultValuesForBoss(pmcType));
 
             if (bossDefaultData is null) continue;
             
             bossDefaultData[0].BossEscortAmount = groupSize.ToString();
+            bossDefaultData[0].Time = spawnTime;
             bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
             bossDefaultData[0].BossZone = "";

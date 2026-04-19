@@ -83,18 +83,18 @@ public class VanillaAdjustments(
                 (int)locationBase.EscapeTimeLimit * 60 - ModConfig.Config.ScavConfig.Waves.StopSpawns;
 
             // Start-Stop wave times for active spawning
-            locationBase.BotSpawnTimeOnMin = 10;
-            locationBase.BotSpawnTimeOnMax = 30;
+            locationBase.BotSpawnTimeOnMin = 45;
+            locationBase.BotSpawnTimeOnMax = 75;
 
             // Start-Stop wave wait times between active spawning
             locationBase.BotSpawnTimeOffMin = 120;
-            locationBase.BotSpawnTimeOffMax = 180;
+            locationBase.BotSpawnTimeOffMax = 240;
 
             // Probably how often it checks to spawn while active spawning
             locationBase.BotSpawnPeriodCheck = 15;
 
             // Bot count required to trigger a spawn
-            locationBase.BotSpawnCountStep = 3;
+            locationBase.BotSpawnCountStep = 1;
         }
         else
         {

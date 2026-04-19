@@ -1,8 +1,33 @@
 ﻿[
   {
+    "Version": "2.0.15",
+    "ReleaseDate": "April 19, 2026",
+    "IsLatest": true,
+    "NewFeatures": [],
+    "Changes": [
+      "Refactored scav spawning code for performance",
+      "Staggered Pmc Wave spawns 5-15 seconds apart within a single wave",
+      "Changed pending bots to trigger on scav waves to 1",
+      "Adjusted how often scavs attempt to spawn client side",
+      "General code cleanup to prep for full rewrite",
+      "Added additional caching",
+      "Changed Group Size -> Follower Count Limit in Webconfig for clarity",
+      "Changed Group Count -> Group Count Limit in Webconfig for clarity",
+      "Adjusted default Pmc wave Follower Count Limit + Max Pmcs per wave",
+      "Adjusted Starting Pmc Limits for Factory upper max to 8",
+      "Adjusted Scav Wave Custom Timers for Factory/Labyrinth/Labs"
+    ],
+    "BugFixes": [
+      "Resolved Pmcs never spawning in scav raids",
+      "Resolved Marksman never spawning in scav raids",
+      "Resolved client trying to double spawn scavs"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.14",
     "ReleaseDate": "April 1, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [
       "Nothing at all I promise"
     ],

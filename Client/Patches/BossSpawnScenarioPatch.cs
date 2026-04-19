@@ -6,7 +6,7 @@ using static acidphantasm_botplacementsystem.Spawning.BossSpawnTracking;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class LocalGameProgressivePatch : ModulePatch
+    internal class BossSpawnScenarioPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {

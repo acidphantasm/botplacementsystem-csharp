@@ -9,6 +9,7 @@ using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Eft.Common.Tables;
 using SPTarkov.Server.Core.Models.Enums;
 using SPTarkov.Server.Core.Models.Spt.Location;
+using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 
 namespace _botplacementsystem.Patches;
@@ -27,42 +28,27 @@ public class AdjustWaves_Patch : AbstractPatch
         var scavSpawns = ServiceLocator.ServiceProvider.GetService<ScavSpawns>();
         
         var locationName = mapBase.Id.ToLowerInvariant();
-        if (raidAdjustments.SimulatedRaidStartSeconds > 60)
-        {
-            var mapBosses = mapBase.BossLocationSpawn.Where((x) =>
-                x.Time == -1 && x.BossName != "pmcUSEC" && x.BossName != "pmcBEAR");
 
-            mapBase.BossLocationSpawn = mapBase.BossLocationSpawn.Where((x) =>
-                x.Time > raidAdjustments.SimulatedRaidStartSeconds &&
-                (x.BossName == "pmcUSEC" || x.BossName == "pmcBEAR")).ToList();
-
-            foreach (var bossWave in mapBase.BossLocationSpawn)
-            {
-                bossWave.Time -= Math.Max(raidAdjustments.SimulatedRaidStartSeconds.GetValueOrDefault(), 0);
-            }
-
-            var totalRemainingTime = raidAdjustments.RaidTimeMinutes * 60;
-            var newStartingPMCs = pmcSpawns.GenerateScavRaidRemainingPmcs(locationName,
-                totalRemainingTime.GetValueOrDefault());
-
-            foreach (var spawn in newStartingPMCs)
-            {
-                mapBase.BossLocationSpawn.Add(spawn);
-            }
-
-            foreach (var spawn in mapBosses)
-            {
-                mapBase.BossLocationSpawn.Add(spawn);
-            }
-
-            var newStartingScavs = scavSpawns.GenerateStartingScavs(locationName, "assault", true, mapBase.Waves.Count);
-
-            foreach (var spawn in newStartingScavs)
-            {
-                mapBase.Waves.Add(spawn);
-            }
-        }
+        var simulatedStart = raidAdjustments.SimulatedRaidStartSeconds ?? 0d;
+        var totalRaidSeconds = (raidAdjustments.RaidTimeMinutes ?? 0d) * 60;
         
+        if (simulatedStart > 60d)
+        {
+            var mapBosses = mapBase.BossLocationSpawn
+                .Where(x => x.Time == -1
+                            && !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+
+            var newPmcs = pmcSpawns.GenerateScavRaidRemainingPmcs(locationName, totalRaidSeconds);
+            mapBase.BossLocationSpawn = newPmcs;
+
+            foreach (var boss in mapBosses)
+                mapBase.BossLocationSpawn.Add(boss);
+
+            mapBase.Waves = scavSpawns.GetLateStartMapData(locationName, totalRaidSeconds);
+        }
+
         return false;
     }
 }
