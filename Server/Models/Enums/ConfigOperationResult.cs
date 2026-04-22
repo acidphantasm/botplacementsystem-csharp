@@ -4,6 +4,5 @@ public enum ConfigOperationResult
 {
     Success,
     Failure,
-    InRaid,
     ActiveProcess
 }

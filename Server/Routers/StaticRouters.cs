@@ -56,7 +56,6 @@ public class StaticRouters : StaticRouter
                 ) =>
                 {
                     var data = (StartLocalRaidRequestData)info;
-                    RaidInformation.IsInRaid = true;
                     if (CacheRebuilt)
                     {
                         CacheRebuilt = false;
@@ -74,7 +73,6 @@ public class StaticRouters : StaticRouter
                     output
                 ) =>
                 {
-                    RaidInformation.IsInRaid = false;
                     if (!CacheRebuilt)
                     {
                         _mapSpawns.ConfigureInitialData();

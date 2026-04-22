@@ -4,7 +4,9 @@
     "ReleaseDate": "April 21, 2026",
     "IsLatest": true,
     "NewFeatures": [],
-    "Changes": [],
+    "Changes": [
+      "Removed in-raid check cause all the spawn data is retrieved on the client during raid start, any changes wouldn't impact the current raid (probably)"
+    ],
     "BugFixes": [
       "Resolved Fika (headless) not tracking progressive/regressive chances",
       "Resolved Fika (headless) not spawning bots due to null position data",

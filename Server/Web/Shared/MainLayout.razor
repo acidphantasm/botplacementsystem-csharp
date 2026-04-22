@@ -23,11 +23,6 @@
             <MudAppBar Dense Elevation="1">
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.MenuOpen" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())">Menu</MudButton>
                 <MudSpacer/>
-                <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true">
-                    <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="RefreshPage">
-                        You or someone you know is in raid. Changes cannot be made. Click to check status.
-                    </MudButton>
-                </MudOverlay>
                 <MudSpacer/>
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Refresh" Color="Color.Inherit" OnClick="@((e) => RefreshData())" Disabled="_isReloading">Reload Config</MudButton>
                 <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Filled.Save" Color="Color.Inherit" OnClick="@((e) => SaveData())" Disabled="_isSaving">Save Config</MudButton>
@@ -39,7 +34,6 @@
                 <NavMenu/>
             </MudDrawer>
             <MudMainContent Class="pt-3">
-                <MudOverlay Visible="_isInRaid" DarkBackground="true" Absolute="true"/>
                 <CascadingValue Value="this">
                     @if (_appDisableAnimations)
                     {
@@ -184,7 +178,6 @@ else
 
 @code {
     bool _drawerOpen = false;
-    public bool _isInRaid = false;
     static bool _unsavedChanges = false;
     
     private static bool _isSaving = false;
@@ -325,11 +318,6 @@ else
                     pendingChanges.Clear();
                     Utils.callerList.Clear();
                     _unsavedChanges = false;
-                    _isInRaid = false;
-                    break;
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, config => { config.ShowCloseIcon = false; });
-                    _isInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, config => { config.ShowCloseIcon = false; });
@@ -392,14 +380,9 @@ else
             {
                 case ConfigOperationResult.Success:
                     Snackbar.Add("Config reloaded successfully.", Severity.Info, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = false;
                     _unsavedChanges = false;
                     pendingChanges.Clear();
                     Utils.callerList.Clear();
-                    break;
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = true;
                     break;
                 case ConfigOperationResult.ActiveProcess:
                     Snackbar.Add("Another process is already running.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
@@ -461,16 +444,10 @@ else
             switch (result)
             {
                 case ConfigOperationResult.Success:
-                    _isInRaid = false;
                     Snackbar.Add($"{changeCount} discarded and config reloaded.", Severity.Warning, cfg => cfg.ShowCloseIcon = false);
                     pendingChanges.Clear();
                     Utils.callerList.Clear();
                     _unsavedChanges = false;
-                    break;
-
-                case ConfigOperationResult.InRaid:
-                    Snackbar.Add("Someone is in raid. No changes made.", Severity.Error, cfg => cfg.ShowCloseIcon = false);
-                    _isInRaid = true;
                     break;
 
                 case ConfigOperationResult.ActiveProcess:
@@ -492,11 +469,5 @@ else
             _isReloading = false;
             StateHasChanged();
         }
-    }
-
-    private void RefreshPage()
-    {
-        _isInRaid = RaidInformation.IsInRaid;
-        StateHasChanged();
     }
 }
