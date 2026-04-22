@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class PmcDistancePatch : ModulePatch
+    internal class PmcSpawnHookPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
@@ -23,12 +23,12 @@ namespace acidphantasm_botplacementsystem.Patches
         private static bool PatchPrefix(BossSpawnerClass __instance, BossLocationSpawn wave, BotSpawnParams spawnParams,
             BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
         {
-            Plugin.botSpawnerInstance ??= __instance.BotSpawner_0;
+            Plugin.BotSpawnerInstance ??= __instance.BotSpawner_0;
             
-            if (!PmcGroupSpawner.IsReset)
+            if (!PmcGroupSpawner.Initialized)
             {
                 Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
-                PmcGroupSpawner.Reset(__instance, __instance.BotSpawner_0, __instance.IBotCreator);
+                PmcGroupSpawner.InitializePmcSpawner(__instance, __instance.BotSpawner_0, __instance.IBotCreator);
             }
             
             if (wave.BossType != WildSpawnType.pmcBEAR && wave.BossType != WildSpawnType.pmcUSEC)
@@ -78,7 +78,7 @@ namespace acidphantasm_botplacementsystem.Patches
                     }
 
                     //__instance.method_3(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
-                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations, __instance, __instance.BotSpawner_0, __instance.IBotCreator);
+                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
                     
                     __result = true;
                     return false;
@@ -91,9 +91,9 @@ namespace acidphantasm_botplacementsystem.Patches
             return false;
         }
 
-        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
+        private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<Player> pmcPlayers, IReadOnlyCollection<Player> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
-            if (!Plugin.pmcSpawnAnywhere)
+            if (!Plugin.PmcSpawnAnywhere)
             {
                 var validPlayerSpawnPoints = GetPlayerSpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance, neededPoints);
                 if (validPlayerSpawnPoints.Count > 0)
@@ -110,7 +110,7 @@ namespace acidphantasm_botplacementsystem.Patches
             return anywhereSpawnPoints;
         }
 
-        private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, int neededPoints)
+        private static List<ISpawnPoint> GetPlayerSpawnPoints(IReadOnlyCollection<Player> pmcPlayers, IReadOnlyCollection<Player> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
             var validSpawnPoints = new List<ISpawnPoint>();
 
@@ -147,7 +147,7 @@ namespace acidphantasm_botplacementsystem.Patches
             return validSpawnPoints;
         }
 
-        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<IPlayer> pmcPlayers, IReadOnlyCollection<IPlayer> scavPlayers, float distance, float scavDistance, bool backupToPlayer = false)
+        private static List<ISpawnPoint> GetAnySpawnPoints(IReadOnlyCollection<Player> pmcPlayers, IReadOnlyCollection<Player> scavPlayers, float distance, float scavDistance, bool backupToPlayer = false)
         {
             var validSpawnPoints = new List<ISpawnPoint>();
 
@@ -173,7 +173,7 @@ namespace acidphantasm_botplacementsystem.Patches
             return validSpawnPoints;
         }
 
-        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance)
+        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<Player> players, float distance)
         {
             if (spawnPoint?.Collider == null)
             {
@@ -182,16 +182,28 @@ namespace acidphantasm_botplacementsystem.Patches
     
             foreach (var player in players)
             {
-                if (player == null || Utility.IsPlayerHeadless(player) || !player.HealthController.IsAlive)
+                if (player == null || Utility.IsPlayerHeadless(player))
                 {
                     continue;
                 }
-
-                if (spawnPoint.Collider.Contains(player.Position))
+                
+                Vector3 playerPosition;
+                try
+                {
+                    playerPosition = player.Position;
+                }
+                catch
+                {
+                    Plugin.LogSource.LogInfo($"Player Position is Null when checking Pmc.IsValid()");
+                    continue;
+                }
+                
+                if (spawnPoint.Collider.Contains(playerPosition))
                 {
                     return false;
                 }
-                if (Vector3.Distance(spawnPoint.Position, player.Position) < distance)
+                
+                if (Vector3.Distance(spawnPoint.Position, playerPosition) < distance)
                 {
                     return false;
                 }
@@ -204,17 +216,17 @@ namespace acidphantasm_botplacementsystem.Patches
         {
             return mapName switch
             {
-                "bigmap" => Plugin.customs_PMCSpawnDistanceCheck,
-                "factory4_day" or "factory4_night" => Plugin.factory_PMCSpawnDistanceCheck,
-                "interchange" => Plugin.interchange_PMCSpawnDistanceCheck,
-                "laboratory" => Plugin.labs_PMCSpawnDistanceCheck,
-                "lighthouse" => Plugin.lighthouse_PMCSpawnDistanceCheck,
-                "rezervbase" => Plugin.reserve_PMCSpawnDistanceCheck,
-                "sandbox" or "sandbox_high" => Plugin.groundZero_PMCSpawnDistanceCheck,
-                "shoreline" => Plugin.shoreline_PMCSpawnDistanceCheck,
-                "tarkovstreets" => Plugin.streets_PMCSpawnDistanceCheck,
-                "woods" => Plugin.woods_PMCSpawnDistanceCheck,
-                "labyrinth" => Plugin.labyrinth_PMCSpawnDistanceCheck,
+                "bigmap" => Plugin.CustomsPmcSpawnDistanceCheck,
+                "factory4_day" or "factory4_night" => Plugin.FactoryPmcSpawnDistanceCheck,
+                "interchange" => Plugin.InterchangePmcSpawnDistanceCheck,
+                "laboratory" => Plugin.LabsPmcSpawnDistanceCheck,
+                "lighthouse" => Plugin.LighthousePmcSpawnDistanceCheck,
+                "rezervbase" => Plugin.ReservePmcSpawnDistanceCheck,
+                "sandbox" or "sandbox_high" => Plugin.GroundZeroPmcSpawnDistanceCheck,
+                "shoreline" => Plugin.ShorelinePmcSpawnDistanceCheck,
+                "tarkovstreets" => Plugin.StreetsPmcSpawnDistanceCheck,
+                "woods" => Plugin.WoodsPmcSpawnDistanceCheck,
+                "labyrinth" => Plugin.LabyrinthPmcSpawnDistanceCheck,
                 _ => 50f,
             };
         }

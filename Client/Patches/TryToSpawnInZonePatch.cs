@@ -42,7 +42,7 @@ namespace acidphantasm_botplacementsystem.Patches
             {
                 var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Count(x => x.IsRole(WildSpawnType.assault));
 
-                if (scavsInZone >= Plugin.zoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) || scavsInZone >= Plugin.hotzoneScavCap && mapHasHotzone && hotZoneSelected)
+                if (scavsInZone >= Plugin.ZoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) || scavsInZone >= Plugin.HotzoneScavCap && mapHasHotzone && hotZoneSelected)
                 {
                     var newBotZone = Utility.GetNewValidBotZone();
                     pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
@@ -75,7 +75,7 @@ namespace acidphantasm_botplacementsystem.Patches
             }
         }
 
-        private static List<ISpawnPoint> GetValidSpawnPoints(BotZone botZone, string location, IReadOnlyCollection<IPlayer> pmcList, float pmcDistance, IReadOnlyCollection<IPlayer> scavList, float scavDistance, WildSpawnType botType)
+        private static List<ISpawnPoint> GetValidSpawnPoints(BotZone botZone, string location, IReadOnlyCollection<Player> pmcList, float pmcDistance, IReadOnlyCollection<Player> scavList, float scavDistance, WildSpawnType botType)
         {
             var validSpawnPoints = new List<ISpawnPoint>();
             var allSpawnPoints = Utility.GetZoneSpawnPoints(botZone);
@@ -99,7 +99,7 @@ namespace acidphantasm_botplacementsystem.Patches
             }
             return validSpawnPoints;
         }
-        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<IPlayer> players, float distance)
+        private static bool IsValid(ISpawnPoint spawnPoint, IReadOnlyCollection<Player> players, float distance)
         {
             if (spawnPoint?.Collider == null)
             {
@@ -113,15 +113,27 @@ namespace acidphantasm_botplacementsystem.Patches
             
             foreach (var player in players)
             {
-                if (player == null || Utility.IsPlayerHeadless(player) || !player.HealthController.IsAlive)
+                if (player == null || Utility.IsPlayerHeadless(player))
                 {
                     continue;
                 }
-                if (spawnPoint.Collider.Contains(player.Position))
+                
+                Vector3 playerPosition;
+                try
+                {
+                    playerPosition = player.Position;
+                }
+                catch
+                {
+                    Plugin.LogSource.LogInfo($"Player Position is Null when checking Scav.IsValid()");
+                    continue;
+                }
+                
+                if (spawnPoint.Collider.Contains(playerPosition))
                 {
                     return false;
                 }
-                if (Vector3.Distance(spawnPoint.Position, player.Position) < distance)
+                if (Vector3.Distance(spawnPoint.Position, playerPosition) < distance)
                 {
                     return false;
                 }
@@ -132,30 +144,30 @@ namespace acidphantasm_botplacementsystem.Patches
         {
             return mapName switch
             {
-                "bigmap"                        => Plugin.customs_ScavSpawnDistanceCheck,
-                "factory4_day" or "factory4_night" => Plugin.factory_ScavSpawnDistanceCheck,
-                "interchange"                   => Plugin.interchange_ScavSpawnDistanceCheck,
-                "laboratory"                    => Plugin.labs_ScavSpawnDistanceCheck,
-                "lighthouse"                    => Plugin.lighthouse_ScavSpawnDistanceCheck,
-                "rezervbase"                    => Plugin.reserve_ScavSpawnDistanceCheck,
-                "sandbox" or "sandbox_high"     => Plugin.groundZero_ScavSpawnDistanceCheck,
-                "shoreline"                     => Plugin.shoreline_ScavSpawnDistanceCheck,
-                "tarkovstreets"                 => Plugin.streets_ScavSpawnDistanceCheck,
-                "woods"                         => Plugin.woods_ScavSpawnDistanceCheck,
-                "labyrinth"                     => Plugin.labyrinth_ScavSpawnDistanceCheck,
+                "bigmap"                        => Plugin.CustomsScavSpawnDistanceCheck,
+                "factory4_day" or "factory4_night" => Plugin.FactoryScavSpawnDistanceCheck,
+                "interchange"                   => Plugin.InterchangeScavSpawnDistanceCheck,
+                "laboratory"                    => Plugin.LabsScavSpawnDistanceCheck,
+                "lighthouse"                    => Plugin.LighthouseScavSpawnDistanceCheck,
+                "rezervbase"                    => Plugin.ReserveScavSpawnDistanceCheck,
+                "sandbox" or "sandbox_high"     => Plugin.GroundZeroScavSpawnDistanceCheck,
+                "shoreline"                     => Plugin.ShorelineScavSpawnDistanceCheck,
+                "tarkovstreets"                 => Plugin.StreetsScavSpawnDistanceCheck,
+                "woods"                         => Plugin.WoodsScavSpawnDistanceCheck,
+                "labyrinth"                     => Plugin.LabyrinthScavSpawnDistanceCheck,
                 _                               => 10f,
             };
         }
         
         private static bool DoesMapHaveHotzones(string mapName)
         {
-            return Plugin.enableHotzones && Utility.MapHotSpots.ContainsKey(mapName);
+            return Plugin.EnableHotzones && Utility.MapHotSpots.ContainsKey(mapName);
         }
         private static bool IsZoneHotzone(string mapName, string botZone)
         {
             return Utility.MapHotSpots[mapName].Contains(botZone);
         }
-        private static List<ISpawnPoint> GetNewSpawnPoints(string mapName, BotZone oldBotZone, BotZone newBotZone, bool mapHasHotzone, IReadOnlyCollection<IPlayer> pmcList, float pmcDistance, IReadOnlyCollection<IPlayer> scavList, float scavDistance, WildSpawnType botType)
+        private static List<ISpawnPoint> GetNewSpawnPoints(string mapName, BotZone oldBotZone, BotZone newBotZone, bool mapHasHotzone, IReadOnlyCollection<Player> pmcList, float pmcDistance, IReadOnlyCollection<Player> scavList, float scavDistance, WildSpawnType botType)
         {
             var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, newBotZone.NameZone);
             if (mapHasHotzone && hotZoneSelected) scavDistance = 10f;

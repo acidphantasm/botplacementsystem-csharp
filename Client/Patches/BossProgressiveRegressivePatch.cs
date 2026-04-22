@@ -8,7 +8,7 @@ using SPT.Reflection.Patching;
 
 namespace acidphantasm_botplacementsystem.Patches;
 
-internal class BossAddProgressionPatch : ModulePatch
+internal class BossProgressiveRegressivePatch : ModulePatch
 {
     protected override MethodBase GetTargetMethod()
     {
@@ -24,7 +24,7 @@ internal class BossAddProgressionPatch : ModulePatch
         }
         
         var bossName = data.Profiles[0].Info.Settings.Role;
-        if (!BossSpawnTracking.TrackedBosses.Contains(bossName) || (!Plugin.progressiveChances && !Plugin.regressiveChances))
+        if (!BossSpawnTracking.TrackedBosses.Contains(bossName) || (!Plugin.ProgressiveChances && !Plugin.RegressiveChances))
         {
             return;
         }

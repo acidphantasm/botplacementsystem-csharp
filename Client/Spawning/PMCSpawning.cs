@@ -18,13 +18,13 @@ namespace acidphantasm_botplacementsystem.Spawning
         private static BotSpawner _botSpawner;
         private static IBotCreator _iBotCreator;
         
-        public static readonly Dictionary<string, HashSet<string>> AllPmcGroups = new Dictionary<string, HashSet<string>>();
-        private static readonly Dictionary<string, string> FollowerToLeader = new Dictionary<string, string>();
-        private static readonly Dictionary<string, BossSpawnerClass.Class332> WavePmcGroupClassData = new Dictionary<string, BossSpawnerClass.Class332>();
+        public static readonly Dictionary<string, HashSet<string>> AllPmcGroups = new();
+        private static readonly Dictionary<string, string> FollowerToLeader = new();
+        private static readonly Dictionary<string, BossSpawnerClass.Class332> WavePmcGroupClassData = new();
 
-        public static bool IsReset;
+        public static bool Initialized;
         
-        public static void Reset(BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
+        public static void InitializePmcSpawner(BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
         {
             AllPmcGroups.Clear();
             FollowerToLeader.Clear();
@@ -53,10 +53,10 @@ namespace acidphantasm_botplacementsystem.Spawning
                 }
             }
             
-            IsReset = true;
+            Initialized = true;
         }
         
-        public static async Task StartSpawnPMCGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions, BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
+        public static async Task StartSpawnPMCGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions)
         {
 
             BossSpawnerClass.Class332 @class = new BossSpawnerClass.Class332();

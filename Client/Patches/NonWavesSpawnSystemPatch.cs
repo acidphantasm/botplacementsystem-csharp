@@ -14,7 +14,7 @@ using Object = System.Object;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class NonWavesSpawnScenarioUpdatePatch : ModulePatch
+    internal class NonWavesSpawnSystemPatch : ModulePatch
     {
         private static float _nextDespawnCheckTime = 0f;
         
@@ -71,7 +71,7 @@ namespace acidphantasm_botplacementsystem.Patches
             }
             lastSpawnAttemptTime = ___abstractGame_0.PastTime;
 
-            var freeSlots = (___botsController_0.MaxCount - Plugin.softCap) - ___botsController_0.AliveLoadingDelayedBotsCount;
+            var freeSlots = (___botsController_0.MaxCount - Plugin.SoftCap) - ___botsController_0.AliveLoadingDelayedBotsCount;
 
             if (isAtBotCap)
             {
@@ -106,7 +106,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 BotsCount = 1,
                 Time = Time.time,
                 Difficulty = ___gclass1881_0.Random(),
-                IsPlayers = GClass856.IsTrue100(Plugin.pScavChance),
+                IsPlayers = GClass856.IsTrue100(Plugin.PScavChance),
                 Side = EPlayerSide.Savage,
                 WildSpawnType = WildSpawnType.assault,
                 SpawnAreaName = botZone,
@@ -115,12 +115,12 @@ namespace acidphantasm_botplacementsystem.Patches
             });
             Utility.BotsSpawnedPerPlayer += 1d / Math.Max(1, Utility.CachedConnectedPlayers.Count);
 
-            if (!(Time.time >= _nextDespawnCheckTime) || !Plugin.despawnFurthest)
+            if (!(Time.time >= _nextDespawnCheckTime) || !Plugin.DespawnFurthest)
             {
                 return false;
             }
             
-            _nextDespawnCheckTime = Time.time + Plugin.despawnTimer;
+            _nextDespawnCheckTime = Time.time + Plugin.DespawnTimer;
             var center = GetPlayerCountAndCenter();
             DespawnFurthestBots(___botsController_0, center);
 
@@ -129,9 +129,9 @@ namespace acidphantasm_botplacementsystem.Patches
         
         private static void DespawnFurthestBots(BotsController botsController, Vector3 centerOfPlayers)
         {
-            var despawnDistance = Plugin.despawnDistance;
+            var despawnDistance = Plugin.DespawnDistance;
 
-            if (Plugin.despawnPmcs)
+            if (Plugin.DespawnPmcs)
             {
                 foreach (var pmc in Utility.CachedPmcs)
                 {
@@ -196,14 +196,14 @@ namespace acidphantasm_botplacementsystem.Patches
             }
             var botZones = Utility.CachedNonSnipeZones.OrderBy(_ => GClass856.Random(0f, 1f)).ToList();
 
-            if (Plugin.enableHotzones && GClass856.IsTrue100(Plugin.hotzoneScavChance) && Utility.MapHotSpots.ContainsKey(location))
+            if (Plugin.EnableHotzones && GClass856.IsTrue100(Plugin.HotzoneScavChance) && Utility.MapHotSpots.ContainsKey(location))
             {
                 var hotSpotZone = Utility.MapHotSpots[location].RandomElement();
                 return hotSpotZone;
             }
             foreach (var currentZone in botZones)
             {
-                if (_botsController.Bots.GetListByZone(currentZone).Count(x => x.IsRole(WildSpawnType.assault)) < Plugin.zoneScavCap)
+                if (_botsController.Bots.GetListByZone(currentZone).Count(x => x.IsRole(WildSpawnType.assault)) < Plugin.ZoneScavCap)
                 {
                     return currentZone.NameZone;
                 }
