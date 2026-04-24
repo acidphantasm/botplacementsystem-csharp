@@ -6,68 +6,68 @@ using EFT;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.15")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.16")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public static ManualLogSource LogSource;
 
-        public static bool despawnFurthest;
-        public static bool despawnPmcs;
-        public static float despawnDistance;
-        public static float despawnTimer;
+        public static bool DespawnFurthest;
+        public static bool DespawnPmcs;
+        public static float DespawnDistance;
+        public static float DespawnTimer;
         
-        public static int customsMapLimit;
-        public static int factoryMapLimit;
-        public static int interchangeMapLimit;
-        public static int labsMapLimit;
-        public static int lighthouseMapLimit;
-        public static int reserveMapLimit;
-        public static int groundZeroMapLimit;
-        public static int shorelineMapLimit;
-        public static int streetsMapLimit;
-        public static int woodsMapLimit;
-        public static int labyrinthMapLimit;
+        public static int CustomsMapLimit;
+        public static int FactoryMapLimit;
+        public static int InterchangeMapLimit;
+        public static int LabsMapLimit;
+        public static int LighthouseMapLimit;
+        public static int ReserveMapLimit;
+        public static int GroundZeroMapLimit;
+        public static int ShorelineMapLimit;
+        public static int StreetsMapLimit;
+        public static int WoodsMapLimit;
+        public static int LabyrinthMapLimit;
         
-        public static bool regressiveChances;
-        public static bool progressiveChances;
-        public static int chanceStep;
-        public static int minimumChance;
-        public static int maximumChance;
+        public static bool RegressiveChances;
+        public static bool ProgressiveChances;
+        public static int ChanceStep;
+        public static int MinimumChance;
+        public static int MaximumChance;
 
-        public static bool pmcSpawnAnywhere;
-        public static float customs_PMCSpawnDistanceCheck;
-        public static float factory_PMCSpawnDistanceCheck;
-        public static float interchange_PMCSpawnDistanceCheck;
-        public static float labs_PMCSpawnDistanceCheck;
-        public static float lighthouse_PMCSpawnDistanceCheck;
-        public static float reserve_PMCSpawnDistanceCheck;
-        public static float groundZero_PMCSpawnDistanceCheck;
-        public static float shoreline_PMCSpawnDistanceCheck;
-        public static float streets_PMCSpawnDistanceCheck;
-        public static float woods_PMCSpawnDistanceCheck;
-        public static float labyrinth_PMCSpawnDistanceCheck;
+        public static bool PmcSpawnAnywhere;
+        public static float CustomsPmcSpawnDistanceCheck;
+        public static float FactoryPmcSpawnDistanceCheck;
+        public static float InterchangePmcSpawnDistanceCheck;
+        public static float LabsPmcSpawnDistanceCheck;
+        public static float LighthousePmcSpawnDistanceCheck;
+        public static float ReservePmcSpawnDistanceCheck;
+        public static float GroundZeroPmcSpawnDistanceCheck;
+        public static float ShorelinePmcSpawnDistanceCheck;
+        public static float StreetsPmcSpawnDistanceCheck;
+        public static float WoodsPmcSpawnDistanceCheck;
+        public static float LabyrinthPmcSpawnDistanceCheck;
 
 
-        public static int softCap;
-        public static int pScavChance;
-        public static int zoneScavCap;
-        public static bool enableHotzones;
-        public static int hotzoneScavCap;
-        public static int hotzoneScavChance;
-        public static float customs_ScavSpawnDistanceCheck;
-        public static float factory_ScavSpawnDistanceCheck;
-        public static float interchange_ScavSpawnDistanceCheck;
-        public static float labs_ScavSpawnDistanceCheck;
-        public static float lighthouse_ScavSpawnDistanceCheck;
-        public static float reserve_ScavSpawnDistanceCheck;
-        public static float groundZero_ScavSpawnDistanceCheck;
-        public static float shoreline_ScavSpawnDistanceCheck;
-        public static float streets_ScavSpawnDistanceCheck;
-        public static float woods_ScavSpawnDistanceCheck;
-        public static float labyrinth_ScavSpawnDistanceCheck;
+        public static int SoftCap;
+        public static int PScavChance;
+        public static int ZoneScavCap;
+        public static bool EnableHotzones;
+        public static int HotzoneScavCap;
+        public static int HotzoneScavChance;
+        public static float CustomsScavSpawnDistanceCheck;
+        public static float FactoryScavSpawnDistanceCheck;
+        public static float InterchangeScavSpawnDistanceCheck;
+        public static float LabsScavSpawnDistanceCheck;
+        public static float LighthouseScavSpawnDistanceCheck;
+        public static float ReserveScavSpawnDistanceCheck;
+        public static float GroundZeroScavSpawnDistanceCheck;
+        public static float ShorelineScavSpawnDistanceCheck;
+        public static float StreetsScavSpawnDistanceCheck;
+        public static float WoodsScavSpawnDistanceCheck;
+        public static float LabyrinthScavSpawnDistanceCheck;
 
-        public static BotSpawner botSpawnerInstance;
+        public static BotSpawner BotSpawnerInstance;
 
 
         internal void Awake()
@@ -79,16 +79,16 @@ namespace acidphantasm_botplacementsystem
             */
             //new OnGameStartedPatch().Enable();
 
-            new UnregisterPlayerPatch().Enable();
-            new SetOwnerToAIDataPatch().Enable();
-            new OnDeadPatch().Enable();
+            new BossSpawnScenarioStopPatch().Enable();
+            new BotOwnerCreationPatch().Enable();
+            new PlayerOnDeadPatch().Enable();
             new MenuLoadPatch().Enable();
-            new SetSettingsPatch().Enable();
-            new BossSpawnScenarioPatch().Enable();
-            new BossAddProgressionPatch().Enable();
-            new PmcDistancePatch().Enable();
+            new SetMaxBotCountPatch().Enable();
+            new BossSpawnScenarioSpawnProgressPatch().Enable();
+            new BossProgressiveRegressivePatch().Enable();
+            new PmcSpawnHookPatch().Enable();
             new AssaultGroupPatch().Enable();
-            new NonWavesSpawnScenarioUpdatePatch().Enable();
+            new NonWavesSpawnSystemPatch().Enable();
             new TryToSpawnInZonePatch().Enable();
             new IsPlayerEnemyPatch().Enable();
             new BotsControllerInitPatch().Enable();

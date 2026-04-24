@@ -21,6 +21,7 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (!Utility.Initialized)
             {
+                Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
                 Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
             }
         }

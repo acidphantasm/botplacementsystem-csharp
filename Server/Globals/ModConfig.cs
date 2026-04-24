@@ -62,9 +62,6 @@ public class ModConfig : IOnLoad
 
         try
         {
-            if (RaidInformation.IsInRaid)
-                return ConfigOperationResult.InRaid;
-            
             var configPath = Path.Combine(_modPath, "config.json");
             var configTask = _jsonUtil.DeserializeFromFileAsync<AbpsConfig>(configPath);
 
@@ -94,9 +91,6 @@ public class ModConfig : IOnLoad
 
         try
         {
-            if (RaidInformation.IsInRaid)
-                return ConfigOperationResult.InRaid;
-            
             var configPath = Path.Combine(_modPath, "config.json");
 
             var serializedConfigTask = Task.Run(() => _jsonUtil.Serialize(Config, true));

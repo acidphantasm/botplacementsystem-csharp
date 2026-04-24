@@ -6,7 +6,7 @@ using static acidphantasm_botplacementsystem.Spawning.BossSpawnTracking;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class BossSpawnScenarioPatch : ModulePatch
+    internal class BossSpawnScenarioSpawnProgressPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
@@ -16,7 +16,7 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPrefix]
         private static void PatchPrefix(BossLocationSpawn[] bossWaves, Action<BossLocationSpawn> spawnBossAction)
         {
-            if (!Plugin.progressiveChances && !Plugin.regressiveChances) return;
+            if (!Plugin.ProgressiveChances && !Plugin.RegressiveChances) return;
             
             foreach (var wave in bossWaves)
             {
@@ -37,14 +37,14 @@ namespace acidphantasm_botplacementsystem.Patches
 
                     if (didBossSpawnLastRaid)
                     {
-                        info.Chance = Plugin.regressiveChances ? Math.Max(Plugin.minimumChance, info.Chance - Plugin.chanceStep) : Plugin.minimumChance;
+                        info.Chance = Plugin.RegressiveChances ? Math.Max(Plugin.MinimumChance, info.Chance - Plugin.ChanceStep) : Plugin.MinimumChance;
 
                         currentBossLocationSpawn.BossChance = info.Chance;
                         Plugin.LogSource.LogInfo($"{bossName} spawned last raid. New Chance: {currentBossLocationSpawn.BossChance}");
                     }
-                    else if (Plugin.progressiveChances)
+                    else if (Plugin.ProgressiveChances)
                     {
-                        info.Chance = Math.Min(Plugin.maximumChance, info.Chance + Plugin.chanceStep);
+                        info.Chance = Math.Min(Plugin.MaximumChance, info.Chance + Plugin.ChanceStep);
                         currentBossLocationSpawn.BossChance = info.Chance;
                         Plugin.LogSource.LogInfo($"{bossName} did not spawn last raid. New Chance: {currentBossLocationSpawn.BossChance}");
                     }

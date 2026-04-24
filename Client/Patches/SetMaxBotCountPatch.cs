@@ -6,7 +6,7 @@ using Comfort.Common;
 
 namespace acidphantasm_botplacementsystem.Patches
 {
-    internal class SetSettingsPatch : ModulePatch
+    internal class SetMaxBotCountPatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod()
         {
@@ -24,17 +24,17 @@ namespace acidphantasm_botplacementsystem.Patches
 
             maxCount = location.ToLower() switch
             {
-                "bigmap" => Plugin.customsMapLimit,
-                "factory4_day" or "factory4_night" => Plugin.factoryMapLimit,
-                "interchange" => Plugin.interchangeMapLimit,
-                "laboratory" => Plugin.labsMapLimit,
-                "lighthouse" => Plugin.lighthouseMapLimit,
-                "rezervbase" => Plugin.reserveMapLimit,
-                "sandbox" or "sandbox_high" => Plugin.groundZeroMapLimit,
-                "shoreline" => Plugin.shorelineMapLimit,
-                "tarkovstreets" => Plugin.streetsMapLimit,
-                "woods" => Plugin.woodsMapLimit,
-                "labyrinth" => Plugin.labyrinthMapLimit,
+                "bigmap" => Plugin.CustomsMapLimit,
+                "factory4_day" or "factory4_night" => Plugin.FactoryMapLimit,
+                "interchange" => Plugin.InterchangeMapLimit,
+                "laboratory" => Plugin.LabsMapLimit,
+                "lighthouse" => Plugin.LighthouseMapLimit,
+                "rezervbase" => Plugin.ReserveMapLimit,
+                "sandbox" or "sandbox_high" => Plugin.GroundZeroMapLimit,
+                "shoreline" => Plugin.ShorelineMapLimit,
+                "tarkovstreets" => Plugin.StreetsMapLimit,
+                "woods" => Plugin.WoodsMapLimit,
+                "labyrinth" => Plugin.LabyrinthMapLimit,
                 _ => 0
             };
 

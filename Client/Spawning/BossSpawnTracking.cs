@@ -10,11 +10,11 @@ namespace acidphantasm_botplacementsystem.Spawning
 {
     public class BossSpawnTracking
     {
-        public static Dictionary<string, CustomizedObject> BossInfoOutOfRaid { get; set; } = [];
-        public static Dictionary<string, CustomizedObject> BossInfoForProfile { get; set; } = [];
+        private static Dictionary<string, CustomizedObject> BossInfoOutOfRaid { get; set; } = [];
+        public static Dictionary<string, CustomizedObject> BossInfoForProfile { get; private set; } = [];
 
-        public static HashSet<WildSpawnType> TrackedBosses = new HashSet<WildSpawnType>
-        {
+        public static readonly HashSet<WildSpawnType> TrackedBosses =
+        [
             WildSpawnType.bossBoar,
             WildSpawnType.bossBully,
             WildSpawnType.bossGluhar,
@@ -27,8 +27,8 @@ namespace acidphantasm_botplacementsystem.Spawning
             WildSpawnType.bossPartisan,
             WildSpawnType.bossZryachiy,
             WildSpawnType.arenaFighterEvent,
-            WildSpawnType.sectantPriest,
-        };
+            WildSpawnType.sectantPriest
+        ];
 
         /*
          * 
@@ -44,7 +44,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             {
                 info = new CustomizedObject
                 {
-                    Chance = Plugin.minimumChance,
+                    Chance = Plugin.MinimumChance,
                     SpawnedLastRaid = true
                 };
 
@@ -87,7 +87,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             {
                 var profile = Utility.GetPlayerProfile().ProfileId;
                 
-                string payload = await RequestHandler.GetJsonAsync("/botplacementsystem/load");
+                var payload = await RequestHandler.GetJsonAsync("/botplacementsystem/load");
                 var retrievedData =
                     JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, CustomizedObject>>>(payload);
 
