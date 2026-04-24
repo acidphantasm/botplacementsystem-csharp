@@ -29,7 +29,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 Utility.CachedPmcs.Remove(__instance);
                 return;
             }
-            if (__instance.Profile.Info.Settings.Role is WildSpawnType.assault)
+            if (__instance.Profile.Info.Settings.Role is WildSpawnType.assault or WildSpawnType.assaultGroup)
             {
                 Utility.CachedAssaultBots.Remove(__instance);
                 return;

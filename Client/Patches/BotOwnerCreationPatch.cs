@@ -27,7 +27,7 @@ namespace acidphantasm_botplacementsystem.Patches
                 Utility.CachedPmcs.Add(player);
                 return;
             }
-            if (player.Profile.Info.Settings.Role is WildSpawnType.assault)
+            if (player.Profile.Info.Settings.Role is WildSpawnType.assault or WildSpawnType.assaultGroup)
             {
                 Utility.CachedAssaultBots.Add(player);
                 return;

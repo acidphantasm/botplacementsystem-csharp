@@ -23,10 +23,11 @@ namespace acidphantasm_botplacementsystem.Patches
         private static bool PatchPrefix(BossSpawnerClass __instance, BossLocationSpawn wave, BotSpawnParams spawnParams,
             BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
         {
-            Plugin.BotSpawnerInstance ??= __instance.BotSpawner_0;
             
             if (!PmcGroupSpawner.Initialized)
             {
+                Plugin.BotSpawnerInstance = __instance.BotSpawner_0;
+                
                 Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
                 PmcGroupSpawner.InitializePmcSpawner(__instance, __instance.BotSpawner_0, __instance.IBotCreator);
             }
