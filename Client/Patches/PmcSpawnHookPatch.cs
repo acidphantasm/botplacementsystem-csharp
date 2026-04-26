@@ -20,18 +20,8 @@ namespace acidphantasm_botplacementsystem.Patches
         }
 
         [PatchPrefix]
-        private static bool PatchPrefix(BossSpawnerClass __instance, BossLocationSpawn wave, BotSpawnParams spawnParams,
-            BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
+        private static bool PatchPrefix(BossSpawnerClass __instance, BossLocationSpawn wave, BotSpawnParams spawnParams, BotDifficulty difficulty, int followersCount, BotCreationDataClass creationData, ref bool __result)
         {
-            
-            if (!PmcGroupSpawner.Initialized)
-            {
-                Plugin.BotSpawnerInstance = __instance.BotSpawner_0;
-                
-                Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
-                PmcGroupSpawner.InitializePmcSpawner(__instance, __instance.BotSpawner_0, __instance.IBotCreator);
-            }
-            
             if (wave.BossType != WildSpawnType.pmcBEAR && wave.BossType != WildSpawnType.pmcUSEC)
             {
                 return true;
@@ -48,8 +38,7 @@ namespace acidphantasm_botplacementsystem.Patches
             location = location.ToLower();
 
             var distance = GetDistanceForMap(location);
-            var isSmallMap = location.Contains("factory4") || location.Contains("laboratory") ||
-                             location.Contains("labyrinth");
+            var isSmallMap = location.Contains("factory4") || location.Contains("laboratory") || location.Contains("labyrinth");
             var scavDistance = isSmallMap ? 20f : 50f;
 
             var validSpawnLocations = GetValidSpawnPoints(pmcList, scavList, distance, scavDistance, escortPointCount);
@@ -79,7 +68,7 @@ namespace acidphantasm_botplacementsystem.Patches
                     }
 
                     //__instance.method_3(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
-                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations);
+                    PmcGroupSpawner.StartSpawnPMCGroup(creationData, wave, spawnParams, followersCount, botZone, validSpawnLocations).HandleExceptions();
                     
                     __result = true;
                     return false;

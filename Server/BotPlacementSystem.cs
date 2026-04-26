@@ -13,7 +13,7 @@ public record ModMetadata : AbstractModMetadata, IModWebMetadata
     public override string Name { get; init; } = "Acid's Bot Placement System";
     public override string Author { get; init; } = "acidphantasm";
     public override List<string>? Contributors { get; init; }
-    public override SemanticVersioning.Version Version { get; init; } = new("2.0.16");
+    public override SemanticVersioning.Version Version { get; init; } = new("2.0.17");
     public override SemanticVersioning.Range SptVersion { get; init; } = new("~4.0.3");
     public override List<string>? Incompatibilities { get; init; }
     public override Dictionary<string, SemanticVersioning.Range>? ModDependencies { get; init; }

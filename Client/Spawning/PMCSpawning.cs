@@ -85,7 +85,9 @@ namespace acidphantasm_botplacementsystem.Spawning
 
             if (flag)
             {
-                if (_bossSpawnerClass.BotSpawner_0.CanSpawnRole(botProfileDataClass))
+                var canSpawn = _bossSpawnerClass.BotSpawner_0.CanSpawnRole(botProfileDataClass);
+                Plugin.LogSource.LogInfo($"CanSpawnRole for {creationData.Profiles[0].Nickname}: {canSpawn}");
+                if (canSpawn)
                 {
                     SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
                     await SpawnFollowers(@class.creationData, @class.botZone, @class.followersCount, @class.spawnParams, @class.wave, @class.side, @class.openedPositions, true, leaderProfileId);
@@ -314,6 +316,7 @@ namespace acidphantasm_botplacementsystem.Spawning
             }
             if (@class.data.SpawnStopped)
             {
+                Plugin.LogSource.LogInfo($"SpawnStopped for {data.Profiles[0].Nickname}");
                 _botSpawner.InSpawnProcess--;
                 return;
             }
