@@ -83,7 +83,7 @@ namespace acidphantasm_botplacementsystem.Patches
 
         private static List<ISpawnPoint> GetValidSpawnPoints(IReadOnlyCollection<Player> pmcPlayers, IReadOnlyCollection<Player> scavPlayers, float distance, float scavDistance, int neededPoints)
         {
-            if (!Plugin.PmcSpawnAnywhere)
+            if (Utility.CurrentLocation == "tarkovstreets" || !Plugin.PmcSpawnAnywhere)
             {
                 var validPlayerSpawnPoints = GetPlayerSpawnPoints(pmcPlayers, scavPlayers, distance, scavDistance, neededPoints);
                 if (validPlayerSpawnPoints.Count > 0)

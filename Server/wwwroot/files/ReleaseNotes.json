@@ -1,8 +1,31 @@
 ﻿[
   {
+    "Version": "2.0.18",
+    "ReleaseDate": "April 27, 2026",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [
+      "Automatically disable Pmc Spawn Anywhere if on Streets - it doesn't work because Streets spawn points are crap"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.17",
+    "ReleaseDate": "April 25, 2026",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [
+      "Added minor logging",
+      "Adjusted initialization order"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.16",
     "ReleaseDate": "April 23, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Removed in-raid check cause all the spawn data is retrieved on the client during raid start, any changes wouldn't impact the current raid (probably)"
