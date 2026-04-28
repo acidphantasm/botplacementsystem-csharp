@@ -2,10 +2,9 @@
 using EFT;
 using EFT.Game.Spawning;
 using SPT.Reflection.Utils;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using UnityEngine;
 
 namespace acidphantasm_botplacementsystem.Utils
 {
@@ -20,13 +19,15 @@ namespace acidphantasm_botplacementsystem.Utils
         public static List<ISpawnPoint> PlayerSpawnPoints = new();
         public static List<ISpawnPoint> BackupPlayerSpawnPoints = new();
         public static List<ISpawnPoint> CombinedSpawnPoints = new();
-        private static Dictionary<string, List<ISpawnPoint>> CachedZoneSpawnPoints = new();
+        private static Dictionary<string, List<ISpawnPoint>> _cachedZoneSpawnPoints = new();
         
         // Zones
         public static List<BotZone> CurrentMapZones = new();
         public static List<BotZone> CachedNonSnipeZones = new();
         
         // Bot Trackers
+        public static readonly HashSet<Vector3> ReservedSpawnPositions = new();
+        public static readonly object SpawnPointLock = new object();
         public static List<Player> CachedPmcs = new();
         public static List<Player> CachedAssaultBots = new();
         public static List<Player> CachedBosses = new();
@@ -75,19 +76,18 @@ namespace acidphantasm_botplacementsystem.Utils
             CachedNonSnipeZones.Clear();
             CurrentMapZones.Clear();
             
+            ReservedSpawnPositions.Clear();
             CachedPmcs.Clear();
             CachedAssaultBots.Clear();
             CachedBosses.Clear();
             CachedConnectedPlayers.Clear();
             
-            CachedZoneSpawnPoints.Clear();
+            _cachedZoneSpawnPoints.Clear();
             
             BotsSpawnedPerPlayer = 0.0;
             
             // Recache spawn points now
-            _allSpawnPoints = LocationScene.GetAllObjectsAndWhenISayAllIActuallyMeanIt<SpawnPointMarker>()
-                .Select(x => x.SpawnPoint)
-                .ToList();
+            _allSpawnPoints = SpawnPointManagerClass.CreateFromScene().ToList();
     
             PlayerSpawnPoints = _allSpawnPoints
                 .Where(x => x.Categories.ContainPlayerCategory() && x.Infiltration != null)
@@ -112,10 +112,10 @@ namespace acidphantasm_botplacementsystem.Utils
                     {
                         continue;
                     }
-                    if (!CachedZoneSpawnPoints.TryGetValue(zoneName, out var list))
+                    if (!_cachedZoneSpawnPoints.TryGetValue(zoneName, out var list))
                     {
                         list = new List<ISpawnPoint>();
-                        CachedZoneSpawnPoints[zoneName] = list;
+                        _cachedZoneSpawnPoints[zoneName] = list;
                     }
 
                     list.Add(spawnPoint);
@@ -127,7 +127,7 @@ namespace acidphantasm_botplacementsystem.Utils
         
         public static List<ISpawnPoint> GetZoneSpawnPoints(BotZone botZone)
         {
-            return CachedZoneSpawnPoints.TryGetValue(botZone.NameZone, out var points) ? points : new List<ISpawnPoint>();
+            return _cachedZoneSpawnPoints.TryGetValue(botZone.NameZone, out var points) ? points : new List<ISpawnPoint>();
         }
         
         public static BotZone GetNewValidBotZone()

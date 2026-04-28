@@ -1,8 +1,40 @@
 ﻿[
   {
+    "Version": "2.0.18",
+    "ReleaseDate": "April 27, 2026",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [
+      "Added advanced F12 debug log and put logging behind it (disabled by default)",
+      "Adjusted spawn point handling",
+      "Adjusted caching of bots",
+      "Adjusted positional spawning logic for leaders",
+      "Adjusted spawn point selection for followers",
+      "Adjusted leader lookup for followers for group assignment",
+      "Adjusted error handling"
+    ],
+    "BugFixes": [
+      "Resolved spawn point handling for followers",
+      "Resolved spawn point handling for bots spawning at the same time"
+    ],
+    "KnownIssues": []
+  },
+  {
+    "Version": "2.0.17",
+    "ReleaseDate": "April 25, 2026",
+    "IsLatest": false,
+    "NewFeatures": [],
+    "Changes": [
+      "Added minor logging",
+      "Adjusted initialization order"
+    ],
+    "BugFixes": [],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.16",
     "ReleaseDate": "April 23, 2026",
-    "IsLatest": true,
+    "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
       "Removed in-raid check cause all the spawn data is retrieved on the client during raid start, any changes wouldn't impact the current raid (probably)"

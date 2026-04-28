@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using acidphantasm_botplacementsystem.Spawning;
 using acidphantasm_botplacementsystem.Utils;
 using EFT;
 using HarmonyLib;
@@ -21,8 +22,21 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (!Utility.Initialized)
             {
-                Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+                if (Plugin.DebugLogging)
+                    Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+                
                 Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
+            }
+            
+            
+            if (!PmcGroupSpawner.Initialized)
+            {
+                Plugin.BotSpawnerInstance = __instance.BotSpawner;
+                
+                if (Plugin.DebugLogging)
+                    Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
+                
+                PmcGroupSpawner.InitializePmcSpawner(__instance.BotSpawner.BossSpawner, __instance.BotSpawner, __instance.BotSpawner.BotCreator);
             }
         }
     }

@@ -6,7 +6,7 @@ using EFT;
 
 namespace acidphantasm_botplacementsystem
 {
-    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.16")]
+    [BepInPlugin("com.acidphantasm.botplacementsystem", "acidphantasm-botplacementsystem", "2.0.18")]
     [BepInDependency("com.fika.headless", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
@@ -67,6 +67,8 @@ namespace acidphantasm_botplacementsystem
         public static float WoodsScavSpawnDistanceCheck;
         public static float LabyrinthScavSpawnDistanceCheck;
 
+        public static bool DebugLogging;
+
         public static BotSpawner BotSpawnerInstance;
 
 
@@ -77,7 +79,7 @@ namespace acidphantasm_botplacementsystem
             /*
              * This patch is only for development purposes in specific scenarios (or it would be in IFDEBUG)
             */
-            //new OnGameStartedPatch().Enable();
+            //new GameworldOnStartedPatch().Enable();
 
             new BossSpawnScenarioStopPatch().Enable();
             new BotOwnerCreationPatch().Enable();
@@ -93,7 +95,7 @@ namespace acidphantasm_botplacementsystem
             new IsPlayerEnemyPatch().Enable();
             new BotsControllerInitPatch().Enable();
             
-            ABPSConfig.InitABPSConfig(Config);
+            AbpsConfig.InitAbpsConfig(Config);
         }
     }
 }
