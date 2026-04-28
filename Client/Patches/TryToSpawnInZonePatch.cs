@@ -21,57 +21,74 @@ namespace acidphantasm_botplacementsystem.Patches
         [PatchPrefix]
         private static void PatchPrefix(BotSpawner __instance, BotZone botZone, BotCreationDataClass data, bool withCheckMinMax, bool newWave, ref List<ISpawnPoint> pointsToSpawn, bool forcedSpawn = false)
         {
-            if (!data.IsValidSpawnType(WildSpawnType.assault) || pointsToSpawn != null) return;
-
-            var botType = data.Profiles[0].Info.Settings.Role;
-            var mapName = Utility.CurrentLocation.ToLower();
-            
-            var pmcList = Utility.CachedPmcs;
-            var pmcDistance = GetDistanceForMap(mapName);
-            var scavList = Utility.CachedAssaultBots;
-
-            var mapHasHotzone = DoesMapHaveHotzones(mapName);
-            var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, botZone.NameZone);
-
-            var isSmallMap = mapName.Contains("factory") || mapName.Contains("sandbox") || mapName.Contains("labyrinth") || mapName.Contains("laboratory");
-            var scavDistance = hotZoneSelected ? 10f : isSmallMap ? 20f : 40f;
-
-            pointsToSpawn = GetValidSpawnPoints(botZone, mapName, pmcList, pmcDistance, scavList, scavDistance, botType);
-
-            if (!isSmallMap)
+            try
             {
-                var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone).Count(x => x.IsRole(WildSpawnType.assault));
+                if (!data.IsValidSpawnType(WildSpawnType.assault) || pointsToSpawn != null) return;
 
-                if (scavsInZone >= Plugin.ZoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) || scavsInZone >= Plugin.HotzoneScavCap && mapHasHotzone && hotZoneSelected)
+                var botType = data.Profiles[0].Info.Settings.Role;
+                var mapName = Utility.CurrentLocation.ToLower();
+                var pmcDistance = GetDistanceForMap(mapName);
+
+                var mapHasHotzone = DoesMapHaveHotzones(mapName);
+                var hotZoneSelected = mapHasHotzone && IsZoneHotzone(mapName, botZone.NameZone);
+                var isSmallMap = mapName.Contains("factory") || mapName.Contains("sandbox") ||
+                                 mapName.Contains("labyrinth") || mapName.Contains("laboratory");
+                var scavDistance = hotZoneSelected ? 10f : isSmallMap ? 20f : 40f;
+
+                List<Player> pmcList;
+                List<Player> scavList;
+                lock (Utility.SpawnPointLock)
                 {
-                    var newBotZone = Utility.GetNewValidBotZone();
-                    pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
-                    botZone = newBotZone;
+                    pmcList = Utility.CachedPmcs.ToList();
+                    scavList = Utility.CachedAssaultBots.ToList();
                 }
 
-                if (pointsToSpawn.Count != 0)
-                {
-                    return;
-                }
+                pointsToSpawn = GetValidSpawnPoints(botZone, mapName, pmcList, pmcDistance, scavList, scavDistance,
+                    botType);
 
-                var validZones = Utility.CachedNonSnipeZones;
-                
-                for (var i = 0; i < Math.Min(5, validZones.Count); i++)
+                if (!isSmallMap)
                 {
-                    var newBotZone = validZones[i];
-                    pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
-                    botZone = newBotZone;
-                    if (pointsToSpawn.Count > 0) 
-                        break;
-                }
+                    var scavsInZone = __instance.BotGame.BotsController.Bots.GetListByZone(botZone)
+                        .Count(x => x.IsRole(WildSpawnType.assault));
 
-                if (pointsToSpawn.Count != 0)
-                {
-                    return;
+                    if (scavsInZone >= Plugin.ZoneScavCap && (mapHasHotzone && !hotZoneSelected || !mapHasHotzone) ||
+                        scavsInZone >= Plugin.HotzoneScavCap && mapHasHotzone && hotZoneSelected)
+                    {
+                        var newBotZone = Utility.GetNewValidBotZone();
+                        pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList, pmcDistance, scavList, scavDistance, botType);
+                        botZone = newBotZone;
+                    }
+
+                    if (pointsToSpawn.Count != 0)
+                    {
+                        return;
+                    }
+
+                    var validZones = Utility.CachedNonSnipeZones;
+
+                    for (var i = 0; i < Math.Min(5, validZones.Count); i++)
+                    {
+                        var newBotZone = validZones[i];
+                        pointsToSpawn = GetNewSpawnPoints(mapName, botZone, newBotZone, mapHasHotzone, pmcList,
+                            pmcDistance, scavList, scavDistance, botType);
+                        botZone = newBotZone;
+                        if (pointsToSpawn.Count > 0)
+                            break;
+                    }
+
+                    if (pointsToSpawn.Count != 0)
+                    {
+                        return;
+                    }
+
+                    Plugin.LogSource.LogInfo(
+                        $"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
+                    pointsToSpawn = null;
                 }
-                    
-                Plugin.LogSource.LogInfo($"{data.Id} - {botZone.NameZone} - Returning null points, no valid points in distance");
-                pointsToSpawn = null;
+            }
+            catch (Exception ex)
+            {
+                Plugin.LogSource.LogError($"TryToSpawnInZonePatch EXCEPTION: {ex.GetType().Name}: {ex.Message}\n{ex.StackTrace}");
             }
         }
 

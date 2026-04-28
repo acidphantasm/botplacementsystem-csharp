@@ -67,6 +67,8 @@ namespace acidphantasm_botplacementsystem
         public static float WoodsScavSpawnDistanceCheck;
         public static float LabyrinthScavSpawnDistanceCheck;
 
+        public static bool DebugLogging;
+
         public static BotSpawner BotSpawnerInstance;
 
 
@@ -93,7 +95,7 @@ namespace acidphantasm_botplacementsystem
             new IsPlayerEnemyPatch().Enable();
             new BotsControllerInitPatch().Enable();
             
-            ABPSConfig.InitABPSConfig(Config);
+            AbpsConfig.InitAbpsConfig(Config);
         }
     }
 }

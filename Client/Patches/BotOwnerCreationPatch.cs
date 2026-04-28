@@ -24,17 +24,22 @@ namespace acidphantasm_botplacementsystem.Patches
             
             if (player.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
             {
-                Utility.CachedPmcs.Add(player);
                 return;
             }
             if (player.Profile.Info.Settings.Role is WildSpawnType.assault or WildSpawnType.assaultGroup)
             {
-                Utility.CachedAssaultBots.Add(player);
+                lock (Utility.SpawnPointLock)
+                {
+                    Utility.CachedAssaultBots.Add(player);
+                }
                 return;
             }
             if (player.Profile.Info.Settings.IsBossOrFollower())
             {
-                Utility.CachedBosses.Add(player);
+                lock (Utility.SpawnPointLock)
+                {
+                    Utility.CachedBosses.Add(player);
+                }
                 return;
             }
         }

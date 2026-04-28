@@ -5,9 +5,18 @@
     "IsLatest": false,
     "NewFeatures": [],
     "Changes": [
-      "Automatically disable Pmc Spawn Anywhere if on Streets - it doesn't work because Streets spawn points are crap"
+      "Added advanced F12 debug log and put logging behind it (disabled by default)",
+      "Adjusted spawn point handling",
+      "Adjusted caching of bots",
+      "Adjusted positional spawning logic for leaders",
+      "Adjusted spawn point selection for followers",
+      "Adjusted leader lookup for followers for group assignment",
+      "Adjusted error handling"
     ],
-    "BugFixes": [],
+    "BugFixes": [
+      "Resolved spawn point handling for followers",
+      "Resolved spawn point handling for bots spawning at the same time"
+    ],
     "KnownIssues": []
   },
   {

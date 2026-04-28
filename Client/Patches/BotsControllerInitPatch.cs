@@ -22,7 +22,9 @@ namespace acidphantasm_botplacementsystem.Patches
 
             if (!Utility.Initialized)
             {
-                Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+                if (Plugin.DebugLogging)
+                    Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+                
                 Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
             }
             
@@ -31,7 +33,9 @@ namespace acidphantasm_botplacementsystem.Patches
             {
                 Plugin.BotSpawnerInstance = __instance.BotSpawner;
                 
-                Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
+                if (Plugin.DebugLogging)
+                    Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
+                
                 PmcGroupSpawner.InitializePmcSpawner(__instance.BotSpawner.BossSpawner, __instance.BotSpawner, __instance.BotSpawner.BotCreator);
             }
         }
