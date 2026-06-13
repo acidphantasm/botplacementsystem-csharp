@@ -37,6 +37,9 @@ public class MapSpawns(
 
     private readonly Dictionary<string, List<BossLocationSpawn>> _botMapCache = new();
     private readonly Dictionary<string, List<Wave>> _scavMapCache = new();
+    // Boss spawns injected by OTHER mods (custom factions: ISB / UNTAR / RUAF / BlackDiv ...) captured
+    // before ABPS wipes BossLocationSpawn, so they can be restored alongside ABPS's own roster.
+    private readonly Dictionary<string, List<BossLocationSpawn>> _externalBossSpawnCache = new();
     private Dictionary<string, Location> _locationData = new();
 
     private ISptLogger<MapSpawns> _logger = logger;
@@ -45,9 +48,16 @@ public class MapSpawns(
     {
         _locationData = databaseService.GetLocations().GetDictionary();
 
+        // Anything in BossLocationSpawn whose BossName is NOT one of these was injected by another mod
+        // (custom factions). ABPS wipes the whole list just below and rebuilds only from its own roster,
+        // which used to delete those faction spawns on every boot — they had 100% spawn chance yet never
+        // appeared in raids. Capture them per map before the wipe; restore in ReplaceOriginalLocations.
+        var managedBossNames = BuildManagedBossNames();
+
         foreach (var map in _validMaps)
         {
             var actualKey = databaseService.GetLocations().GetMappedKey(map);
+            CaptureExternalBossSpawns(map, _locationData[actualKey].Base, managedBossNames);
             _locationData[actualKey].Base.BossLocationSpawn = [];
             _botMapCache[map] = [];
             _scavMapCache[map] = [];
@@ -155,8 +165,47 @@ public class MapSpawns(
         foreach (var map in _validMaps)
         {
             var actualKey = databaseService.GetLocations().GetMappedKey(map);
-            _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[map]);
+
+            var finalBossSpawns = cloner.Clone(_botMapCache[map]);
+            // Re-add the faction / other-mod boss spawns captured before the wipe so they coexist with
+            // ABPS's roster instead of being deleted.
+            if (_externalBossSpawnCache.TryGetValue(map, out var external) && external.Count > 0)
+                finalBossSpawns.AddRange(cloner.Clone(external));
+
+            _locationData[actualKey].Base.BossLocationSpawn = finalBossSpawns;
             _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[map]);
         }
+    }
+
+    // Names ABPS regenerates itself: every boss in its BossConfig (enabled or not, so a user-disabled
+    // boss is never resurrected) plus its own PMC roles. Everything else found in a location's
+    // BossLocationSpawn was put there by another mod and must be preserved.
+    private HashSet<string> BuildManagedBossNames()
+    {
+        var managed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (boss, _) in ModConfig.Config.BossConfig)
+            managed.Add(boss);
+        managed.Add("pmcUSEC");
+        managed.Add("pmcBEAR");
+        return managed;
+    }
+
+    private void CaptureExternalBossSpawns(string map, LocationBase locationBase, HashSet<string> managedBossNames)
+    {
+        var external = new List<BossLocationSpawn>();
+        var existing = locationBase.BossLocationSpawn;
+        if (existing is not null)
+        {
+            foreach (var spawn in existing)
+            {
+                if (spawn?.BossName is null) continue;
+                if (managedBossNames.Contains(spawn.BossName)) continue; // ABPS owns/regenerates this type
+                external.Add(cloner.Clone(spawn));                        // injected by another mod — keep it
+            }
+        }
+
+        _externalBossSpawnCache[map] = external;
+        if (external.Count > 0)
+            logger.Info($"[ABPS] Preserving {external.Count} external boss spawn(s) on {map} from other mods: {string.Join(", ", external.Select(s => s.BossName).Distinct())}");
     }
 }
