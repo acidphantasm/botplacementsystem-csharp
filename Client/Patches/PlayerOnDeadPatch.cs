@@ -1,61 +1,60 @@
 ﻿using System.Reflection;
-using acidphantasm_botplacementsystem.Utils;
+using BotPlacementSystemClient.Utils;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace acidphantasm_botplacementsystem.Patches
-{
-    internal class PlayerOnDeadPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.Method(typeof(Player), nameof(Player.OnDead));
-        }
+namespace BotPlacementSystemClient.Patches;
 
-        [PatchPrefix]
-        private static void PatchPrefix(Player __instance)
+internal class PlayerOnDeadPatch : ModulePatch
+{
+    protected override MethodBase GetTargetMethod()
+    {
+        return AccessTools.Method(typeof(Player), nameof(Player.OnDead));
+    }
+
+    [PatchPrefix]
+    private static void PatchPrefix(Player __instance)
+    {
+        if (__instance == null || Utility.IsPlayerHeadless(__instance)) 
+            return;
+            
+        if (!__instance.IsAI)
         {
-            if (__instance == null || Utility.IsPlayerHeadless(__instance)) 
-                return;
+                
+            lock (Utility.SpawnPointLock)
+            {
+                Utility.CachedConnectedPlayers.Remove(__instance);
+            }
+            return;
+        }
+        if (__instance.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
+        {
+                
+            lock (Utility.SpawnPointLock)
+            {
+                Utility.CachedPmcs.Remove(__instance);
+            }
+            return;
+        }
+        if (__instance.Profile.Info.Settings.Role is WildSpawnType.assault or WildSpawnType.assaultGroup)
+        {
+                
+            lock (Utility.SpawnPointLock)
+            {
+                Utility.CachedAssaultBots.Remove(__instance);
+            }
+            return;
+        }
             
-            if (!__instance.IsAI)
-            {
+        if (__instance.Profile.Info.Settings.IsBossOrFollower())
+        {
                 
-                lock (Utility.SpawnPointLock)
-                {
-                    Utility.CachedConnectedPlayers.Remove(__instance);
-                }
-                return;
-            }
-            if (__instance.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
+            lock (Utility.SpawnPointLock)
             {
-                
-                lock (Utility.SpawnPointLock)
-                {
-                    Utility.CachedPmcs.Remove(__instance);
-                }
-                return;
+                Utility.CachedBosses.Remove(__instance);
             }
-            if (__instance.Profile.Info.Settings.Role is WildSpawnType.assault or WildSpawnType.assaultGroup)
-            {
-                
-                lock (Utility.SpawnPointLock)
-                {
-                    Utility.CachedAssaultBots.Remove(__instance);
-                }
-                return;
-            }
-            
-            if (__instance.Profile.Info.Settings.IsBossOrFollower())
-            {
-                
-                lock (Utility.SpawnPointLock)
-                {
-                    Utility.CachedBosses.Remove(__instance);
-                }
-                return;
-            }
+            return;
         }
     }
 }

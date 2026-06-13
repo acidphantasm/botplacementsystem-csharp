@@ -1,4 +1,4 @@
-﻿namespace _progressiveBotSystem.Models;
+﻿namespace BotPlacementSystemServer.Models;
 
 public class ReleaseNote
 {

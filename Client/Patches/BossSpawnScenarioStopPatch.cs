@@ -1,24 +1,23 @@
 ﻿using System.Reflection;
-using acidphantasm_botplacementsystem.Spawning;
-using acidphantasm_botplacementsystem.Utils;
+using BotPlacementSystemClient.Spawning;
+using BotPlacementSystemClient.Utils;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace acidphantasm_botplacementsystem.Patches
-{
-    internal class BossSpawnScenarioStopPatch : ModulePatch
-    {
-        protected override MethodBase GetTargetMethod()
-        {
-            return AccessTools.Method(typeof(BossSpawnScenario), nameof(BossSpawnScenario.Stop));
-        }
+namespace BotPlacementSystemClient.Patches;
 
-        [PatchPostfix]
-        private static void PatchPostfix()
-        {
-            PmcGroupSpawner.Initialized = false;
-            Utility.Initialized = false;
-            BossSpawnTracking.EndRaidMergeData();
-        }
+internal class BossSpawnScenarioStopPatch : ModulePatch
+{
+    protected override MethodBase GetTargetMethod()
+    {
+        return AccessTools.Method(typeof(BossSpawnScenario), nameof(BossSpawnScenario.Stop));
+    }
+
+    [PatchPostfix]
+    private static void PatchPostfix()
+    {
+        PmcGroupSpawner.Initialized = false;
+        Utility.Initialized = false;
+        BossSpawnTracking.EndRaidMergeData();
     }
 }

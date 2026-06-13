@@ -1,4 +1,5 @@
-﻿using _botplacementsystem.Globals;
+﻿using BotPlacementSystemServer.Globals;
+using BotPlacementSystemServer.Service;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -6,9 +7,9 @@ using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _botplacementsystem.Controllers;
+namespace BotPlacementSystemServer.Controllers;
 
-[Injectable(TypePriority = OnLoadOrder.PostSptModLoader)]
+[Injectable(InjectionType = InjectionType.Singleton, TypePriority = OnLoadOrder.PostDBModLoader + 69420)]
 public class MapSpawns(
     ISptLogger<MapSpawns> logger,
     BossSpawns bossSpawns,
@@ -16,9 +17,11 @@ public class MapSpawns(
     PmcSpawns pmcSpawns,
     VanillaAdjustments vanillaAdjustments,
     ICloner cloner,
-    DatabaseService databaseService)
+    DatabaseService databaseService,
+    RaidLifecycleService raidLifecycleService)
+    : IOnLoad
 {
-    private List<string> _validMaps =
+    private readonly List<string> _validMaps =
     [
         "bigmap",
         "factory4_day",
@@ -38,13 +41,21 @@ public class MapSpawns(
     private readonly Dictionary<string, List<BossLocationSpawn>> _botMapCache = new();
     private readonly Dictionary<string, List<Wave>> _scavMapCache = new();
     private Dictionary<string, Location> _locationData = new();
+    
+    public Task OnLoad()
+    {
+        ConfigureInitialData();
+        
+        ModConfig.ConfigChanged += ConfigureInitialData;
+        raidLifecycleService.RaidFinished += RebuildMap;
+        
+        return Task.CompletedTask;
+    }
 
-    private ISptLogger<MapSpawns> _logger = logger;
-
-    public void ConfigureInitialData()
+    private void ConfigureInitialData()
     {
         _locationData = databaseService.GetLocations().GetDictionary();
-
+        
         foreach (var map in _validMaps)
         {
             var actualKey = databaseService.GetLocations().GetMappedKey(map);
@@ -158,5 +169,57 @@ public class MapSpawns(
             _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[map]);
             _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[map]);
         }
+    }
+
+    private void RebuildMap(string location)
+    {
+        if (!_validMaps.Contains(location)) return;
+    
+        _botMapCache[location] = [];
+        _scavMapCache[location] = [];
+
+        BuildBossWavesForMap(location);
+        BuildPmcWavesForMap(location);
+        BuildStartingScavsForMap(location);
+        ReplaceOriginalLocationForMap(location);
+    }
+    
+    private void BuildBossWavesForMap(string location)
+    {
+        var actualKey = databaseService.GetLocations().GetMappedKey(location);
+        var mapData = bossSpawns.GetCustomMapData(location, _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault());
+        foreach (var spawn in mapData)
+        {
+            _botMapCache[location].Add(spawn);
+        }
+    }
+
+    private void BuildPmcWavesForMap(string location)
+    {
+        var actualKey = databaseService.GetLocations().GetMappedKey(location);
+        var mapData = pmcSpawns.GetCustomMapData(location, _locationData[actualKey].Base.EscapeTimeLimit.GetValueOrDefault());
+        foreach (var spawn in mapData)
+        {
+            _botMapCache[location].Add(spawn);
+        }
+    }
+
+    private void BuildStartingScavsForMap(string location)
+    {
+        if ((location == "laboratory" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLaboratory) || (location == "labyrinth" && !ModConfig.Config.ScavConfig.Waves.AllowScavsOnLabyrinth)) 
+            return;
+        
+        var mapData = scavSpawns.GetCustomMapData(location);
+        foreach (var spawn in mapData)
+        {
+            _scavMapCache[location].Add(spawn);
+        }
+    }
+
+    private void ReplaceOriginalLocationForMap(string location)
+    {
+        var actualKey = databaseService.GetLocations().GetMappedKey(location);
+        _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[location]);
+        _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[location]);
     }
 }

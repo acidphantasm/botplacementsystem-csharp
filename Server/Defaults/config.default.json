@@ -1,4 +1,4 @@
-{
+﻿{
   "pmcDifficulty": {
     "easy": 10,
     "normal": 50,
@@ -285,7 +285,8 @@
         "sandbox_high": 0,
         "shoreline": 0,
         "tarkovstreets": 0,
-        "woods": 0
+        "woods": 0,
+        "labyrinth": 0
       },
       "bossZone": {
         "bigmap": "",

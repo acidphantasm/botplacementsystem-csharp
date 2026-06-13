@@ -1,8 +1,9 @@
 ﻿using System.Reflection;
 using System.Text.Json;
-using _botplacementsystem.Controllers;
-using _botplacementsystem.Models;
-using _botplacementsystem.Models.Enums;
+using BotPlacementSystemServer.Controllers;
+using BotPlacementSystemServer.Helpers;
+using BotPlacementSystemServer.Models;
+using BotPlacementSystemServer.Models.Enums;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
@@ -10,14 +11,14 @@ using SPTarkov.Server.Core.Loaders;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Utils;
 
-namespace _botplacementsystem.Globals;
+namespace BotPlacementSystemServer.Globals;
 
 [Injectable (InjectionType.Singleton, TypePriority = OnLoadOrder.PreSptModLoader)]
 public class ModConfig : IOnLoad
 {
     private static JsonUtil _jsonUtil;
     private static FileUtil _fileUtil;
-    private static MapSpawns _mapSpawns;
+    private static ISptLogger<ModConfig> _logger;
     
     public static MapZoneDefaults? MapZoneDefaults { get; private set; }
     public static BossWaveDefaults? BossWaveDefaults { get; private set; }
@@ -30,24 +31,44 @@ public class ModConfig : IOnLoad
     private static int _isActivelyProcessingFlag = 0;
     
     public static string? _modPath;
+    
+    public static event Action? ConfigChanged;
 
     public ModConfig(
         JsonUtil jsonUtil,
         FileUtil fileUtil,
         ModHelper modHelper,
-        MapSpawns mapSpawns
-    )
+        ISptLogger<ModConfig> logger)
     {
         _modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());
         _jsonUtil = jsonUtil;
         _fileUtil = fileUtil;
-        _mapSpawns = mapSpawns;
+        _logger = logger;
     }
     
     public async Task OnLoad()
     {
-        Config = await _jsonUtil.DeserializeFromFileAsync<AbpsConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
-        OriginalConfig = await _jsonUtil.DeserializeFromFileAsync<AbpsConfig>(_modPath + "/config.json") ?? throw new ArgumentNullException();
+        var configPath = Path.Combine(_modPath, "config.json");
+        var defaultConfigPath = Path.Combine(_modPath, "Defaults", "config.default.json");
+        
+        if (!File.Exists(configPath))
+        {
+            File.Copy(defaultConfigPath, configPath);
+        }
+        
+        var rawConfig = await _fileUtil.ReadFileAsync(configPath);
+        var rawDefaultConfig = await _fileUtil.ReadFileAsync(defaultConfigPath);
+        
+        Config = _jsonUtil.Deserialize<AbpsConfig>(rawConfig) ?? throw new ArgumentNullException();
+        
+        if (ConfigHelper.IsJsonOutdated(rawConfig, rawDefaultConfig, Config))
+        {
+            await _fileUtil.WriteFileAsync(configPath, _jsonUtil.Serialize(Config, true)!);
+            _logger.Success("[ABPS] Config updated and/or repaired.");
+        }
+        
+        OriginalConfig = DeepClone(Config);
+        
         MapZoneDefaults = await _jsonUtil.DeserializeFromFileAsync<MapZoneDefaults>(_modPath + "/Defaults/MapZones.json") ?? throw new ArgumentNullException();
         BossWaveDefaults = await _jsonUtil.DeserializeFromFileAsync<BossWaveDefaults>(_modPath + "/Defaults/Bosses.json") ?? throw new ArgumentNullException();
         PmcDefaults = await _jsonUtil.DeserializeFromFileAsync<PmcDefaults>(_modPath + "/Defaults/PMCs.json") ?? throw new ArgumentNullException();
@@ -70,7 +91,7 @@ public class ModConfig : IOnLoad
             Config = configTask.Result ?? throw new ArgumentNullException(nameof(Config));
             OriginalConfig = DeepClone(Config);
 
-            await Task.Run(() => _mapSpawns.ConfigureInitialData());
+            ConfigChanged?.Invoke();
 
             return ConfigOperationResult.Success;
         }
@@ -99,7 +120,7 @@ public class ModConfig : IOnLoad
             var writeConfigTask = _fileUtil.WriteFileAsync(configPath, serializedConfigTask.Result!);
             await Task.WhenAll(writeConfigTask);
 
-            await Task.Run(() => _mapSpawns.ConfigureInitialData());
+            ConfigChanged?.Invoke();
             
             // Update 'Original' config stuff since we've saved so the 'Undo' function works
             OriginalConfig = DeepClone(Config);

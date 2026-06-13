@@ -1,4 +1,4 @@
-﻿using _botplacementsystem.Globals;
+﻿using BotPlacementSystemServer.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Helpers;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -6,7 +6,7 @@ using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _botplacementsystem.Controllers;
+namespace BotPlacementSystemServer.Controllers;
 
 [Injectable]
 public class PmcSpawns(
@@ -31,7 +31,7 @@ public class PmcSpawns(
             pmcSpawnInfo.AddRange(GenerateStartingPmcWaves(location));
         }
 
-        var canGenerateWaves = ModConfig.Config.PmcConfig.Waves.Enable && (location != "labyrinth" || ModConfig.Config.PmcConfig.Waves.AllowPmcsOnLabyrinth);
+        var canGenerateWaves = ModConfig.Config.PmcConfig.Waves.Enable && (!location.Contains("labyrinth") || ModConfig.Config.PmcConfig.Waves.AllowPmcsOnLabyrinth);
         if (canGenerateWaves)
         {
             pmcSpawnInfo.AddRange(GeneratePmcWaves(location, escapeTimeLimit));
@@ -80,22 +80,37 @@ public class PmcSpawns(
 
                 if (bossDefaultData is null) continue;
                 
+                var spawnTime = currentWaveTime + currentSpawnOffset;
                 bossDefaultData[0].BossEscortAmount = groupSize.ToString();
-                bossDefaultData[0].Time = currentWaveTime + currentSpawnOffset;
+                bossDefaultData[0].Time = spawnTime;
                 bossDefaultData[0].BossDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
                 bossDefaultData[0].BossEscortDifficulty = weightedRandomHelper.GetWeightedValue(difficultyWeights);
                 bossDefaultData[0].BossZone = "";
                 bossDefaultData[0].IgnoreMaxBots = ignoreMaxBotCaps;
+
                 currentPmcCount += groupSize + 1;
                 pmcWaveSpawnInfo.Add(bossDefaultData[0]);
+
+                //logger.Info($"Location: {location} | Wave {i} | {pmcType} | Escorts: {groupSize} | Time: {FormatRemainingTime(escapeTimeLimit, spawnTime)} remaining");
                 
                 currentSpawnOffset += randomUtil.GetInt(spawnStaggerMin, spawnStaggerMax);
             }
             
+            //logger.Info($"Location: {location} | Wave {i} | Groups: {groupCount} | PMC Spawns: {currentPmcCount} | WaveTime: {FormatRemainingTime(escapeTimeLimit, currentWaveTime)} remaining");
             currentWaveTime += waveTimer;
         }
+        
+        //logger.Info($"Location: {location} | Total Waves: {waveCount} | Max PMCs Per Wave: {waveMaxPmcCount}");
 
         return pmcWaveSpawnInfo;
+    }
+    
+    static string FormatRemainingTime(double escapeTimeLimit, double currentTime)
+    {
+        var remaining = (escapeTimeLimit * 60) - currentTime;
+        var minutes = (int)remaining / 60;
+        var seconds = (int)remaining % 60;
+        return $"{minutes}:{seconds:D2}";
     }
 
     private List<BossLocationSpawn> GenerateStartingPmcWaves(string location)

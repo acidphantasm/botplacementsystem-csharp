@@ -1,8 +1,7 @@
 ﻿using System.Linq;
-
-namespace acidphantasm_botplacementsystem.Utils;
-
 using UnityEngine;
+
+namespace BotPlacementSystemClient.Utils;
 
 public class BoundsVisualizer : MonoBehaviour
 {

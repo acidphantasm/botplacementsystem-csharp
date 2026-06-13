@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using _botplacementsystem.Controllers;
+using BotPlacementSystemServer.Controllers;
 using HarmonyLib;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Constants;
@@ -12,7 +12,7 @@ using SPTarkov.Server.Core.Models.Spt.Location;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Services;
 
-namespace _botplacementsystem.Patches;
+namespace BotPlacementSystemServer.Patches;
 
 public class AdjustWaves_Patch : AbstractPatch
 {

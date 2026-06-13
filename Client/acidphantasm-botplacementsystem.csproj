@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
     <OutputType>Library</OutputType>
-    <RootNamespace>acidphantasm_botplacementsystem</RootNamespace>
+    <RootNamespace>BotPlacementSystemClient</RootNamespace>
     <AssemblyName>acidphantasm-botplacementsystem</AssemblyName>
     <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>

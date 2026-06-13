@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using acidphantasm_botplacementsystem.Spawning;
-using acidphantasm_botplacementsystem.Utils;
+﻿using System.Reflection;
+using BotPlacementSystemClient.Spawning;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace acidphantasm_botplacementsystem.Patches;
+namespace BotPlacementSystemClient.Patches;
 
 internal class IsPlayerEnemyPatch : ModulePatch
 {

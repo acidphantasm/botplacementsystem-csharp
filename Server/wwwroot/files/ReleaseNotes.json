@@ -1,5 +1,26 @@
 ﻿[
   {
+    "Version": "2.0.19",
+    "ReleaseDate": "June 13, 2026",
+    "IsLatest": true,
+    "NewFeatures": [
+      "Configs are now forward compatible - ABPS no longer ships with a config.json",
+      "The server will notify you if your config needs the new features added and will do so without impacting your existing settings"
+    ],
+    "Changes": [
+      "Updated the WebConfig theme",
+      "Added load order to router",
+      "Adjusted rebuild logic to event based actions instead of DI",
+      "Adjusted config logic to event based actions instead of DI",
+      "Adjusted initialization logic",
+      "Adjusted namespace naming"
+    ],
+    "BugFixes": [
+      "Resolved caching racing loading and occasionally causing human players to be skipped"
+    ],
+    "KnownIssues": []
+  },
+  {
     "Version": "2.0.18",
     "ReleaseDate": "April 27, 2026",
     "IsLatest": false,

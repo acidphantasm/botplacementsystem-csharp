@@ -1,442 +1,448 @@
-﻿using Comfort.Common;
-using EFT;
-using EFT.Game.Spawning;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using acidphantasm_botplacementsystem.Utils;
+using BotPlacementSystemClient.Utils;
+using Comfort.Common;
+using EFT;
+using EFT.Game.Spawning;
 using UnityEngine;
 
-namespace acidphantasm_botplacementsystem.Spawning
-{
-    public class PmcGroupSpawner : MonoBehaviour
-    {
-        private static BossSpawnerClass _bossSpawnerClass;
-        private static BotSpawner _botSpawner;
-        private static IBotCreator _iBotCreator;
-        
-        public static readonly Dictionary<string, HashSet<string>> AllPmcGroups = new();
-        private static readonly Dictionary<string, string> FollowerToLeader = new();
-        private static readonly Dictionary<string, BossSpawnerClass.Class332> WavePmcGroupClassData = new();
+namespace BotPlacementSystemClient.Spawning;
 
-        public static bool Initialized;
+public class PmcGroupSpawner : MonoBehaviour
+{
+    private static BossSpawnerClass _bossSpawnerClass;
+    private static BotSpawner _botSpawner;
+    private static IBotCreator _iBotCreator;
         
-        public static void InitializePmcSpawner(BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
+    public static readonly Dictionary<string, HashSet<string>> AllPmcGroups = new();
+    private static readonly Dictionary<string, string> FollowerToLeader = new();
+    private static readonly Dictionary<string, BossSpawnerClass.Class332> WavePmcGroupClassData = new();
+
+    public static bool Initialized;
+        
+    public static async Task InitializePmcSpawner(BossSpawnerClass bossSpawnerClass, BotSpawner botSpawner, IBotCreator botCreator)
+    {
+        AllPmcGroups.Clear();
+        FollowerToLeader.Clear();
+        WavePmcGroupClassData.Clear();
+            
+        _bossSpawnerClass = bossSpawnerClass;
+        _botSpawner = botSpawner;
+        _iBotCreator = botCreator;
+            
+        var gameWorld = Singleton<GameWorld>.Instance;
+            
+        if (!await Utility.WaitForHumanPlayer())
         {
-            AllPmcGroups.Clear();
-            FollowerToLeader.Clear();
-            WavePmcGroupClassData.Clear();
+            Initialized = true;
+            return;
+        }
             
-            _bossSpawnerClass = bossSpawnerClass;
-            _botSpawner = botSpawner;
-            _iBotCreator = botCreator;
-            
-            var gameWorld = Singleton<GameWorld>.Instance;
-            foreach (var iPlayer in gameWorld.RegisteredPlayers)
+        foreach (var iPlayer in gameWorld.RegisteredPlayers)
+        {
+            var player = iPlayer as Player;
+            if (player != null && !player.IsAI && !Utility.IsPlayerHeadless(player) && player.Profile.Info.Settings.Role != WildSpawnType.marksman)
             {
-                var player = iPlayer as Player;
-                if (player != null && !player.IsAI && !Utility.IsPlayerHeadless(player) && player.Profile.Info.Settings.Role != WildSpawnType.marksman)
+                if (Plugin.DebugLogging)
+                    Plugin.LogSource.LogInfo($"Caching connected player as human: {player.Profile.Info.Nickname}");
+                    
+                Utility.CachedConnectedPlayers.Add(player);
+                if (player.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
                 {
                     if (Plugin.DebugLogging)
-                        Plugin.LogSource.LogInfo($"[ABPS] Caching connected player: {player.Profile.Info.Nickname}");
-                    
-                    Utility.CachedConnectedPlayers.Add(player);
-                    if (player.Profile.Side is EPlayerSide.Bear or EPlayerSide.Usec)
-                    {
-                        Utility.CachedPmcs.Add(player);
-                    }
-                    else
-                    {
-                        Utility.CachedAssaultBots.Add(player);
-                    }
-                }
-            }
-            
-            Initialized = true;
-        }
-        
-        public static async Task StartSpawnPmcGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions)
-        {
-            BossSpawnerClass.Class332 @class = new BossSpawnerClass.Class332();
-            @class.BossSpawnerClass = _bossSpawnerClass;
-            @class.creationData = creationData;
-            @class.botZone = botZone;
-            @class.followersCount = followersCount;
-            @class.spawnParams = spawnParams;
-            @class.wave = wave;
-            @class.openedPositions = openedPositions;
-            float time = @class.wave.Time;
-            @class.spawnParams.ShallBeGroup = new ShallBeGroupParams(true, true, @class.followersCount + 1);
-            BotProfileDataClass botProfileDataClass = new BotProfileDataClass(EPlayerSide.Savage, @class.wave.BossType, @class.wave.BossDif, time, @class.spawnParams);
-            @class.side = EPlayerSide.Savage;
-            bool flag = @class.wave.IsStartWave();
-            ISpawnPoint spawnPoint = @class.openedPositions[0];
-            @class.openedPositions.Remove(spawnPoint);
-            @class.spawnProcessData = new BossSpawnerClass.GClass669(@class.wave, @class.botZone, spawnPoint);
-            _bossSpawnerClass.List_0.Add(@class.spawnProcessData);
-
-            var leaderProfileId = creationData.Profiles[0].ProfileId;
-
-            if (!AllPmcGroups.ContainsKey(leaderProfileId))
-            {
-                AllPmcGroups[leaderProfileId] = new HashSet<string>();
-            }
-
-            if (flag)
-            {
-                var canSpawn = _bossSpawnerClass.BotSpawner_0.CanSpawnRole(botProfileDataClass);
-                if (Plugin.DebugLogging)
-                    Plugin.LogSource.LogInfo($"[ABPS] CanSpawnRole for {creationData.Profiles[0].Nickname}: {canSpawn}");
-                
-                if (canSpawn)
-                {
-                    SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
-                    await SpawnFollowers(@class.creationData, @class.botZone, @class.followersCount, @class.spawnParams, @class.wave, @class.side, @class.openedPositions, true, leaderProfileId);
-                }
-            }
-            else
-            {
-                if (followersCount != 0)
-                {
-                    WavePmcGroupClassData[leaderProfileId] = @class;
-                }
-                SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
-            }
-        }
-
-        private static void SpawnLeader(BotCreationDataClass creationData, ISpawnPoint point, BotZone ss, int followers, BotProfileDataClass data, Action<BotOwner> callback)
-        {
-            if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] SpawnLeader: {creationData.Profiles[0].Nickname} SpawnStopped={creationData.SpawnStopped} ProfileCount={creationData.Profiles.Count}");
-            
-            BossSpawnerClass.Class335 @class = new BossSpawnerClass.Class335();
-            @class.data = data;
-            @class.followers = followers;
-            @class.callback = callback;
-            List<ISpawnPoint> list = new List<ISpawnPoint> { point };
-            SpawnBotsInZoneOnPositions(list, ss, creationData, new Action<BotOwner>(@class.method_0));
-        }
-
-        private static async Task SpawnFollowers(BotCreationDataClass bossCreationData, BotZone zone, int followersCount, BotSpawnParams spawnParams, BossLocationSpawn wave, EPlayerSide side, List<ISpawnPoint> pointsToSpawn, bool forceSpawn, string leaderProfileId)
-        {
-            List<BossLocationSpawnSubData> escors = wave.GetEscors();
-            if (escors != null)
-            {
-                await GenerateFollowerData(bossCreationData, zone, side, wave, escors, spawnParams, pointsToSpawn, forceSpawn, leaderProfileId);
-            }
-            else if (followersCount > 0)
-            {
-                BotCreationDataClass botCreationDataClass = await BotCreationDataClass.Create(new BotProfileDataClass(EPlayerSide.Savage, wave.EscortType, wave.EscortDif, wave.Time, spawnParams, false), _iBotCreator, followersCount, _botSpawner);
-                RegisterFollowers(leaderProfileId, botCreationDataClass.Profiles);
-                TryToSpawnInZoneAndDelay(zone, botCreationDataClass, false, true, pointsToSpawn, forceSpawn);
-            }
-        }
-
-        private static async Task GenerateFollowerData(BotCreationDataClass creationData, BotZone zone, EPlayerSide side, BossLocationSpawn wave, List<BossLocationSpawnSubData> escorts, BotSpawnParams spawnParams, List<ISpawnPoint> pointsToSpawn, bool forceSpawn, string leaderProfileId)
-        {
-            if (wave.EscortCount > pointsToSpawn.Count)
-            {
-                pointsToSpawn = null;
-            }
-            
-            foreach (BossLocationSpawnSubData bossLocationSpawnSubData in escorts)
-            {
-                List<ISpawnPoint> list = null;
-                if (pointsToSpawn != null)
-                {
-                    list = new List<ISpawnPoint>();
-                    for (int i = 0; i < bossLocationSpawnSubData.BossEscortAmount; i++)
-                    {
-                        if (pointsToSpawn.Count > 0)
-                        {
-                            ISpawnPoint spawnPoint = pointsToSpawn.First();
-                            list.Add(spawnPoint);
-                            pointsToSpawn.Remove(spawnPoint);
-                        }
-                    }
-                    if (bossLocationSpawnSubData.BossEscortAmount != list.Count)
-                    {
-                        list = null;
-                    }
-                }
-                
-                BotCreationDataClass result = await BotCreationDataClass.Create(new BotProfileDataClass(side, bossLocationSpawnSubData.BossEscortType, bossLocationSpawnSubData.EscortDifficulty, wave.Time, spawnParams), _iBotCreator, bossLocationSpawnSubData.BossEscortAmount, _botSpawner);
-                RegisterFollowers(leaderProfileId, result.Profiles);
-                TryToSpawnInZoneAndDelay(zone, result, false, true, list, forceSpawn);
-                await Task.Yield();
-                list = null;
-            }
-        }
-
-        private static void RegisterFollowers(string leaderProfileId, IEnumerable<Profile> profiles)
-        {
-            if (!AllPmcGroups.TryGetValue(leaderProfileId, out var followerSet))
-            {
-                followerSet = new HashSet<string>();
-                AllPmcGroups[leaderProfileId] = followerSet;
-            }
-
-            foreach (var profile in profiles)
-            {
-                followerSet.Add(profile.ProfileId);
-                FollowerToLeader[profile.ProfileId] = leaderProfileId;
-            }
-        }
-
-        private static void SpawnBotsInZoneOnPositions(List<ISpawnPoint> openedPositions, BotZone botZone, BotCreationDataClass data, Action<BotOwner> callback = null)
-        {
-            AddSpawnPointDataAndSpawn(openedPositions, botZone, data, callback, _botSpawner.CancellationTokenSource.Token).HandleExceptions();
-        }
-
-        private static async Task AddSpawnPointDataAndSpawn(List<ISpawnPoint> spawnPoints, BotZone botZone, BotCreationDataClass data, Action<BotOwner> callback, CancellationToken cancellationToken)
-        {
-            if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] AddSpawnPointDataAndSpawn: {data.Profiles[0].Nickname} SpawnStopped={data.SpawnStopped}");
-            
-            _botSpawner.InSpawnProcess += spawnPoints.Count;
-            if (!data.SpawnStopped)
-            {
-                if (!cancellationToken.IsCancellationRequested)
-                {
-                    foreach (ISpawnPoint spawnPoint in spawnPoints)
-                    {
-                        if (spawnPoint.Categories.ContainPlayerCategory())
-                        {
-                            var corePointID = Singleton<IBotGame>.Instance.BotsController.CoversData.GetClosest(spawnPoint.Position).CorePointInGame.Id;
-                            
-                            if (Plugin.DebugLogging)
-                                Plugin.LogSource.LogInfo($"[ABPS] {data.Profiles[0].Nickname} - CorePoint ContainPlayerCategory, old {spawnPoint.CorePointId} -> {corePointID}");
-                            
-                            data.AddPosition(spawnPoint.Position, corePointID);
-                        }
-                        else
-                        {
-                            if (Plugin.DebugLogging)
-                                Plugin.LogSource.LogInfo($"[ABPS] {data.Profiles[0].Nickname} - CorePoint is good");
-                            
-                            data.AddPosition(spawnPoint.Position, spawnPoint.CorePointId);
-                        }
-                    }
-                    spawnPoints.Clear();
-                    SpawnBot(botZone, data, callback, cancellationToken);
-                    await Task.Yield();
-                }
-            }
-        }
-
-        private static void TryToSpawnInZoneAndDelay(BotZone botZone, BotCreationDataClass data, bool withCheckMinMax, bool newWave, List<ISpawnPoint> pointsToSpawn = null, bool forcedSpawn = false)
-        {
-            if (data.SpawnStopped)
-            {
-                return;
-            }
-            
-            TryToSpawnInZoneInner(botZone, data, data.Count, withCheckMinMax, newWave, pointsToSpawn, forcedSpawn);
-        }
-
-        private static GClass1884 TryToSpawnInZoneInner(BotZone botZone, BotCreationDataClass data, int count, bool withCheckMinMax, bool newWave, List<ISpawnPoint> pointsToSpawn = null, bool forcedSpawn = false)
-        {
-            if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] TryToSpawnInZoneInner {data.Profiles[0].Nickname} Count={count} Zone={botZone.name} PointsToSpawn={(pointsToSpawn == null ? "null" : pointsToSpawn.Count.ToString())}");
-            
-            if (data.SpawnStopped)
-            {
-                return null;
-            }
-            
-            if (DebugBotData.UseDebugData && DebugBotData.Instance.spawnInstantly)
-            {
-                forcedSpawn = true;
-            }
-            
-            if (!_botSpawner.BotCreator.StartProfilesLoaded)
-            {
-                return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
-            }
-            
-            if (DebugBotData.UseDebugData && DebugBotData.Instance.spawnInstantly)
-            {
-                List<ISpawnPoint> array = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.DuplicateIfAtLeastOne);
-                SpawnBotsInZoneOnPositions(array, botZone, data, null);
-                return new GClass1884(botZone, 0, data, new Action<GClass1884>(_botSpawner.method_8));
-            }
-            
-            if (!data.CanAtZoneByType(botZone, _botSpawner.BotGame.BotsController.ZonesLeaveController))
-            {
-                return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
-            }
-            
-            _botSpawner.Bots.GetListByZone(botZone);
-            bool flag = data.IsBossOrFollowerByTime();
-            
-            if (withCheckMinMax && !botZone.HaveFreeSpace(count) && !flag && !forcedSpawn)
-            {
-                return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
-            }
-            
-            if (newWave)
-            {
-                Action<GClass1888> onSpawnedWave = (x) => new GClass1888(botZone, count, data);
-                _botSpawner.OnSpawnedWave += onSpawnedWave;
-            }
-            
-            int num;
-            int num2;
-            if (withCheckMinMax && !forcedSpawn)
-            {
-                _botSpawner.CheckOnMax(count, out num, out num2, false);
-            }
-            else
-            {
-                num = 0;
-                num2 = count;
-            }
-            
-            if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] SpawnCheck {data.Profiles[0].Nickname} Req:{count} Block:{num} Allow:{num2} Alive:{_botSpawner.Bots.BotOwners.Count()} InProcess:{_botSpawner.InSpawnProcess} Max:{_botSpawner.MaxBots}");
-            
-            if (num > 0)
-            {
-                return new GClass1884(botZone, num, data, new Action<GClass1884>(_botSpawner.method_8));
-            }
-            
-            if (num2 > 0)
-            {
-                if (flag)
-                {
-                    data.IsSpawnOnStart();
-                }
-                
-                count = num2;
-                List<ISpawnPoint> list2;
-                if (pointsToSpawn != null)
-                {
-                    list2 = pointsToSpawn;
+                        Plugin.LogSource.LogInfo($"Caching connected player as PMC: {player.Profile.Info.Nickname}");
+                    Utility.CachedPmcs.Add(player);
                 }
                 else
                 {
-                    list2 = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.DuplicateIfAtLeastOne);
-                    if (count > list2.Count)
+                    if (Plugin.DebugLogging)
+                        Plugin.LogSource.LogInfo($"Caching connected player as Scav: {player.Profile.Info.Nickname}");
+                    Utility.CachedAssaultBots.Add(player);
+                }
+            }
+        }
+            
+        Initialized = true;
+    }
+        
+    public static async Task StartSpawnPmcGroup(BotCreationDataClass creationData, BossLocationSpawn wave, BotSpawnParams spawnParams, int followersCount, BotZone botZone, List<ISpawnPoint> openedPositions)
+    {
+        BossSpawnerClass.Class332 @class = new BossSpawnerClass.Class332();
+        @class.BossSpawnerClass = _bossSpawnerClass;
+        @class.creationData = creationData;
+        @class.botZone = botZone;
+        @class.followersCount = followersCount;
+        @class.spawnParams = spawnParams;
+        @class.wave = wave;
+        @class.openedPositions = openedPositions;
+        float time = @class.wave.Time;
+        @class.spawnParams.ShallBeGroup = new ShallBeGroupParams(true, true, @class.followersCount + 1);
+        BotProfileDataClass botProfileDataClass = new BotProfileDataClass(EPlayerSide.Savage, @class.wave.BossType, @class.wave.BossDif, time, @class.spawnParams);
+        @class.side = EPlayerSide.Savage;
+        bool flag = @class.wave.IsStartWave();
+        ISpawnPoint spawnPoint = @class.openedPositions[0];
+        @class.openedPositions.Remove(spawnPoint);
+        @class.spawnProcessData = new BossSpawnerClass.GClass669(@class.wave, @class.botZone, spawnPoint);
+        _bossSpawnerClass.List_0.Add(@class.spawnProcessData);
+
+        var leaderProfileId = creationData.Profiles[0].ProfileId;
+
+        if (!AllPmcGroups.ContainsKey(leaderProfileId))
+        {
+            AllPmcGroups[leaderProfileId] = new HashSet<string>();
+        }
+
+        if (flag)
+        {
+            var canSpawn = _bossSpawnerClass.BotSpawner_0.CanSpawnRole(botProfileDataClass);
+            if (Plugin.DebugLogging)
+                Plugin.LogSource.LogInfo($"{creationData.Profiles[0].Nickname} | CanSpawnRole: {canSpawn}");
+                
+            if (canSpawn)
+            {
+                SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
+                await SpawnFollowers(@class.creationData, @class.botZone, @class.followersCount, @class.spawnParams, @class.wave, @class.side, @class.openedPositions, true, leaderProfileId);
+            }
+        }
+        else
+        {
+            if (followersCount != 0)
+            {
+                WavePmcGroupClassData[leaderProfileId] = @class;
+            }
+            SpawnLeader(@class.creationData, spawnPoint, @class.botZone, @class.followersCount, botProfileDataClass, new Action<BotOwner>(@class.method_0));
+        }
+    }
+
+    private static void SpawnLeader(BotCreationDataClass creationData, ISpawnPoint point, BotZone ss, int followers, BotProfileDataClass data, Action<BotOwner> callback)
+    {
+        if (Plugin.DebugLogging)
+            Plugin.LogSource.LogInfo($"{creationData.Profiles[0].Nickname} | SpawnLeader: SpawnStopped={creationData.SpawnStopped} ProfileCount={creationData.Profiles.Count}");
+            
+        BossSpawnerClass.Class335 @class = new BossSpawnerClass.Class335();
+        @class.data = data;
+        @class.followers = followers;
+        @class.callback = callback;
+        List<ISpawnPoint> list = new List<ISpawnPoint> { point };
+        SpawnBotsInZoneOnPositions(list, ss, creationData, new Action<BotOwner>(@class.method_0));
+    }
+
+    private static async Task SpawnFollowers(BotCreationDataClass bossCreationData, BotZone zone, int followersCount, BotSpawnParams spawnParams, BossLocationSpawn wave, EPlayerSide side, List<ISpawnPoint> pointsToSpawn, bool forceSpawn, string leaderProfileId)
+    {
+        List<BossLocationSpawnSubData> escors = wave.GetEscors();
+        if (escors != null)
+        {
+            await GenerateFollowerData(bossCreationData, zone, side, wave, escors, spawnParams, pointsToSpawn, forceSpawn, leaderProfileId);
+        }
+        else if (followersCount > 0)
+        {
+            BotCreationDataClass botCreationDataClass = await BotCreationDataClass.Create(new BotProfileDataClass(EPlayerSide.Savage, wave.EscortType, wave.EscortDif, wave.Time, spawnParams, false), _iBotCreator, followersCount, _botSpawner);
+            RegisterFollowers(leaderProfileId, botCreationDataClass.Profiles);
+            TryToSpawnInZoneAndDelay(zone, botCreationDataClass, false, true, pointsToSpawn, forceSpawn);
+        }
+    }
+
+    private static async Task GenerateFollowerData(BotCreationDataClass creationData, BotZone zone, EPlayerSide side, BossLocationSpawn wave, List<BossLocationSpawnSubData> escorts, BotSpawnParams spawnParams, List<ISpawnPoint> pointsToSpawn, bool forceSpawn, string leaderProfileId)
+    {
+        if (wave.EscortCount > pointsToSpawn.Count)
+        {
+            pointsToSpawn = null;
+        }
+            
+        foreach (BossLocationSpawnSubData bossLocationSpawnSubData in escorts)
+        {
+            List<ISpawnPoint> list = null;
+            if (pointsToSpawn != null)
+            {
+                list = new List<ISpawnPoint>();
+                for (int i = 0; i < bossLocationSpawnSubData.BossEscortAmount; i++)
+                {
+                    if (pointsToSpawn.Count > 0)
                     {
-                        if (!forcedSpawn)
-                        {
-                            var num3 = count - list2.Count;
-                            return new GClass1884(botZone, num3, data, new Action<GClass1884>(_botSpawner.method_8));
-                        }
-                        list2 = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.ReturnFoundPoints);
+                        ISpawnPoint spawnPoint = pointsToSpawn.First();
+                        list.Add(spawnPoint);
+                        pointsToSpawn.Remove(spawnPoint);
                     }
                 }
-                SpawnBotsInZoneOnPositions(list2, botZone, data, null);
+                if (bossLocationSpawnSubData.BossEscortAmount != list.Count)
+                {
+                    list = null;
+                }
             }
+                
+            BotCreationDataClass result = await BotCreationDataClass.Create(new BotProfileDataClass(side, bossLocationSpawnSubData.BossEscortType, bossLocationSpawnSubData.EscortDifficulty, wave.Time, spawnParams), _iBotCreator, bossLocationSpawnSubData.BossEscortAmount, _botSpawner);
+            RegisterFollowers(leaderProfileId, result.Profiles);
+            TryToSpawnInZoneAndDelay(zone, result, false, true, list, forceSpawn);
+            await Task.Yield();
+            list = null;
+        }
+    }
+
+    private static void RegisterFollowers(string leaderProfileId, IEnumerable<Profile> profiles)
+    {
+        if (!AllPmcGroups.TryGetValue(leaderProfileId, out var followerSet))
+        {
+            followerSet = new HashSet<string>();
+            AllPmcGroups[leaderProfileId] = followerSet;
+        }
+
+        foreach (var profile in profiles)
+        {
+            followerSet.Add(profile.ProfileId);
+            FollowerToLeader[profile.ProfileId] = leaderProfileId;
+        }
+    }
+
+    private static void SpawnBotsInZoneOnPositions(List<ISpawnPoint> openedPositions, BotZone botZone, BotCreationDataClass data, Action<BotOwner> callback = null)
+    {
+        AddSpawnPointDataAndSpawn(openedPositions, botZone, data, callback, _botSpawner.CancellationTokenSource.Token).HandleExceptions();
+    }
+
+    private static async Task AddSpawnPointDataAndSpawn(List<ISpawnPoint> spawnPoints, BotZone botZone, BotCreationDataClass data, Action<BotOwner> callback, CancellationToken cancellationToken)
+    {
+        _botSpawner.InSpawnProcess += spawnPoints.Count;
+        if (!data.SpawnStopped)
+        {
+            if (!cancellationToken.IsCancellationRequested)
+            {
+                for (var i = 0; i < spawnPoints.Count; i++)
+                {
+                    var spawnPoint = spawnPoints[i];
+
+                    if (spawnPoint.Categories.ContainPlayerCategory())
+                    {
+                        var corePointID = Singleton<IBotGame>.Instance.BotsController.CoversData.GetClosest(spawnPoint.Position).CorePointInGame.Id;
+                        if (Plugin.DebugLogging)
+                        {
+                            Plugin.LogSource.LogInfo(
+                                $"{data.Profiles[i].Nickname} - {i} | CorePoint ContainPlayerCategory, old {spawnPoint.CorePointId} -> {corePointID}");
+                        }
+                        data.AddPosition(spawnPoint.Position, corePointID);
+                    }
+                    else
+                    {
+                        if (Plugin.DebugLogging)
+                        {
+                            Plugin.LogSource.LogInfo(
+                                $"{data.Profiles[i].Nickname} - {i} | CorePoint is good ({spawnPoint.CorePointId})");
+                        }
+                        data.AddPosition(spawnPoint.Position, spawnPoint.CorePointId);
+                    }
+                }
+                spawnPoints.Clear();
+                SpawnBot(botZone, data, callback, cancellationToken);
+                await Task.Yield();
+            }
+        }
+    }
+
+    private static void TryToSpawnInZoneAndDelay(BotZone botZone, BotCreationDataClass data, bool withCheckMinMax, bool newWave, List<ISpawnPoint> pointsToSpawn = null, bool forcedSpawn = false)
+    {
+        if (data.SpawnStopped)
+        {
+            return;
+        }
+            
+        TryToSpawnInZoneInner(botZone, data, data.Count, withCheckMinMax, newWave, pointsToSpawn, forcedSpawn);
+    }
+
+    private static GClass1884 TryToSpawnInZoneInner(BotZone botZone, BotCreationDataClass data, int count, bool withCheckMinMax, bool newWave, List<ISpawnPoint> pointsToSpawn = null, bool forcedSpawn = false)
+    {
+        if (data.SpawnStopped)
+        {
             return null;
         }
+            
+        if (DebugBotData.UseDebugData && DebugBotData.Instance.spawnInstantly)
+        {
+            forcedSpawn = true;
+        }
+            
+        if (!_botSpawner.BotCreator.StartProfilesLoaded)
+        {
+            return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
+        }
+            
+        if (DebugBotData.UseDebugData && DebugBotData.Instance.spawnInstantly)
+        {
+            List<ISpawnPoint> array = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.DuplicateIfAtLeastOne);
+            SpawnBotsInZoneOnPositions(array, botZone, data, null);
+            return new GClass1884(botZone, 0, data, new Action<GClass1884>(_botSpawner.method_8));
+        }
+            
+        if (!data.CanAtZoneByType(botZone, _botSpawner.BotGame.BotsController.ZonesLeaveController))
+        {
+            return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
+        }
+            
+        _botSpawner.Bots.GetListByZone(botZone);
+        bool flag = data.IsBossOrFollowerByTime();
+            
+        if (withCheckMinMax && !botZone.HaveFreeSpace(count) && !flag && !forcedSpawn)
+        {
+            return new GClass1884(botZone, count, data, new Action<GClass1884>(_botSpawner.method_8));
+        }
+            
+        if (newWave)
+        {
+            Action<GClass1888> onSpawnedWave = (x) => new GClass1888(botZone, count, data);
+            _botSpawner.OnSpawnedWave += onSpawnedWave;
+        }
+            
+        int num;
+        int num2;
+        if (withCheckMinMax && !forcedSpawn)
+        {
+            _botSpawner.CheckOnMax(count, out num, out num2, false);
+        }
+        else
+        {
+            num = 0;
+            num2 = count;
+        }
+            
+        if (Plugin.DebugLogging)
+            Plugin.LogSource.LogInfo($"{data.Profiles[0].Nickname} | SpawnCheck Req:{count} Block:{num} Allow:{num2} Alive:{_botSpawner.Bots.BotOwners.Count()} InProcess:{_botSpawner.InSpawnProcess} Max:{_botSpawner.MaxBots}");
+            
+        if (num > 0)
+        {
+            return new GClass1884(botZone, num, data, new Action<GClass1884>(_botSpawner.method_8));
+        }
+            
+        if (num2 > 0)
+        {
+            if (flag)
+            {
+                data.IsSpawnOnStart();
+            }
+                
+            count = num2;
+            List<ISpawnPoint> list2;
+            if (pointsToSpawn != null)
+            {
+                list2 = pointsToSpawn;
+            }
+            else
+            {
+                list2 = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.DuplicateIfAtLeastOne);
+                if (count > list2.Count)
+                {
+                    if (!forcedSpawn)
+                    {
+                        var num3 = count - list2.Count;
+                        return new GClass1884(botZone, num3, data, new Action<GClass1884>(_botSpawner.method_8));
+                    }
+                    list2 = _botSpawner.SpawnSystem.SelectAISpawnPoints(data, botZone, count, null, ActionIfNotEnoughPoints.ReturnFoundPoints);
+                }
+            }
+            SpawnBotsInZoneOnPositions(list2, botZone, data, null);
+        }
+        return null;
+    }
 
-        private static void SpawnBot(BotZone zone, BotCreationDataClass data, Action<BotOwner> callback, CancellationToken cancellationToken)
+    private static void SpawnBot(BotZone zone, BotCreationDataClass data, Action<BotOwner> callback, CancellationToken cancellationToken)
+    {
+        BotSpawner.Class1164 @class = new BotSpawner.Class1164();
+        @class.botSpawner_0 = _botSpawner;
+        @class.data = data;
+        @class.callback = callback;
+            
+        if (_botSpawner.GameEnd)
+            return;
+            
+        if (@class.data.SpawnStopped)
         {
             if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] SpawnBot entered: {data.Profiles[0].Nickname} SpawnStopped={data.SpawnStopped} GameEnd={_botSpawner.GameEnd}");
-            
-            BotSpawner.Class1164 @class = new BotSpawner.Class1164();
-            @class.botSpawner_0 = _botSpawner;
-            @class.data = data;
-            @class.callback = callback;
-            
-            if (_botSpawner.GameEnd)
-                return;
-            
-            if (@class.data.SpawnStopped)
-            {
-                if (Plugin.DebugLogging)
-                    Plugin.LogSource.LogInfo($"[ABPS] SpawnStopped for {data.Profiles[0].Nickname}");
+                Plugin.LogSource.LogInfo($"{data.Profiles[0].Nickname} | SpawnStopped");
                 
-                _botSpawner.InSpawnProcess--;
-                return;
-            }
+            _botSpawner.InSpawnProcess--;
+            return;
+        }
             
-            @class.stopWatch = new Stopwatch();
-            @class.stopWatch.Start();
-            @class.shallBeGroup = @class.data.SpawnParams != null && @class.data.SpawnParams.ShallBeGroup != null && @class.data.SpawnParams.ShallBeGroup.Group && @class.data.SpawnParams.ShallBeGroup.RemainCount > 0;
+        @class.stopWatch = new Stopwatch();
+        @class.stopWatch.Start();
+        @class.shallBeGroup = @class.data.SpawnParams != null && @class.data.SpawnParams.ShallBeGroup != null && @class.data.SpawnParams.ShallBeGroup.Group && @class.data.SpawnParams.ShallBeGroup.RemainCount > 0;
             
-            if (@class.shallBeGroup)
+        if (@class.shallBeGroup)
+        {
+            @class.data.SpawnParams.ShallBeGroup.DescreaseCount();
+        }
+            
+        _botSpawner.BotCreator.ActivateBot(@class.data, zone, @class.shallBeGroup, new Func<BotOwner, BotZone, BotsGroup>(GetGroupAndSetEnemies), new Action<BotOwner>(@class.method_0), cancellationToken);
+
+        var spawnedBotProfileId = data.Profiles[0].ProfileId;
+        if (!WavePmcGroupClassData.TryGetValue(spawnedBotProfileId, out var originalClassData)) return;
+
+        SpawnFollowers(@originalClassData.creationData, @originalClassData.botZone, @originalClassData.followersCount, @originalClassData.spawnParams, @originalClassData.wave, @originalClassData.side, @originalClassData.openedPositions, true, spawnedBotProfileId).HandleExceptions();
+    }
+
+    private static BotsGroup GetGroupAndSetEnemies(BotOwner bot, BotZone zone)
+    {
+        var side = bot.Profile.Info.Side;
+        var botProfileId = bot.Profile.ProfileId;
+        List<BotOwner> botOwners = new List<BotOwner>();
+
+        if (Plugin.DebugLogging)
+            Plugin.LogSource.LogInfo($"{bot.Profile.Nickname} | GetGroupAndSetEnemies: IsLeader={AllPmcGroups.ContainsKey(botProfileId)} | IsFollower={FollowerToLeader.ContainsKey(botProfileId)}");
+            
+        lock (Utility.SpawnPointLock)
+        {
+            if (!Utility.CachedPmcs.Contains(bot.GetPlayer))
             {
-                @class.data.SpawnParams.ShallBeGroup.DescreaseCount();
+                Utility.CachedPmcs.Add(bot.GetPlayer);
             }
+
+            Utility.ReservedSpawnPositions.RemoveWhere(pos => Vector3.Distance(pos, bot.Position) < 10f);
+        }
             
-            _botSpawner.BotCreator.ActivateBot(@class.data, zone, @class.shallBeGroup, new Func<BotOwner, BotZone, BotsGroup>(GetGroupAndSetEnemies), new Action<BotOwner>(@class.method_0), cancellationToken);
-
-            var spawnedBotProfileId = data.Profiles[0].ProfileId;
-            if (!WavePmcGroupClassData.TryGetValue(spawnedBotProfileId, out var originalClassData)) return;
-
-            SpawnFollowers(@originalClassData.creationData, @originalClassData.botZone, @originalClassData.followersCount, @originalClassData.spawnParams, @originalClassData.wave, @originalClassData.side, @originalClassData.openedPositions, true, spawnedBotProfileId).HandleExceptions();
+        if (AllPmcGroups.ContainsKey(botProfileId))
+        {
+            foreach (BotOwner botOwner in _botSpawner.method_5(bot))
+            {
+                botOwners.Add(botOwner);
+            }
+                
+            _botSpawner.method_4(bot);
+            BotsGroup botsGroup = new BotsGroup(zone, _botSpawner.BotGame, bot, botOwners, _botSpawner.DeadBodiesController, _botSpawner.AllPlayers, true);
+                
+            if (bot.SpawnProfileData.SpawnParams.ShallBeGroup != null)
+            {
+                botsGroup.TargetMembersCount = bot.SpawnProfileData.SpawnParams.ShallBeGroup.StartCount;
+            }
+                
+            _botSpawner.Groups.Add(zone, side, botsGroup, true);
+            return botsGroup;
         }
 
-        private static BotsGroup GetGroupAndSetEnemies(BotOwner bot, BotZone zone)
+        if (FollowerToLeader.TryGetValue(botProfileId, out var leaderId))
         {
-            var side = bot.Profile.Info.Side;
-            var botProfileId = bot.Profile.ProfileId;
-            List<BotOwner> botOwners = new List<BotOwner>();
-
-            if (Plugin.DebugLogging)
-                Plugin.LogSource.LogInfo($"[ABPS] GetGroupAndSetEnemies: {bot.Profile.Nickname} | IsLeader={AllPmcGroups.ContainsKey(botProfileId)} | IsFollower={FollowerToLeader.ContainsKey(botProfileId)}");
-            
-            lock (Utility.SpawnPointLock)
+            for (var attempt = 0; attempt < 10; attempt++)
             {
-                if (!Utility.CachedPmcs.Contains(bot.GetPlayer))
+                foreach (var (botZone, botGroup) in _botSpawner.Groups)
                 {
-                    Utility.CachedPmcs.Add(bot.GetPlayer);
-                }
-
-                Utility.ReservedSpawnPositions.RemoveWhere(pos => Vector3.Distance(pos, bot.Position) < 10f);
-            }
-            
-            if (AllPmcGroups.ContainsKey(botProfileId))
-            {
-                foreach (BotOwner botOwner in _botSpawner.method_5(bot))
-                {
-                    botOwners.Add(botOwner);
-                }
-                
-                _botSpawner.method_4(bot);
-                BotsGroup botsGroup = new BotsGroup(zone, _botSpawner.BotGame, bot, botOwners, _botSpawner.DeadBodiesController, _botSpawner.AllPlayers, true);
-                
-                if (bot.SpawnProfileData.SpawnParams.ShallBeGroup != null)
-                {
-                    botsGroup.TargetMembersCount = bot.SpawnProfileData.SpawnParams.ShallBeGroup.StartCount;
-                }
-                
-                _botSpawner.Groups.Add(zone, side, botsGroup, true);
-                return botsGroup;
-            }
-
-            if (FollowerToLeader.TryGetValue(botProfileId, out var leaderId))
-            {
-                for (var attempt = 0; attempt < 10; attempt++)
-                {
-                    foreach (var (botZone, botGroup) in _botSpawner.Groups)
+                    foreach (var group in botGroup.HashSet_0)
                     {
-                        foreach (var group in botGroup.HashSet_0)
+                        if (group.InitialBot.ProfileId == leaderId)
                         {
-                            if (group.InitialBot.ProfileId == leaderId)
-                            {
-                                if (Plugin.DebugLogging)
-                                    Plugin.LogSource.LogInfo($"[ABPS] {bot.Profile.Nickname} found Leader={leaderId}");
+                            if (Plugin.DebugLogging)
+                                Plugin.LogSource.LogInfo($"{bot.Profile.Nickname} found Leader={leaderId} - Attempts: {attempt}");
                                 
-                                _botSpawner.method_4(bot);
-                                return group;
-                            }
+                            _botSpawner.method_4(bot);
+                            return group;
                         }
                     }
-                    Thread.Sleep(50);
                 }
-                
-                if (Plugin.DebugLogging)
-                    Plugin.LogSource.LogInfo($"[ABPS] GetGroupAndSetEnemies: {bot.Profile.Nickname} could not find leader group after retries, leaderId={leaderId}");
+                Thread.Sleep(50);
             }
-
-            return null;
+                
+            if (Plugin.DebugLogging)
+                Plugin.LogSource.LogInfo($"[ABPS] GetGroupAndSetEnemies: {bot.Profile.Nickname} could not find leader group after retries, leaderId={leaderId}");
         }
+
+        return null;
     }
 }

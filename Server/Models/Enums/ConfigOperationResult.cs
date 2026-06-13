@@ -1,4 +1,4 @@
-﻿namespace _botplacementsystem.Models.Enums;
+﻿namespace BotPlacementSystemServer.Models.Enums;
 
 public enum ConfigOperationResult
 {

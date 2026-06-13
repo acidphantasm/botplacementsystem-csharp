@@ -3,7 +3,7 @@ using HarmonyLib;
 using SPTarkov.Reflection.Patching;
 using SPTarkov.Server.Core.Services;
 
-namespace _botplacementsystem.Patches;
+namespace BotPlacementSystemServer.Patches;
 
 public class ReplaceBotHostility_Patch: AbstractPatch
 {

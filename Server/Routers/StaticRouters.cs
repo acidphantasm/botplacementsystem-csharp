@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
-using _botplacementsystem.Controllers;
-using _botplacementsystem.Globals;
+using BotPlacementSystemServer.Controllers;
+using BotPlacementSystemServer.Models;
+using BotPlacementSystemServer.Service;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Helpers;
@@ -8,26 +9,25 @@ using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Utils;
 
-namespace _botplacementsystem.Routers;
+namespace BotPlacementSystemServer.Routers;
 
-[Injectable]
+[Injectable(TypePriority = OnLoadOrder.PreSptModLoader)]
 public class StaticRouters : StaticRouter
 {
     private static JsonUtil _jsonUtil;
     private static HttpResponseUtil _httpResponseUtil;
+    private static RaidLifecycleService _raidLifecycleService;
     private static string? _modPath;
     private static string? _savesPath;
-    private static MapSpawns _mapSpawns;
     private static ISptLogger<StaticRouters> _logger;
 
-    public static bool CacheRebuilt = false;
-    public static Dictionary<string, Dictionary<string, CustomizedObject>>? BossTrackingData = null;
+    private static Dictionary<string, Dictionary<string, CustomizedObject>>? _bossTrackingData = null;
 
     public StaticRouters(
         JsonUtil jsonUtil,
         HttpResponseUtil httpResponseUtil,
         ModHelper modHelper,
-        MapSpawns mapSpawns,
+        RaidLifecycleService raidLifecycleService,
         ISptLogger<StaticRouters> logger
     ) : base(
         jsonUtil,
@@ -38,9 +38,9 @@ public class StaticRouters : StaticRouter
         _httpResponseUtil = httpResponseUtil;
         _modPath = modHelper.GetAbsolutePathToModFolder(Assembly.GetExecutingAssembly());;
         _savesPath = Path.Join(_modPath, "Data");
-        _mapSpawns = mapSpawns;
         _logger = logger;
-        Load();
+        _raidLifecycleService = raidLifecycleService;
+        _ = Load();
     }
 
     private static List<RouteAction> GetCustomRoutes()
@@ -56,10 +56,7 @@ public class StaticRouters : StaticRouter
                 ) =>
                 {
                     var data = (StartLocalRaidRequestData)info;
-                    if (CacheRebuilt)
-                    {
-                        CacheRebuilt = false;
-                    }
+                    _raidLifecycleService.RaidStarted(data.Location.ToLowerInvariant());
 
                     return output;
                 },
@@ -73,10 +70,9 @@ public class StaticRouters : StaticRouter
                     output
                 ) =>
                 {
-                    if (!CacheRebuilt)
+                    if (!_raidLifecycleService.CacheRebuilt && !string.IsNullOrEmpty(_raidLifecycleService.CurrentMap))
                     {
-                        _mapSpawns.ConfigureInitialData();
-                        CacheRebuilt = true;
+                        _raidLifecycleService.RaidEnded();
                     }
 
                     return output;
@@ -97,7 +93,7 @@ public class StaticRouters : StaticRouter
                     info,
                     sessionID,
                     output
-                ) => await new ValueTask<string>(_jsonUtil.Serialize(BossTrackingData))
+                ) => await new ValueTask<string>(_jsonUtil.Serialize(_bossTrackingData))
             )
         ];
     }
@@ -105,20 +101,20 @@ public class StaticRouters : StaticRouter
     private static ValueTask<string> SaveBossTrackingData(BossTrackingStats info)
     {
         var profileId = info.ProfileId;
-        BossTrackingData[profileId] = info.Data;
+        _bossTrackingData[profileId] = info.Data;
 
         Task.Run(() => Save(profileId));
         return new ValueTask<string>(_httpResponseUtil.NullResponse());
     }
 
-    public static async Task Save(string profileId)
+    private static async Task Save(string profileId)
     {
         try
         {
             if (!Directory.Exists(_savesPath))
                 Directory.CreateDirectory(_savesPath);
             
-            if (!BossTrackingData.TryGetValue(profileId, out var data))
+            if (!_bossTrackingData.TryGetValue(profileId, out var data))
             {
                 _logger.Warning($"No for profile '{profileId}', skipping");
                 return;
@@ -140,7 +136,7 @@ public class StaticRouters : StaticRouter
     {
         try
         {
-            BossTrackingData = new Dictionary<string, Dictionary<string, CustomizedObject>>();
+            _bossTrackingData = new Dictionary<string, Dictionary<string, CustomizedObject>>();
             
             if (!Directory.Exists(_savesPath))
             {
@@ -165,7 +161,7 @@ public class StaticRouters : StaticRouter
                         continue;
                     }
 
-                    BossTrackingData[profileId] = data;
+                    _bossTrackingData[profileId] = data;
                 }
                 catch (Exception ex)
                 {
@@ -178,16 +174,4 @@ public class StaticRouters : StaticRouter
             _logger.Warning($"Failed to load StatTrack Profiles: {ex.Message}");
         }
     }
-}
-
-public record CustomizedObject
-{
-    public bool SpawnedLastRaid { get; set; }
-    public int Chance { get; set; }
-}
-
-public record BossTrackingStats : IRequestData
-{
-    public Dictionary<string, CustomizedObject> Data { get; set; }
-    public string ProfileId { get; set; }
 }

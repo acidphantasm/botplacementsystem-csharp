@@ -1,4 +1,4 @@
-﻿using _botplacementsystem.Globals;
+﻿using BotPlacementSystemServer.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Extensions;
 using SPTarkov.Server.Core.Helpers;
@@ -9,7 +9,7 @@ using SPTarkov.Server.Core.Servers;
 using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _botplacementsystem.Controllers;
+namespace BotPlacementSystemServer.Controllers;
 
 [Injectable]
 public class BossSpawns(

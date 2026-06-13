@@ -1,28 +1,27 @@
-﻿using acidphantasm_botplacementsystem.Utils;
+﻿using System.Reflection;
+using BotPlacementSystemClient.Utils;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
-using System.Reflection;
 
-namespace acidphantasm_botplacementsystem.Patches
+namespace BotPlacementSystemClient.Patches;
+
+internal class GameworldOnStartedPatch : ModulePatch
 {
-    internal class GameworldOnStartedPatch : ModulePatch
+    protected override MethodBase GetTargetMethod()
     {
-        protected override MethodBase GetTargetMethod()
+        return AccessTools.Method(typeof(GameWorld), nameof(GameWorld.OnGameStarted));
+    }
+
+    [PatchPostfix]
+    private static void PatchPostfix(GameWorld __instance)
+    {
+        if (__instance == null)
         {
-            return AccessTools.Method(typeof(GameWorld), nameof(GameWorld.OnGameStarted));
+            return;
         }
 
-        [PatchPostfix]
-        private static void PatchPostfix(GameWorld __instance)
-        {
-            if (__instance == null)
-            {
-                return;
-            }
-
-            __instance.GetOrAddComponent<BotZoneVisualizer>();
-            __instance.GetOrAddComponent<SpawnPointGetter>();
-        }
+        __instance.GetOrAddComponent<BotZoneVisualizer>();
+        __instance.GetOrAddComponent<SpawnPointGetter>();
     }
 }

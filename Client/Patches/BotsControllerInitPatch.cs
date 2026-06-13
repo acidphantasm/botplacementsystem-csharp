@@ -1,43 +1,42 @@
 ﻿using System.Reflection;
-using acidphantasm_botplacementsystem.Spawning;
-using acidphantasm_botplacementsystem.Utils;
+using BotPlacementSystemClient.Spawning;
+using BotPlacementSystemClient.Utils;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace acidphantasm_botplacementsystem.Patches
+namespace BotPlacementSystemClient.Patches;
+
+internal class BotsControllerInitPatch : ModulePatch
 {
-    internal class BotsControllerInitPatch : ModulePatch
+    protected override MethodBase GetTargetMethod()
     {
-        protected override MethodBase GetTargetMethod()
+        return AccessTools.Method(typeof(BotsController), nameof(BotsController.Init));
+    }
+
+    [PatchPostfix]
+    private static void PatchPostfix(BotsController __instance)
+    {
+        if (__instance == null)
+            return;
+
+        if (!Utility.Initialized)
         {
-            return AccessTools.Method(typeof(BotsController), nameof(BotsController.Init));
+            if (Plugin.DebugLogging)
+                Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+                
+            Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
         }
-
-        [PatchPostfix]
-        private static void PatchPostfix(BotsController __instance)
+            
+            
+        if (!PmcGroupSpawner.Initialized)
         {
-            if (__instance == null)
-                return;
-
-            if (!Utility.Initialized)
-            {
-                if (Plugin.DebugLogging)
-                    Plugin.LogSource.LogInfo($"Resetting Cached Client Data");
+            Plugin.BotSpawnerInstance = __instance.BotSpawner;
                 
-                Utility.InitializeSpawnPoints(__instance.BotSpawner.AllBotZones);
-            }
-            
-            
-            if (!PmcGroupSpawner.Initialized)
-            {
-                Plugin.BotSpawnerInstance = __instance.BotSpawner;
+            if (Plugin.DebugLogging)
+                Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
                 
-                if (Plugin.DebugLogging)
-                    Plugin.LogSource.LogInfo($"Resetting PmcGroupSpawner");
-                
-                PmcGroupSpawner.InitializePmcSpawner(__instance.BotSpawner.BossSpawner, __instance.BotSpawner, __instance.BotSpawner.BotCreator);
-            }
+            PmcGroupSpawner.InitializePmcSpawner(__instance.BotSpawner.BossSpawner, __instance.BotSpawner, __instance.BotSpawner.BotCreator);
         }
     }
 }

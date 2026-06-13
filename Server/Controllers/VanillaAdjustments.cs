@@ -1,13 +1,11 @@
-﻿using _botplacementsystem.Globals;
+﻿using BotPlacementSystemServer.Globals;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.Models.Eft.Common;
 using SPTarkov.Server.Core.Models.Spt.Config;
-using SPTarkov.Server.Core.Models.Utils;
 using SPTarkov.Server.Core.Servers;
-using SPTarkov.Server.Core.Utils;
 using SPTarkov.Server.Core.Utils.Cloners;
 
-namespace _botplacementsystem.Controllers;
+namespace BotPlacementSystemServer.Controllers;
 
 [Injectable]
 public class VanillaAdjustments(

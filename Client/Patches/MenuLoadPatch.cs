@@ -1,31 +1,30 @@
-﻿using acidphantasm_botplacementsystem.Spawning;
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using BotPlacementSystemClient.Spawning;
 using Comfort.Common;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 using SPT.Reflection.Utils;
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
 
-namespace acidphantasm_botplacementsystem.Patches
+namespace BotPlacementSystemClient.Patches;
+
+public class MenuLoadPatch : ModulePatch
 {
-    public class MenuLoadPatch : ModulePatch
+    protected override MethodBase GetTargetMethod()
     {
-        protected override MethodBase GetTargetMethod()
-        {
-            Type type = PatchConstants.EftTypes.Single(
-                t => !t.IsAbstract &&
-                typeof(ProfileEndpointFactoryAbstractClass).IsAssignableFrom(t) &&
-                t.GetMethod("RequestBuilds") != null);
-            return AccessTools.Method(type, "RequestBuilds");
-        }
+        Type type = PatchConstants.EftTypes.Single(
+            t => !t.IsAbstract &&
+                 typeof(ProfileEndpointFactoryAbstractClass).IsAssignableFrom(t) &&
+                 t.GetMethod("RequestBuilds") != null);
+        return AccessTools.Method(type, "RequestBuilds");
+    }
 
-        [PatchPostfix]
-        public static async void Postfix(Task<IResult> __result)
-        {
-            await __result;
-            BossSpawnTracking.LoadFromServer();
-        }
+    [PatchPostfix]
+    public static async void Postfix(Task<IResult> __result)
+    {
+        await __result;
+        BossSpawnTracking.LoadFromServer();
     }
 }

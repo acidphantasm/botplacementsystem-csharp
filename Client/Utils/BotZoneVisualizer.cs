@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace acidphantasm_botplacementsystem.Utils;
+namespace BotPlacementSystemClient.Utils;
 
 public class BotZoneVisualizer : MonoBehaviour
 {

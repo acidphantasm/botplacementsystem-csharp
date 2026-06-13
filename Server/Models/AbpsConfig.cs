@@ -1,33 +1,486 @@
-﻿using System.Collections;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 using SPTarkov.Server.Core.Models.Common;
 using SPTarkov.Server.Core.Models.Eft.Common;
 
-namespace _botplacementsystem.Models;
+namespace BotPlacementSystemServer.Models;
 
 public record AbpsConfig
 {
     // export type DifficultyConfig = "easy" | "normal" | "hard" | "impossible";
-    [JsonPropertyName("pmcDifficulty")] public required Dictionary<string, double> PmcDifficulty { get; set; }
-    [JsonPropertyName("pmcType")] public required PmcTypeChance PmcType { get; set; }
-    [JsonPropertyName("pmcConfig")] public required PMCConfig PmcConfig { get; set; }
-    [JsonPropertyName("scavConfig")] public required ScavConfig ScavConfig { get; set; }
-    [JsonPropertyName("bossDifficulty")] public required Dictionary<string, double> BossDifficulty { get; set; }
-    [JsonPropertyName("weeklyBoss")] public required WeeklyBossConfig WeeklyBoss { get; set; }
-    [JsonPropertyName("bossConfig")] public required BossConfig BossConfig { get; set; }
+    [JsonPropertyName("pmcDifficulty")] public Dictionary<string, double> PmcDifficulty { get; set; } = new()
+    {
+        { "easy", 10 },
+        { "normal", 50 },
+        { "hard", 30 },
+        { "impossible", 10 }
+    };
+    [JsonPropertyName("pmcType")] public PmcTypeChance PmcType { get; set; } = new();
+    [JsonPropertyName("pmcConfig")] public PMCConfig PmcConfig { get; set; } = new()
+    {
+        StartingPMCs = new PMCStartingConfig
+        {
+            Enable = true,
+            IgnoreMaxBotCaps = true,
+            GroupChance = 25,
+            MaxGroupSize = 3,
+            MaxGroupCount = 4,
+            MapLimits = new ValidLocationsMinMax
+            {
+                Customs = new MinMax<int> { Min = 8, Max = 10 },
+                Factory4Day = new MinMax<int> { Min = 5, Max = 7 },
+                Factory4Night = new MinMax<int> { Min = 5, Max = 7 },
+                Interchange = new MinMax<int> { Min = 9, Max = 13 },
+                Laboratory = new MinMax<int> { Min = 7, Max = 9 },
+                Lighthouse = new MinMax<int> { Min = 7, Max = 10 },
+                Reserve = new MinMax<int> { Min = 8, Max = 10 },
+                GroundZero = new MinMax<int> { Min = 8, Max = 11 },
+                GroundZeroHigh = new MinMax<int> { Min = 8, Max = 11 },
+                Shoreline = new MinMax<int> { Min = 9, Max = 13 },
+                TarkovStreets = new MinMax<int> { Min = 7, Max = 10 },
+                Woods = new MinMax<int> { Min = 9, Max = 13 },
+                Labyrinth = new MinMax<int> { Min = 0, Max = 0 }
+            }
+        },
+        Waves = new WaveConfig
+        {
+            Enable = false,
+            AllowPmcsOnLabyrinth = false,
+            IgnoreMaxBotCaps = false,
+            GroupChance = 10,
+            MaxGroupSize = 1,
+            MaxGroupCount = 3,
+            MaxBotsPerWave = 4,
+            DelayBeforeFirstWave = 500,
+            SecondsBetweenWaves = 360,
+            StopWavesBeforeEndOfRaidLimit = 300
+        }
+    };
+    [JsonPropertyName("scavConfig")] public ScavConfig ScavConfig { get; set; } = new()
+    {
+        StartingScavs = new ScavStartingConfig
+        {
+            Enable = true,
+            MaxBotSpawns = new ValidLocationInt
+            {
+                Customs = 5,
+                Factory4Day = 3,
+                Factory4Night = 3,
+                Interchange = 5,
+                Laboratory = 0,
+                Lighthouse = 5,
+                Reserve = 5,
+                GroundZero = 5,
+                GroundZeroHigh = 5,
+                Shoreline = 5,
+                TarkovStreets = 5,
+                Woods = 5,
+                Labyrinth = 0
+            },
+            StartingMarksman = true
+        },
+        Waves = new ScavWaveConfig
+        {
+            Enable = true,
+            EnableCustomTimers = true,
+            AllowScavsOnLaboratory = false,
+            AllowScavsOnLabyrinth = false,
+            StartSpawns = 60,
+            StopSpawns = 600,
+            ActiveTimeMin = 180,
+            ActiveTimeMax = 240,
+            QuietTimeMin = 120,
+            QuietTimeMax = 180,
+            CheckToSpawnTimer = 15,
+            PendingBotsToTrigger = 1,
+            NonWaveSpawnBotsLimitPerPlayer = 20
+        }
+    };
+    [JsonPropertyName("bossDifficulty")] public Dictionary<string, double> BossDifficulty { get; set; } = new()
+    {
+        { "easy", 0 },
+        { "normal", 60 },
+        { "hard", 30 },
+        { "impossible", 10 }
+    };
+    [JsonPropertyName("weeklyBoss")] public WeeklyBossConfig WeeklyBoss { get; set; } = new() { Enable = false };
+    [JsonPropertyName("bossConfig")] public BossConfig BossConfig { get; set; } = new()
+    {
+        BossKnight = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 30, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 30, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 30,
+                TarkovStreets = 0, Woods = 30, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "ZoneScavBase", Factory4Day = "", Factory4Night = "", Interchange = "",
+                Laboratory = "", Lighthouse = "Zone_TreatmentContainers,Zone_Chalet", Reserve = "",
+                GroundZero = "", GroundZeroHigh = "", Shoreline = "ZoneMeteoStation",
+                TarkovStreets = "", Woods = "ZoneScavBase2", Labyrinth = ""
+            }
+        },
+        BossBully = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 30, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "ZoneDormitory,ZoneGasStation,ZoneScavBase", Factory4Day = "", Factory4Night = "",
+                Interchange = "", Laboratory = "", Lighthouse = "", Reserve = "", GroundZero = "",
+                GroundZeroHigh = "", Shoreline = "", TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossTagilla = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 30, Factory4Night = 30, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "BotZone", Factory4Night = "BotZone", Interchange = "",
+                Laboratory = "", Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "",
+                Shoreline = "", TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossKilla = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 30, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "",
+                Interchange = "ZoneCenterBot,ZoneCenter,ZoneOLI,ZoneIDEA,ZoneGoshan",
+                Laboratory = "", Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "",
+                Shoreline = "", TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossZryachiy = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 100, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "Zone_Island", Reserve = "", GroundZero = "", GroundZeroHigh = "",
+                Shoreline = "", TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossGluhar = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 30, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "ZoneRailStrorage,ZonePTOR2,ZoneBarrack,ZoneSubStorage",
+                GroundZero = "", GroundZeroHigh = "", Shoreline = "", TarkovStreets = "", Woods = "",
+                Labyrinth = ""
+            }
+        },
+        BossSanitar = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 30,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "",
+                Shoreline = "ZoneGreenHouses,ZoneSanatorium1,ZoneSanatorium2,ZonePort",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossKolontay = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 30, Shoreline = 0,
+                TarkovStreets = 30, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "ZoneSandbox",
+                Shoreline = "", TarkovStreets = "ZoneClimova,ZoneMvd", Woods = "", Labyrinth = ""
+            }
+        },
+        BossBoar = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 30, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "ZoneCarShowroom", Woods = "", Labyrinth = ""
+            }
+        },
+        BossKojaniy = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 30, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "ZoneWoodCutter", Labyrinth = ""
+            }
+        },
+        BossTagillaAgro = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 100
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossKillaAgro = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 100
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        TagillaHelperAgro = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            AddExtraSpawns = false,
+            DisableVanillaSpawns = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 100
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        BossPartisan = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 30, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 30, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 30,
+                TarkovStreets = 0, Woods = 30, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        SectantPriest = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 15, Factory4Day = 0, Factory4Night = 20, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 44, Shoreline = 15,
+                TarkovStreets = 0, Woods = 15, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "ZoneScavBase", Factory4Day = "", Factory4Night = "BotZone", Interchange = "",
+                Laboratory = "", Lighthouse = "", Reserve = "", GroundZero = "",
+                GroundZeroHigh = "ZoneSandbox", Shoreline = "ZoneSanatorium1,ZoneSanatorium2,ZoneForestSpawn",
+                TarkovStreets = "", Woods = "ZoneMiniHouse,ZoneBrokenVill", Labyrinth = ""
+            }
+        },
+        ArenaFighterEvent = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 5, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 5, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "ZoneFactoryCenter,ZoneScavBase", Factory4Day = "", Factory4Night = "",
+                Interchange = "", Laboratory = "", Lighthouse = "", Reserve = "", GroundZero = "",
+                GroundZeroHigh = "", Shoreline = "", TarkovStreets = "",
+                Woods = "ZoneMiniHouse,ZoneClearVill,ZoneRoad,ZoneBrokenVill,ZoneScavBase2", Labyrinth = ""
+            }
+        },
+        PmcBot = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            AddExtraSpawns = true,
+            DisableVanillaSpawns = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 40,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "",
+                Laboratory = "BotZoneBasement,BotZoneFloor1,BotZoneFloor2", Lighthouse = "", Reserve = "",
+                GroundZero = "", GroundZeroHigh = "", Shoreline = "", TarkovStreets = "", Woods = "",
+                Labyrinth = ""
+            }
+        },
+        ExUsec = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            AddExtraSpawns = false,
+            DisableVanillaSpawns = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        },
+        Gifter = new BossLocationInfo
+        {
+            Enable = true,
+            DisableFollowers = false,
+            Time = -1,
+            SpawnChance = new ValidLocationInt
+            {
+                Customs = 0, Factory4Day = 0, Factory4Night = 0, Interchange = 0, Laboratory = 0,
+                Lighthouse = 0, Reserve = 0, GroundZero = 0, GroundZeroHigh = 0, Shoreline = 0,
+                TarkovStreets = 0, Woods = 0, Labyrinth = 0
+            },
+            BossZone = new ValidLocationString
+            {
+                Customs = "", Factory4Day = "", Factory4Night = "", Interchange = "", Laboratory = "",
+                Lighthouse = "", Reserve = "", GroundZero = "", GroundZeroHigh = "", Shoreline = "",
+                TarkovStreets = "", Woods = "", Labyrinth = ""
+            }
+        }
+    };
 
     [JsonPropertyName("configAppSettings")]
-    public required ConfigAppSettings ConfigAppSettings { get; set; }
+    public ConfigAppSettings ConfigAppSettings { get; set; } = new()
+    {
+        ShowUndo = true,
+        ShowDefault = false,
+        DisableAnimations = false,
+        AllowUpdateChecks = false,
+        RequireAuthCode = false,
+        AuthCode = "Kitten Mittons"
+    };
 }
 
 public record PmcTypeChance
 {
-    [JsonPropertyName("usecChance")] public double UsecChance { get; set; }
+    [JsonPropertyName("usecChance")] public double UsecChance { get; set; } = 50;
 }
 public record WeeklyBossConfig
 {
-    [JsonPropertyName("enable")] public bool Enable { get; set; } 
+    [JsonPropertyName("enable")] public bool Enable { get; set; }
 }
 public record ConfigAppSettings
 {
@@ -41,19 +494,19 @@ public record ConfigAppSettings
 
 public class ValidLocationsMinMax
 {
-    [JsonPropertyName("bigmap")] public required MinMax<int> Customs { get; set; }
-    [JsonPropertyName("factory4_day")] public required MinMax<int> Factory4Day { get; set; }
-    [JsonPropertyName("factory4_night")] public required MinMax<int> Factory4Night { get; set; }
-    [JsonPropertyName("interchange")] public required MinMax<int> Interchange { get; set; }
-    [JsonPropertyName("laboratory")] public required MinMax<int> Laboratory { get; set; }
-    [JsonPropertyName("lighthouse")] public required MinMax<int> Lighthouse { get; set; }
-    [JsonPropertyName("rezervbase")] public required MinMax<int> Reserve { get; set; }
-    [JsonPropertyName("sandbox")] public required MinMax<int> GroundZero { get; set; }
-    [JsonPropertyName("sandbox_high")] public required MinMax<int> GroundZeroHigh { get; set; }
-    [JsonPropertyName("shoreline")] public required MinMax<int> Shoreline { get; set; }
-    [JsonPropertyName("tarkovstreets")] public required MinMax<int> TarkovStreets { get; set; }
-    [JsonPropertyName("woods")] public required MinMax<int> Woods { get; set; }
-    [JsonPropertyName("labyrinth")] public required MinMax<int> Labyrinth { get; set; }
+    [JsonPropertyName("bigmap")] public MinMax<int> Customs { get; set; }
+    [JsonPropertyName("factory4_day")] public MinMax<int> Factory4Day { get; set; }
+    [JsonPropertyName("factory4_night")] public MinMax<int> Factory4Night { get; set; }
+    [JsonPropertyName("interchange")] public MinMax<int> Interchange { get; set; }
+    [JsonPropertyName("laboratory")] public MinMax<int> Laboratory { get; set; }
+    [JsonPropertyName("lighthouse")] public MinMax<int> Lighthouse { get; set; }
+    [JsonPropertyName("rezervbase")] public MinMax<int> Reserve { get; set; }
+    [JsonPropertyName("sandbox")] public MinMax<int> GroundZero { get; set; }
+    [JsonPropertyName("sandbox_high")] public MinMax<int> GroundZeroHigh { get; set; }
+    [JsonPropertyName("shoreline")] public MinMax<int> Shoreline { get; set; }
+    [JsonPropertyName("tarkovstreets")] public MinMax<int> TarkovStreets { get; set; }
+    [JsonPropertyName("woods")] public MinMax<int> Woods { get; set; }
+    [JsonPropertyName("labyrinth")] public MinMax<int> Labyrinth { get; set; }
     
     public MinMax<int> this[string key]
     {
@@ -173,19 +626,19 @@ public class ValidLocationInt
 
 public class ValidLocationString
 {
-    [JsonPropertyName("bigmap")] public required string Customs { get; set; }
-    [JsonPropertyName("factory4_day")] public required string Factory4Day { get; set; }
-    [JsonPropertyName("factory4_night")] public required string Factory4Night { get; set; }
-    [JsonPropertyName("interchange")] public required string Interchange { get; set; }
-    [JsonPropertyName("laboratory")] public required string Laboratory { get; set; }
-    [JsonPropertyName("lighthouse")] public required string Lighthouse { get; set; }
-    [JsonPropertyName("rezervbase")] public required string Reserve { get; set; }
-    [JsonPropertyName("sandbox")] public required string GroundZero { get; set; }
-    [JsonPropertyName("sandbox_high")]public required string GroundZeroHigh { get; set; }
-    [JsonPropertyName("shoreline")] public required string Shoreline { get; set; }
-    [JsonPropertyName("tarkovstreets")] public required string TarkovStreets { get; set; }
-    [JsonPropertyName("woods")] public required string Woods { get; set; }
-    [JsonPropertyName("labyrinth")] public required string Labyrinth { get; set; }
+    [JsonPropertyName("bigmap")] public string Customs { get; set; }
+    [JsonPropertyName("factory4_day")] public string Factory4Day { get; set; }
+    [JsonPropertyName("factory4_night")] public string Factory4Night { get; set; }
+    [JsonPropertyName("interchange")] public string Interchange { get; set; }
+    [JsonPropertyName("laboratory")] public string Laboratory { get; set; }
+    [JsonPropertyName("lighthouse")] public string Lighthouse { get; set; }
+    [JsonPropertyName("rezervbase")] public string Reserve { get; set; }
+    [JsonPropertyName("sandbox")] public string GroundZero { get; set; }
+    [JsonPropertyName("sandbox_high")]public string GroundZeroHigh { get; set; }
+    [JsonPropertyName("shoreline")] public string Shoreline { get; set; }
+    [JsonPropertyName("tarkovstreets")] public string TarkovStreets { get; set; }
+    [JsonPropertyName("woods")] public string Woods { get; set; }
+    [JsonPropertyName("labyrinth")] public string Labyrinth { get; set; }
 
     [JsonIgnore]
     public string this[string key]
@@ -237,31 +690,31 @@ public record BossLocationInfo
     [JsonPropertyName("addExtraSpawns")] public bool? AddExtraSpawns { get; set; }
     [JsonPropertyName("disableVanillaSpawns")] public bool? DisableVanillaSpawns { get; set; }
     [JsonPropertyName("time")] public long Time { get; set; }
-    [JsonPropertyName("spawnChance")] public required ValidLocationInt SpawnChance { get; set; }
-    [JsonPropertyName("bossZone")] public required ValidLocationString BossZone { get; set; }
+    [JsonPropertyName("spawnChance")] public ValidLocationInt SpawnChance { get; set; }
+    [JsonPropertyName("bossZone")] public ValidLocationString BossZone { get; set; }
 }
 
 public class BossConfig
 {
-    [JsonPropertyName("bossKnight")] public required BossLocationInfo BossKnight { get; set; }
-    [JsonPropertyName("bossBully")] public required BossLocationInfo BossBully { get; set; }
-    [JsonPropertyName("bossTagilla")] public required BossLocationInfo BossTagilla { get; set; }
-    [JsonPropertyName("bossKilla")] public required BossLocationInfo BossKilla { get; set; }
-    [JsonPropertyName("bossZryachiy")] public required BossLocationInfo BossZryachiy { get; set; }
-    [JsonPropertyName("bossGluhar")] public required BossLocationInfo BossGluhar { get; set; }
-    [JsonPropertyName("bossSanitar")] public required BossLocationInfo BossSanitar { get; set; }
-    [JsonPropertyName("bossKolontay")] public required BossLocationInfo BossKolontay { get; set; }
-    [JsonPropertyName("bossBoar")] public required BossLocationInfo BossBoar { get; set; }
-    [JsonPropertyName("bossKojaniy")] public required BossLocationInfo BossKojaniy { get; set; }
-    [JsonPropertyName("bossTagillaAgro")] public required BossLocationInfo BossTagillaAgro { get; set; }
-    [JsonPropertyName("bossKillaAgro")] public required BossLocationInfo BossKillaAgro { get; set; }
-    [JsonPropertyName("tagillaHelperAgro")] public required BossLocationInfo TagillaHelperAgro { get; set; }
-    [JsonPropertyName("bossPartisan")] public required BossLocationInfo BossPartisan { get; set; }
-    [JsonPropertyName("sectantPriest")] public required BossLocationInfo SectantPriest { get; set; }
-    [JsonPropertyName("arenaFighterEvent")] public required BossLocationInfo ArenaFighterEvent { get; set; }
-    [JsonPropertyName("pmcBot")] public required BossLocationInfo PmcBot { get; set; }
-    [JsonPropertyName("exUsec")] public required BossLocationInfo ExUsec { get; set; }
-    [JsonPropertyName("gifter")] public required BossLocationInfo Gifter { get; set; }
+    [JsonPropertyName("bossKnight")] public BossLocationInfo BossKnight { get; set; }
+    [JsonPropertyName("bossBully")] public BossLocationInfo BossBully { get; set; }
+    [JsonPropertyName("bossTagilla")] public BossLocationInfo BossTagilla { get; set; }
+    [JsonPropertyName("bossKilla")] public BossLocationInfo BossKilla { get; set; }
+    [JsonPropertyName("bossZryachiy")] public BossLocationInfo BossZryachiy { get; set; }
+    [JsonPropertyName("bossGluhar")] public BossLocationInfo BossGluhar { get; set; }
+    [JsonPropertyName("bossSanitar")] public BossLocationInfo BossSanitar { get; set; }
+    [JsonPropertyName("bossKolontay")] public BossLocationInfo BossKolontay { get; set; }
+    [JsonPropertyName("bossBoar")] public BossLocationInfo BossBoar { get; set; }
+    [JsonPropertyName("bossKojaniy")] public BossLocationInfo BossKojaniy { get; set; }
+    [JsonPropertyName("bossTagillaAgro")] public BossLocationInfo BossTagillaAgro { get; set; }
+    [JsonPropertyName("bossKillaAgro")] public BossLocationInfo BossKillaAgro { get; set; }
+    [JsonPropertyName("tagillaHelperAgro")] public BossLocationInfo TagillaHelperAgro { get; set; }
+    [JsonPropertyName("bossPartisan")] public BossLocationInfo BossPartisan { get; set; }
+    [JsonPropertyName("sectantPriest")] public BossLocationInfo SectantPriest { get; set; }
+    [JsonPropertyName("arenaFighterEvent")] public BossLocationInfo ArenaFighterEvent { get; set; }
+    [JsonPropertyName("pmcBot")] public BossLocationInfo PmcBot { get; set; }
+    [JsonPropertyName("exUsec")] public BossLocationInfo ExUsec { get; set; }
+    [JsonPropertyName("gifter")] public BossLocationInfo Gifter { get; set; }
     
     public BossLocationInfo this[string key]
     {
@@ -365,7 +818,7 @@ public record PMCStartingConfig
     [JsonPropertyName("groupChance")] public int GroupChance { get; set; }
     [JsonPropertyName("maxGroupSize")] public int MaxGroupSize { get; set; }
     [JsonPropertyName("maxGroupCount")] public int MaxGroupCount { get; set; }
-    [JsonPropertyName("mapLimits")] public required ValidLocationsMinMax MapLimits { get; set; }
+    [JsonPropertyName("mapLimits")] public ValidLocationsMinMax MapLimits { get; set; }
 }
 
 public record ScavWaveConfig
@@ -388,20 +841,20 @@ public record ScavWaveConfig
 public record ScavStartingConfig
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
-    [JsonPropertyName("maxBotSpawns")] public required ValidLocationInt MaxBotSpawns { get; set; }
+    [JsonPropertyName("maxBotSpawns")] public ValidLocationInt MaxBotSpawns { get; set; }
     [JsonPropertyName("startingMarksman")] public bool StartingMarksman { get; set; }
 }
 
 public record ScavConfig
 {
-    [JsonPropertyName("startingScavs")] public required ScavStartingConfig StartingScavs { get; set; }
-    [JsonPropertyName("waves")] public required ScavWaveConfig Waves { get; set; }
+    [JsonPropertyName("startingScavs")] public ScavStartingConfig StartingScavs { get; set; }
+    [JsonPropertyName("waves")] public ScavWaveConfig Waves { get; set; }
 }
 
 public record PMCConfig
 {
-    [JsonPropertyName("startingPMCs")] public required PMCStartingConfig StartingPMCs { get; set; }
-    [JsonPropertyName("waves")] public required WaveConfig Waves { get; set; }
+    [JsonPropertyName("startingPMCs")] public PMCStartingConfig StartingPMCs { get; set; }
+    [JsonPropertyName("waves")] public WaveConfig Waves { get; set; }
 }
 
 public class BossWaveDefaults : Dictionary<string, List<BossLocationSpawn>>

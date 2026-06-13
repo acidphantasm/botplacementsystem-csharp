@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
-using acidphantasm_botplacementsystem.Spawning;
+using BotPlacementSystemClient.Spawning;
 using EFT;
 using HarmonyLib;
 using SPT.Reflection.Patching;
 
-namespace acidphantasm_botplacementsystem.Patches;
+namespace BotPlacementSystemClient.Patches;
 
 internal class BossProgressiveRegressivePatch : ModulePatch
 {
@@ -28,7 +28,7 @@ internal class BossProgressiveRegressivePatch : ModulePatch
         {
             return;
         }
-        Logger.LogInfo($"Saving boss as spawned: {bossName}");
+        Plugin.LogSource.LogInfo($"Saving boss as spawned: {bossName}");
         BossSpawnTracking.UpdateBossSpawnChance(bossName);
     }
 }

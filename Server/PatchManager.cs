@@ -1,8 +1,8 @@
-﻿using _botplacementsystem.Patches;
+﻿using BotPlacementSystemServer.Patches;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 
-namespace _botplacementsystem;
+namespace BotPlacementSystemServer;
 
 [Injectable(TypePriority = OnLoadOrder.PreSptModLoader + 50)]
 public class PatchManager() : IOnLoad

@@ -1,115 +1,114 @@
-﻿using acidphantasm_botplacementsystem.Utils;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using BotPlacementSystemClient.Utils;
 using EFT;
 using Newtonsoft.Json;
 using SPT.Common.Http;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace acidphantasm_botplacementsystem.Spawning
+namespace BotPlacementSystemClient.Spawning;
+
+public class BossSpawnTracking
 {
-    public class BossSpawnTracking
+    private static Dictionary<string, CustomizedObject> BossInfoOutOfRaid { get; set; } = [];
+    public static Dictionary<string, CustomizedObject> BossInfoForProfile { get; private set; } = [];
+
+    public static readonly HashSet<WildSpawnType> TrackedBosses =
+    [
+        WildSpawnType.bossBoar,
+        WildSpawnType.bossBully,
+        WildSpawnType.bossGluhar,
+        WildSpawnType.bossKilla,
+        WildSpawnType.bossKnight,
+        WildSpawnType.bossKolontay,
+        WildSpawnType.bossKojaniy,
+        WildSpawnType.bossSanitar,
+        WildSpawnType.bossTagilla,
+        WildSpawnType.bossPartisan,
+        WildSpawnType.bossZryachiy,
+        WildSpawnType.arenaFighterEvent,
+        WildSpawnType.sectantPriest
+    ];
+
+    /*
+     *
+     *  (WildSpawnType) 199,                // Legion
+     *  (WildSpawnType) 801,                // Punisher
+     */
+
+    public static void UpdateBossSpawnChance(WildSpawnType boss)
     {
-        private static Dictionary<string, CustomizedObject> BossInfoOutOfRaid { get; set; } = [];
-        public static Dictionary<string, CustomizedObject> BossInfoForProfile { get; private set; } = [];
+        var bossName = boss.ToString();
 
-        public static readonly HashSet<WildSpawnType> TrackedBosses =
-        [
-            WildSpawnType.bossBoar,
-            WildSpawnType.bossBully,
-            WildSpawnType.bossGluhar,
-            WildSpawnType.bossKilla,
-            WildSpawnType.bossKnight,
-            WildSpawnType.bossKolontay,
-            WildSpawnType.bossKojaniy,
-            WildSpawnType.bossSanitar,
-            WildSpawnType.bossTagilla,
-            WildSpawnType.bossPartisan,
-            WildSpawnType.bossZryachiy,
-            WildSpawnType.arenaFighterEvent,
-            WildSpawnType.sectantPriest
-        ];
-
-        /*
-         * 
-         *  (WildSpawnType) 199,                // Legion
-         *  (WildSpawnType) 801,                // Punisher
-        */
-
-        public static void UpdateBossSpawnChance(WildSpawnType boss)
+        if (!BossInfoForProfile.TryGetValue(bossName, out var info))
         {
-            var bossName = boss.ToString();
-
-            if (!BossInfoForProfile.TryGetValue(bossName, out var info))
+            info = new CustomizedObject
             {
-                info = new CustomizedObject
-                {
-                    Chance = Plugin.MinimumChance,
-                    SpawnedLastRaid = true
-                };
+                Chance = Plugin.MinimumChance,
+                SpawnedLastRaid = true
+            };
 
-                BossInfoForProfile.Add(bossName, info);
-            }
-            else
-            {
-                info.SpawnedLastRaid = true;
-            }
+            BossInfoForProfile.Add(bossName, info);
         }
-
-        public static void EndRaidMergeData()
+        else
         {
-            BossInfoOutOfRaid = BossInfoForProfile;
-            SaveRaidEndInServer();
+            info.SpawnedLastRaid = true;
         }
+    }
 
-        public static void SaveRaidEndInServer()
+    public static void EndRaidMergeData()
+    {
+        BossInfoOutOfRaid = BossInfoForProfile;
+        SaveRaidEndInServer();
+    }
+
+    public static void SaveRaidEndInServer()
+    {
+        try
         {
-            try
-            {
-                var profile = Utility.GetPlayerProfile().ProfileId;
+            var profile = Utility.GetPlayerProfile().ProfileId;
                 
-                var jsonString = JsonConvert.SerializeObject(
-                    new RequestData() { Data = BossInfoOutOfRaid, ProfileId = profile }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+            var jsonString = JsonConvert.SerializeObject(
+                new RequestData() { Data = BossInfoOutOfRaid, ProfileId = profile }, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
                 
-                RequestHandler.PutJsonAsync("/botplacementsystem/save", jsonString);
-                BossInfoForProfile.Clear();
-            }
-            catch (Exception ex)
-            {
-                Plugin.LogSource.LogError("Failed to save: " + ex.ToString());
-                NotificationManagerClass.DisplayWarningNotification("Failed to save ABPS Progressive Boss data - check the server");
-            }
+            RequestHandler.PutJsonAsync("/botplacementsystem/save", jsonString);
+            BossInfoForProfile.Clear();
         }
-
-        public static async Task LoadFromServer()
+        catch (Exception ex)
         {
-            try
-            {
-                var profile = Utility.GetPlayerProfile().ProfileId;
+            Plugin.LogSource.LogError("Failed to save: " + ex.ToString());
+            NotificationManagerClass.DisplayWarningNotification("Failed to save ABPS Progressive Boss data - check the server");
+        }
+    }
+
+    public static async Task LoadFromServer()
+    {
+        try
+        {
+            var profile = Utility.GetPlayerProfile().ProfileId;
                 
-                var payload = await RequestHandler.GetJsonAsync("/botplacementsystem/load");
-                var retrievedData =
-                    JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, CustomizedObject>>>(payload);
+            var payload = await RequestHandler.GetJsonAsync("/botplacementsystem/load");
+            var retrievedData =
+                JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, CustomizedObject>>>(payload);
 
-                BossInfoForProfile = retrievedData.TryGetValue(profile, out var value) ? value : new Dictionary<string, CustomizedObject>();
-            }
-            catch (Exception ex)
-            {
-                Plugin.LogSource.LogError("Failed to load: " + ex.ToString());
-                NotificationManagerClass.DisplayWarningNotification("Failed to load ABPS Progressive Boss data - check the server");
-            }
+            BossInfoForProfile = retrievedData.TryGetValue(profile, out var value) ? value : new Dictionary<string, CustomizedObject>();
         }
-
-        public class CustomizedObject
+        catch (Exception ex)
         {
-            public bool SpawnedLastRaid;
-            public int Chance;
+            Plugin.LogSource.LogError("Failed to load: " + ex.ToString());
+            NotificationManagerClass.DisplayWarningNotification("Failed to load ABPS Progressive Boss data - check the server");
         }
+    }
+
+    public class CustomizedObject
+    {
+        public bool SpawnedLastRaid;
+        public int Chance;
+    }
         
-        private struct RequestData
-        {
-            public string ProfileId;
-            public Dictionary<string, CustomizedObject> Data;
-        }
+    private struct RequestData
+    {
+        public string ProfileId;
+        public Dictionary<string, CustomizedObject> Data;
     }
 }

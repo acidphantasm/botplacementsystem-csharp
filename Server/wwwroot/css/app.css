@@ -1,0 +1,117 @@
+﻿/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0b0e14;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #2a2d33;
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+}
+
+/* ============================================================
+   BACKGROUND IMAGE (content areas)
+   ============================================================ */
+
+:scope .content {
+    overflow: auto;
+    position: relative;
+    animation-name: transition;
+    animation-duration: 1.5s;
+    animation-delay: 0s;
+    animation-fill-mode: forwards;
+}
+
+.content::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url('/acidphantasm-botplacementsystem/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    -webkit-filter: blur(4px);
+    filter: blur(4px);
+    opacity: 0.35;
+    animation-name: transitionBG;
+    animation-duration: 3.5s;
+    animation-delay: 1s;
+    animation-fill-mode: forwards;
+}
+
+:scope .no-animation-content {
+    overflow: auto;
+    position: relative;
+    user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+}
+
+.no-animation-content::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-image: url('/acidphantasm-botplacementsystem/images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    -webkit-filter: blur(4px);
+    filter: blur(4px);
+    opacity: 0.35;
+}
+
+/* ============================================================
+   MISC GLOBAL RESETS
+   ============================================================ */
+
+.no-highlight {
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#blazor-error-ui {
+    background: lightyellow;
+    bottom: 0;
+    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
+    display: none;
+    left: 0;
+    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    color: red;
+    margin-left: 3rem;
+}
+
+#blazor-error-ui .dismiss {
+    cursor: pointer;
+    position: absolute;
+    right: 0.75rem;
+    top: 0.5rem;
+}
+
+.custom-blur-background {
+    backdrop-filter: blur(7px);
+}

@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
-using _botplacementsystem.Web.Shared;
+using BotPlacementSystemServer.Web.Shared;
 
-namespace _botplacementsystem.Web.Core
+namespace BotPlacementSystemServer.Web.Core
 {
     internal class Utils
     {
