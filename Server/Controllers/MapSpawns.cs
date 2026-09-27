@@ -230,9 +230,11 @@ public class MapSpawns(
     }
 
     // Waves whose boss isn't a vanilla WildSpawnType were added by other mods (e.g. through MoreBotsAPI), leave them in.
+    // Also keep MoreBotsAPI hunt waves, are marked by a "hunt" trigger.
     internal static bool IsCustomBotTypeSpawn(BossLocationSpawn spawn)
     {
-        return !string.IsNullOrEmpty(spawn.BossName)
-               && !(Enum.TryParse<WildSpawnType>(spawn.BossName, ignoreCase: true, out var bossType) && Enum.IsDefined(bossType));
+        return spawn.TriggerId?.Contains("hunt", StringComparison.OrdinalIgnoreCase) == true
+               || (!string.IsNullOrEmpty(spawn.BossName)
+                   && !(Enum.TryParse<WildSpawnType>(spawn.BossName, ignoreCase: true, out var bossType) && Enum.IsDefined(bossType)));
     }
 }
