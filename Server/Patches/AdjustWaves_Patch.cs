@@ -38,9 +38,10 @@ public class AdjustWavesPatch : AbstractPatch
         if (simulatedStart > 60d)
         {
             var mapBosses = mapBase.BossLocationSpawn
-                .Where(x => x.Time == -1
-                            && !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
-                            && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase))
+                .Where(x => (x.Time == -1
+                             && !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
+                             && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase))
+                            || MapSpawns.IsCustomBotTypeSpawn(x))
                 .ToList();
 
             var newPmcs = _pmcSpawns.GenerateScavRaidRemainingPmcs(locationName, totalRaidSeconds);

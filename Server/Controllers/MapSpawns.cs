@@ -60,7 +60,7 @@ public class MapSpawns(
         foreach (var map in _validMaps)
         {
             var actualKey = locationTable.GetMappedKey(map);
-            _locationData[actualKey].Base.BossLocationSpawn = [];
+            _locationData[actualKey].Base.BossLocationSpawn = GetCustomBotTypeSpawns(actualKey);
             _botMapCache[map] = [];
             _scavMapCache[map] = [];
             switch (ModConfig.Config.ScavConfig.Waves.Enable)
@@ -167,7 +167,7 @@ public class MapSpawns(
         foreach (var map in _validMaps)
         {
             var actualKey = locationTable.GetMappedKey(map);
-            _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[map]);
+            _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[map])!, ..GetCustomBotTypeSpawns(actualKey)];
             _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[map]);
         }
     }
@@ -220,7 +220,19 @@ public class MapSpawns(
     private void ReplaceOriginalLocationForMap(string location)
     {
         var actualKey = locationTable.GetMappedKey(location);
-        _locationData[actualKey].Base.BossLocationSpawn = cloner.Clone(_botMapCache[location]);
+        _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[location])!, ..GetCustomBotTypeSpawns(actualKey)];
         _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[location]);
+    }
+
+    private List<BossLocationSpawn> GetCustomBotTypeSpawns(string actualKey)
+    {
+        return _locationData[actualKey].Base.BossLocationSpawn?.Where(IsCustomBotTypeSpawn).ToList() ?? [];
+    }
+
+    // Waves whose boss isn't a vanilla WildSpawnType were added by other mods (e.g. through MoreBotsAPI), leave them in.
+    internal static bool IsCustomBotTypeSpawn(BossLocationSpawn spawn)
+    {
+        return !string.IsNullOrEmpty(spawn.BossName)
+               && !(Enum.TryParse<WildSpawnType>(spawn.BossName, ignoreCase: true, out var bossType) && Enum.IsDefined(bossType));
     }
 }
