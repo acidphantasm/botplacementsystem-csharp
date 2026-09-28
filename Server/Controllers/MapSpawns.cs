@@ -60,7 +60,7 @@ public class MapSpawns(
         foreach (var map in _validMaps)
         {
             var actualKey = locationTable.GetMappedKey(map);
-            _locationData[actualKey].Base.BossLocationSpawn = GetCustomBotTypeSpawns(actualKey);
+            _locationData[actualKey].Base.BossLocationSpawn = GetUnmanagedSpawns(actualKey);
             _botMapCache[map] = [];
             _scavMapCache[map] = [];
             switch (ModConfig.Config.ScavConfig.Waves.Enable)
@@ -167,7 +167,7 @@ public class MapSpawns(
         foreach (var map in _validMaps)
         {
             var actualKey = locationTable.GetMappedKey(map);
-            _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[map])!, ..GetCustomBotTypeSpawns(actualKey)];
+            _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[map])!, ..GetUnmanagedSpawns(actualKey)];
             _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[map]);
         }
     }
@@ -220,21 +220,34 @@ public class MapSpawns(
     private void ReplaceOriginalLocationForMap(string location)
     {
         var actualKey = locationTable.GetMappedKey(location);
-        _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[location])!, ..GetCustomBotTypeSpawns(actualKey)];
+        _locationData[actualKey].Base.BossLocationSpawn = [..cloner.Clone(_botMapCache[location])!, ..GetUnmanagedSpawns(actualKey)];
         _locationData[actualKey].Base.Waves = cloner.Clone(_scavMapCache[location]);
     }
 
-    private List<BossLocationSpawn> GetCustomBotTypeSpawns(string actualKey)
+    private List<BossLocationSpawn> GetUnmanagedSpawns(string actualKey)
     {
-        return _locationData[actualKey].Base.BossLocationSpawn?.Where(IsCustomBotTypeSpawn).ToList() ?? [];
+        return _locationData[actualKey].Base.BossLocationSpawn?.Where(spawn => !IsManagedByAbps(spawn)).ToList() ?? [];
     }
 
-    // Waves whose boss isn't a vanilla WildSpawnType were added by other mods (e.g. through MoreBotsAPI), leave them in.
-    // Also keep MoreBotsAPI hunt waves, are marked by a "hunt" trigger.
-    internal static bool IsCustomBotTypeSpawn(BossLocationSpawn spawn)
+    // ABPS only replaces the boss types it generates itself; so we leave in:
+    // - vanilla waves it has no config for:
+    //   - Kaban's snipers on Streets (bossBoarSniper, spawned by Kaban's BossBoarBorn event),
+    //   - Crazy scav event on Lighthouse (crazyAssaultEvent)
+    //   - Peacemaker squad on Shoreline (peacemaker)
+    // - waves added by other mods, e.g. custom bot types registered through MoreBotsAPI
+    // MoreBotsAPI hunt waves can use a managed type (e.g. exUsec, pmcBot) but are marked by a "hunt" trigger.
+    internal static bool IsManagedByAbps(BossLocationSpawn spawn)
     {
-        return spawn.TriggerId?.Contains("hunt", StringComparison.OrdinalIgnoreCase) == true
-               || (!string.IsNullOrEmpty(spawn.BossName)
-                   && !(Enum.TryParse<WildSpawnType>(spawn.BossName, ignoreCase: true, out var bossType) && Enum.IsDefined(bossType)));
+        if (spawn.TriggerId?.Contains("hunt", StringComparison.OrdinalIgnoreCase) == true) return false;
+
+        if (string.Equals(spawn.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(spawn.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase)) return true;
+
+        foreach (var (boss, _) in ModConfig.Config.BossConfig)
+        {
+            if (string.Equals(spawn.BossName, boss, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+
+        return false;
     }
 }
