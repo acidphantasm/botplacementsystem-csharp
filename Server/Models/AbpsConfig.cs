@@ -103,6 +103,7 @@ public record AbpsConfig
         { "impossible", 10 }
     };
     [JsonPropertyName("weeklyBoss")] public WeeklyBossConfig WeeklyBoss { get; set; } = new() { Enable = false };
+    [JsonPropertyName("additionalSpawns")] public AdditionalSpawnsConfig AdditionalSpawns { get; set; } = new();
     [JsonPropertyName("bossConfig")] public BossConfig BossConfig { get; set; } = new()
     {
         BossKnight = new BossLocationInfo
@@ -481,6 +482,62 @@ public record PmcTypeChance
 public record WeeklyBossConfig
 {
     [JsonPropertyName("enable")] public bool Enable { get; set; }
+}
+
+/// <summary>
+/// Boss spawns ABPS has no config for. ABPS rebuilds every map's boss list from its own roster,
+/// so these are only kept when their toggle is enabled.
+/// </summary>
+public record AdditionalSpawnsConfig
+{
+    [JsonPropertyName("seasonalEvents")] public SeasonalEventSpawnsConfig SeasonalEvents { get; set; } = new();
+    [JsonPropertyName("vanillaExtras")] public VanillaExtraSpawnsConfig VanillaExtras { get; set; } = new();
+    [JsonPropertyName("otherMods")] public bool OtherMods { get; set; } = false;
+}
+
+/// <summary>
+/// Spawns SPT adds while a seasonal event is active (keys of SPT's seasonalevents.json "eventBossSpawns").
+/// </summary>
+public record SeasonalEventSpawnsConfig
+{
+    [JsonPropertyName("halloweenSummon")] public bool HalloweenSummon { get; set; } = true;
+    [JsonPropertyName("halloweenNightCult")] public bool HalloweenNightCult { get; set; } = true;
+    [JsonPropertyName("halloweenZombies")] public bool HalloweenZombies { get; set; } = true;
+    [JsonPropertyName("otherEvents")] public bool OtherEvents { get; set; } = true;
+
+    public bool IsEventEnabled(string sptEventKey)
+    {
+        return sptEventKey.ToLowerInvariant() switch
+        {
+            "halloweensummon" => HalloweenSummon,
+            "halloweennightcult" => HalloweenNightCult,
+            "halloweenzombies" => HalloweenZombies,
+            _ => OtherEvents
+        };
+    }
+}
+
+/// <summary>
+/// Vanilla map spawns that ABPS has no boss config for.
+/// </summary>
+public record VanillaExtraSpawnsConfig
+{
+    public static readonly IReadOnlyList<string> BossNames = ["bossBoarSniper", "crazyAssaultEvent", "peacemaker"];
+
+    [JsonPropertyName("bossBoarSniper")] public bool BossBoarSniper { get; set; } = true;
+    [JsonPropertyName("crazyAssaultEvent")] public bool CrazyAssaultEvent { get; set; } = true;
+    [JsonPropertyName("peacemaker")] public bool Peacemaker { get; set; } = true;
+
+    public bool IsEnabled(string bossName)
+    {
+        return bossName.ToLowerInvariant() switch
+        {
+            "bossboarsniper" => BossBoarSniper,
+            "crazyassaultevent" => CrazyAssaultEvent,
+            "peacemaker" => Peacemaker,
+            _ => false
+        };
+    }
 }
 public record ConfigAppSettings
 {

@@ -128,6 +128,20 @@
   "weeklyBoss": {
     "enable": false
   },
+  "additionalSpawns": {
+    "seasonalEvents": {
+      "halloweenSummon": true,
+      "halloweenNightCult": true,
+      "halloweenZombies": true,
+      "otherEvents": true
+    },
+    "vanillaExtras": {
+      "bossBoarSniper": true,
+      "crazyAssaultEvent": true,
+      "peacemaker": true
+    },
+    "otherMods": false
+  },
   "bossConfig": {
     "bossKnight": {
       "enable": true,

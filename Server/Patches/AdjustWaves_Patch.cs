@@ -37,10 +37,12 @@ public class AdjustWavesPatch : AbstractPatch
         
         if (simulatedStart > 60d)
         {
+            // Keep ABPS's instant (-1) bosses as before, plus every spawn ABPS doesn't manage (seasonal events,
+            // vanilla extras, other mods) - those are only on the map when their AdditionalSpawns toggle is on.
             var mapBosses = mapBase.BossLocationSpawn
-                .Where(x => x.Time == -1
-                            && !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
-                            && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase))
+                .Where(x => !string.Equals(x.BossName, "pmcUSEC", StringComparison.OrdinalIgnoreCase)
+                            && !string.Equals(x.BossName, "pmcBEAR", StringComparison.OrdinalIgnoreCase)
+                            && (x.Time == -1 || !MapSpawns.IsManagedByAbps(x)))
                 .ToList();
 
             var newPmcs = _pmcSpawns.GenerateScavRaidRemainingPmcs(locationName, totalRaidSeconds);

@@ -161,6 +161,221 @@
                             </MudItem>
                         </MudGrid>
                     </MudExpansionPanel>
+                    <MudExpansionPanel Class="mud-expansion-panels-borders ma-3 pa-5" Text="Additional Spawns" Expanded=true>
+                        <MudGrid>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.caption">ABPS rebuilds every map's boss list from its own config. These toggles keep spawns ABPS has no config for.</MudText>
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps SPT's Halloween summoning event spawns (Event Cultist Priest, Zryachiy events, Labs Tagilla). Only present while SPT has the Halloween event active." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Halloween: Summoning Event</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalHalloweenSummon" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalHalloweenSummon</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalHalloweenSummon"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalHalloweenSummon" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalHalloweenSummon != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalHalloweenSummon" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps SPT's Halloween night cultists (Predvestnik) on Customs, Woods and Shoreline. Only present while SPT has the Halloween event active." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Halloween: Night Cultists</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalHalloweenNightCult" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalHalloweenNightCult</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalHalloweenNightCult"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalHalloweenNightCult" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalHalloweenNightCult != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalHalloweenNightCult" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps SPT's Halloween infected/zombie spawns. Only present while SPT has the Halloween event active with zombies enabled." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Halloween: Zombies</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalHalloweenZombies" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalHalloweenZombies</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalHalloweenZombies"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalHalloweenZombies" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalHalloweenZombies != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalHalloweenZombies" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps boss spawns from any other SPT (or modded) seasonal event. Only present while that event is active." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Other Seasonal Events</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalOtherEvents" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalOtherEvents</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalOtherEvents"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalOtherEvents" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalOtherEvents != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalOtherEvents" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps the vanilla snipers that spawn alongside Kaban on Streets." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Kaban's Snipers (Streets)</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalBossBoarSniper" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalBossBoarSniper</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalBossBoarSniper"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalBossBoarSniper" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalBossBoarSniper != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalBossBoarSniper" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps the vanilla crazy scav event on Lighthouse." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Crazy Scav Event (Lighthouse)</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalCrazyAssaultEvent" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalCrazyAssaultEvent</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalCrazyAssaultEvent"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalCrazyAssaultEvent" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalCrazyAssaultEvent != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalCrazyAssaultEvent" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps the vanilla Peacemaker squad on Shoreline." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Peacemaker Squad (Shoreline)</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalPeacemaker" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalPeacemaker</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalPeacemaker"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalPeacemaker" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalPeacemaker != true)
+                                {
+                                    <MudButton @onclick="default_AdditionalPeacemaker" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+
+                            <MudItem xs="1" />
+                            <MudItem xs="4">
+                                <MudPaper Class="d-flex align-center mud-width-full ma-1" Elevation="0">
+                                    <MudTooltip Text="Keeps boss/faction spawns added by other mods instead of removing them. Bosses ABPS has a config for are still controlled by ABPS." Color="Color.Primary" Placement="Placement.Right" Arrow="true">
+                                        <MudText>Other Mods' Boss Spawns</MudText>
+                                    </MudTooltip>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="6">
+                                <MudPaper Class="d-flex align-center mud-width-full" Elevation="0">
+                                    <MudSwitch T="bool" @bind-Value="_additionalOtherMods" Color="Color.Success" UncheckedColor="Color.Default" LabelPlacement="Placement.End">@_additionalOtherMods</MudSwitch>
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="1">
+                                @if (MainLayout._appUndoButtonToggle &&
+                                     MainLayout.pendingChanges.Contains("_additionalOtherMods"))
+                                {
+                                    <MudButton @onclick="undo_AdditionalOtherMods" Variant="Variant.Filled" Color="Color.Inherit" Size="Size.Small">Undo</MudButton>
+                                }
+                                else if (MainLayout._appDefaultButtonToggle &&
+                                         _additionalOtherMods != false)
+                                {
+                                    <MudButton @onclick="default_AdditionalOtherMods" Variant="Variant.Filled" Color="Color.Dark" Size="Size.Small">Default</MudButton>
+                                }
+                            </MudItem>
+                        </MudGrid>
+                    </MudExpansionPanel>
                 </MudTabPanel>
             </MudExpansionPanels>
         </MudTabs>
@@ -180,6 +395,97 @@
     }
     private void undo_WeeklyBosses() => _enableWeeklyBosses = ModConfig.OriginalConfig.WeeklyBoss.Enable;
     private void default_WeeklyBosses() => _enableWeeklyBosses = false;
+
+    #region AdditionalSpawns
+    private bool _additionalHalloweenSummon
+    {
+        get => ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenSummon;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenSummon);
+            ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenSummon = value;
+        }
+    }
+    private void undo_AdditionalHalloweenSummon() => _additionalHalloweenSummon = ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenSummon;
+    private void default_AdditionalHalloweenSummon() => _additionalHalloweenSummon = true;
+    private bool _additionalHalloweenNightCult
+    {
+        get => ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenNightCult;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenNightCult);
+            ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenNightCult = value;
+        }
+    }
+    private void undo_AdditionalHalloweenNightCult() => _additionalHalloweenNightCult = ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenNightCult;
+    private void default_AdditionalHalloweenNightCult() => _additionalHalloweenNightCult = true;
+    private bool _additionalHalloweenZombies
+    {
+        get => ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenZombies;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenZombies);
+            ModConfig.Config.AdditionalSpawns.SeasonalEvents.HalloweenZombies = value;
+        }
+    }
+    private void undo_AdditionalHalloweenZombies() => _additionalHalloweenZombies = ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.HalloweenZombies;
+    private void default_AdditionalHalloweenZombies() => _additionalHalloweenZombies = true;
+    private bool _additionalOtherEvents
+    {
+        get => ModConfig.Config.AdditionalSpawns.SeasonalEvents.OtherEvents;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.OtherEvents);
+            ModConfig.Config.AdditionalSpawns.SeasonalEvents.OtherEvents = value;
+        }
+    }
+    private void undo_AdditionalOtherEvents() => _additionalOtherEvents = ModConfig.OriginalConfig.AdditionalSpawns.SeasonalEvents.OtherEvents;
+    private void default_AdditionalOtherEvents() => _additionalOtherEvents = true;
+    private bool _additionalBossBoarSniper
+    {
+        get => ModConfig.Config.AdditionalSpawns.VanillaExtras.BossBoarSniper;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.BossBoarSniper);
+            ModConfig.Config.AdditionalSpawns.VanillaExtras.BossBoarSniper = value;
+        }
+    }
+    private void undo_AdditionalBossBoarSniper() => _additionalBossBoarSniper = ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.BossBoarSniper;
+    private void default_AdditionalBossBoarSniper() => _additionalBossBoarSniper = true;
+    private bool _additionalCrazyAssaultEvent
+    {
+        get => ModConfig.Config.AdditionalSpawns.VanillaExtras.CrazyAssaultEvent;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.CrazyAssaultEvent);
+            ModConfig.Config.AdditionalSpawns.VanillaExtras.CrazyAssaultEvent = value;
+        }
+    }
+    private void undo_AdditionalCrazyAssaultEvent() => _additionalCrazyAssaultEvent = ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.CrazyAssaultEvent;
+    private void default_AdditionalCrazyAssaultEvent() => _additionalCrazyAssaultEvent = true;
+    private bool _additionalPeacemaker
+    {
+        get => ModConfig.Config.AdditionalSpawns.VanillaExtras.Peacemaker;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.Peacemaker);
+            ModConfig.Config.AdditionalSpawns.VanillaExtras.Peacemaker = value;
+        }
+    }
+    private void undo_AdditionalPeacemaker() => _additionalPeacemaker = ModConfig.OriginalConfig.AdditionalSpawns.VanillaExtras.Peacemaker;
+    private void default_AdditionalPeacemaker() => _additionalPeacemaker = true;
+    private bool _additionalOtherMods
+    {
+        get => ModConfig.Config.AdditionalSpawns.OtherMods;
+        set
+        {
+            Utils.UpdateView(value, ModConfig.OriginalConfig.AdditionalSpawns.OtherMods);
+            ModConfig.Config.AdditionalSpawns.OtherMods = value;
+        }
+    }
+    private void undo_AdditionalOtherMods() => _additionalOtherMods = ModConfig.OriginalConfig.AdditionalSpawns.OtherMods;
+    private void default_AdditionalOtherMods() => _additionalOtherMods = false;
+    #endregion
     
     #region BossDifficulty
     private double _boss_EasyDifficulty
